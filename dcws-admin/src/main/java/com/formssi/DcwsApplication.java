@@ -14,13 +14,13 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
  */
 
 @SpringBootApplication
-public class LowCodeEngineApplication {
+public class DcwsApplication {
 
   public static void main(String[] args) {
-    SpringApplication application = new SpringApplication(LowCodeEngineApplication.class);
+    SpringApplication application = new SpringApplication(DcwsApplication.class);
     application.setApplicationStartup(new BufferingApplicationStartup(2048));
     application.run(args);
-    System.out.println("(♥◠‿◠)ﾉﾞ  Formssi-Low-Code-Engine启动成功   ლ(´ڡ`ლ)ﾞ");
+    System.out.println("(♥◠‿◠)ﾉﾞ  DcwsApplication启动成功   ლ(´ڡ`ლ)ﾞ");
   }
 
 }

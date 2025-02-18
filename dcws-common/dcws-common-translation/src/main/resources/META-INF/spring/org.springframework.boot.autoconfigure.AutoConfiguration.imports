@@ -1,0 +1,6 @@
+com.formssi.common.translation.config.TranslationConfig
+com.formssi.common.translation.core.impl.DeptNameTranslationImpl
+com.formssi.common.translation.core.impl.DictTypeTranslationImpl
+com.formssi.common.translation.core.impl.OssUrlTranslationImpl
+com.formssi.common.translation.core.impl.UserNameTranslationImpl
+com.formssi.common.translation.core.impl.NicknameTranslationImpl

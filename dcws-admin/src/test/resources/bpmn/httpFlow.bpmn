@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:activiti="http://www.activiti.org/test" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:tns="http://bpmn.io/schema/bpmn" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" expressionLanguage="http://www.w3.org/1999/XPath" id="Definitions_0001" name="" targetNamespace="http://bpmn.io/schema/bpmn" typeLanguage="http://www.w3.org/2001/XMLSchema">
+    <bpmn:process id="save_money" isClosed="false" isExecutable="true" name="save_money" processType="None">
+        <bpmn:documentation id="save_money_D_1"><![CDATA[存钱]]></bpmn:documentation>
+        <bpmn:startEvent id="httpFlow" name="httpFlow">
+            <bpmn:documentation id="httpFlow_D_1"><![CDATA[httpFlow请求]]></bpmn:documentation>
+            <bpmn:extensionElements>
+                <bpmn:camunda:properties>
+                    <bpmn:camunda:property name="idempotent" value="true"/>
+                    <bpmn:camunda:property name="idempotent-keys" value="[&quot;data.id&quot;,&quot;data.name&quot;]"/>
+                    <bpmn:camunda:property name="transactional-suspend" value="false"/>
+                </bpmn:camunda:properties>
+            </bpmn:extensionElements>
+        </bpmn:startEvent>
+        <bpmn:serviceTask activiti:exclusive="true" id="verify" name="verify">
+            <bpmn:documentation id="verify_D_1"><![CDATA[验证用户名密码]]></bpmn:documentation>
+            <bpmn:extensionElements>
+                <bpmn:camunda:properties>
+                    <bpmn:camunda:property name="task-service" value="rest-service"/>
+                    <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                    <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/user/verify&quot;,&#10;        &quot;method&quot;: &quot;POST&quot;,&#10;        &quot;body&quot;: {&#10;            &quot;name&quot;: &quot;@req.data.name&quot;,&#10;            &quot;pwd&quot;: &quot;123&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;verify&quot;,&#10;        &quot;transactional&quot;: false,&#10;        &quot;transactional-red&quot;: false&#10;    }&#10;}"/>
+                </bpmn:camunda:properties>
+            </bpmn:extensionElements>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="Flow_0vq2psv" sourceRef="httpFlow" targetRef="verify"/>
+        <bpmn:sequenceFlow id="Flow_1o4mfnu" sourceRef="verify" targetRef="asyncGateway"/>
+        <bpmn:inclusiveGateway gatewayDirection="Unspecified" id="asyncGateway" name="asyncGateway">
+            <bpmn:documentation id="asyncGateway_D_1"><![CDATA[并行网关
+]]></bpmn:documentation>
+            <bpmn:extensionElements>
+                <bpmn:camunda:properties>
+                    <bpmn:camunda:property name="open-async" value="true"/>
+                    <bpmn:camunda:property name="midway-start-id" value="midway-001"/>
+                </bpmn:camunda:properties>
+            </bpmn:extensionElements>
+        </bpmn:inclusiveGateway>
+        <bpmn:subProcess activiti:exclusive="true" id="sub_user_info" name="sub_user_info" triggeredByEvent="false">
+            <bpmn:documentation id="sub_user_info_D_1"><![CDATA[用户信息 子流程]]></bpmn:documentation>
+            <bpmn:startEvent id="Event_1sq263k" name="user_info">
+                <bpmn:documentation id="Event_1sq263k_D_1"><![CDATA[用户信息子流程]]></bpmn:documentation>
+            </bpmn:startEvent>
+            <bpmn:serviceTask activiti:exclusive="true" id="isAdmin" name="isAdmin">
+                <bpmn:documentation id="isAdmin_D_1"><![CDATA[判断是否是管理员用户]]></bpmn:documentation>
+                <bpmn:extensionElements>
+                    <bpmn:camunda:properties>
+                        <bpmn:camunda:property name="task-service" value="rest-service"/>
+                        <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/user/isAdmin&quot;,&#10;        &quot;method&quot;: &quot;GET&quot;,&#10;        &quot;params&quot;: {&#10;            &quot;id&quot;: &quot;@var.verify.response.data.id&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;isAdmin&quot;&#10;    }&#10;}"/>
+                        <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                    </bpmn:camunda:properties>
+                </bpmn:extensionElements>
+            </bpmn:serviceTask>
+            <bpmn:serviceTask activiti:exclusive="true" id="page" name="page">
+                <bpmn:documentation id="page_D_1"><![CDATA[返回用户信息]]></bpmn:documentation>
+                <bpmn:extensionElements>
+                    <bpmn:camunda:properties>
+                        <bpmn:camunda:property name="task-service" value="rest-service"/>
+                        <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                        <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/user/page&quot;,&#10;        &quot;method&quot;: &quot;GET&quot;,&#10;        &quot;params&quot;: {&#10;            &quot;size&quot;: 5,&#10;            &quot;number&quot;: 1&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;page&quot;&#10;    }&#10;}"/>
+                    </bpmn:camunda:properties>
+                </bpmn:extensionElements>
+            </bpmn:serviceTask>
+            <bpmn:exclusiveGateway gatewayDirection="Unspecified" id="isAdminGateway" name="isAdminGateway">
+                <bpmn:documentation id="isAdminGateway_D_1"><![CDATA[判断是否管理员的网关]]></bpmn:documentation>
+            </bpmn:exclusiveGateway>
+            <bpmn:serviceTask activiti:exclusive="true" id="get" name="get">
+                <bpmn:documentation id="get_D_1"><![CDATA[返回用户信息]]></bpmn:documentation>
+                <bpmn:extensionElements>
+                    <bpmn:camunda:properties>
+                        <bpmn:camunda:property name="task-service" value="rest-service"/>
+                        <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/user/get&quot;,&#10;        &quot;method&quot;: &quot;GET&quot;,&#10;        &quot;params&quot;: {&#10;            &quot;id&quot;: &quot;@var.verify.response.data.id&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;get&quot;,&#10;    }&#10;}"/>
+                        <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                    </bpmn:camunda:properties>
+                </bpmn:extensionElements>
+            </bpmn:serviceTask>
+            <bpmn:sequenceFlow id="Flow_06cg7cq" sourceRef="isAdminGateway" targetRef="page">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[var.isAdmin.response.data==true]]></bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_0e7xxn5" sourceRef="isAdminGateway" targetRef="get">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[var.isAdmin.response.data==false]]></bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_0q97q85" sourceRef="Event_1sq263k" targetRef="isAdmin"/>
+            <bpmn:sequenceFlow id="Flow_0vkipnp" sourceRef="isAdmin" targetRef="isAdminGateway"/>
+            <bpmn:endEvent id="Event_1820r37" name="end">
+                <bpmn:documentation id="Event_1820r37_D_1"><![CDATA[sub_user_info 结束]]></bpmn:documentation>
+            </bpmn:endEvent>
+            <bpmn:sequenceFlow id="Flow_1138ir5" sourceRef="get" targetRef="Event_1820r37"/>
+            <bpmn:sequenceFlow id="Flow_0z4oiam" sourceRef="page" targetRef="Event_1820r37"/>
+        </bpmn:subProcess>
+        <bpmn:endEvent id="end" name="end">
+            <bpmn:documentation id="end_D_1"><![CDATA[结束]]></bpmn:documentation>
+        </bpmn:endEvent>
+        <bpmn:callActivity activiti:exclusive="true" calledElement="sub_user_info" id="call_sub_user_info" name="sub_user_info">
+            <bpmn:documentation id="call_sub_user_info_D_1"><![CDATA[用户信息 子流程]]></bpmn:documentation>
+            <bpmn:extensionElements>
+                <bpmn:camunda:properties>
+                    <bpmn:camunda:property name="timeout" value="2000"/>
+                    <bpmn:camunda:property name="strict-mode" value="true"/>
+                </bpmn:camunda:properties>
+            </bpmn:extensionElements>
+        </bpmn:callActivity>
+        <bpmn:sequenceFlow id="Flow_1bml744" sourceRef="asyncGateway" targetRef="call_sub_user_info"/>
+        <bpmn:subProcess activiti:exclusive="true" id="sub_account" name="sub_account" triggeredByEvent="false">
+            <bpmn:documentation id="sub_account_D_1"><![CDATA[账户操作 子流程
+]]></bpmn:documentation>
+            <bpmn:startEvent id="account" name="account">
+                <bpmn:documentation id="account_D_1"><![CDATA[账户操作 子流程
+]]></bpmn:documentation>
+            </bpmn:startEvent>
+            <bpmn:serviceTask activiti:exclusive="true" id="login" name="login">
+                <bpmn:documentation id="login_D_1"><![CDATA[登录换取token
+]]></bpmn:documentation>
+                <bpmn:extensionElements>
+                    <bpmn:camunda:properties>
+                        <bpmn:camunda:property name="task-service" value="rest-service"/>
+                        <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/userAccount/login&quot;,&#10;        &quot;method&quot;: &quot;POST&quot;,&#10;        &quot;body&quot;: {&#10;            &quot;name&quot;: &quot;@req.data.name&quot;,&#10;            &quot;pwd&quot;: &quot;@req.data.pwd&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;login&quot;,&#10;    }&#10;}"/>
+                        <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                    </bpmn:camunda:properties>
+                </bpmn:extensionElements>
+            </bpmn:serviceTask>
+            <bpmn:serviceTask activiti:exclusive="true" id="cost" name="cost">
+                <bpmn:documentation id="cost_D_1"><![CDATA[消费金额]]></bpmn:documentation>
+                <bpmn:extensionElements>
+                    <bpmn:camunda:properties>
+                        <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/userAccount/cost&quot;,&#10;        &quot;method&quot;: &quot;POST&quot;,&#10;        &quot;body&quot;: {&#10;            &quot;userId&quot;: &quot;@var.verify.response.data.id&quot;,&#10;            &quot;consumptionAmount&quot;:&quot;@req.data.consumptionAmount&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;cost&quot;&#10;    }&#10;}"/>
+                        <bpmn:camunda:property name="task-service" value="rest-service"/>
+                        <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                    </bpmn:camunda:properties>
+                </bpmn:extensionElements>
+            </bpmn:serviceTask>
+            <bpmn:serviceTask activiti:exclusive="true" id="deposit" name="deposit">
+                <bpmn:documentation id="deposit_D_1"><![CDATA[存钱]]></bpmn:documentation>
+                <bpmn:extensionElements>
+                    <bpmn:camunda:properties>
+                        <bpmn:camunda:property name="task-service" value="rest-service"/>
+                        <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                        <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/userAccount/deposit&quot;,&#10;        &quot;method&quot;: &quot;POST&quot;,&#10;        &quot;body&quot;: {&#10;            &quot;userId&quot;: &quot;@var.verify.response.data.id&quot;,&#10;            &quot;depositAmount&quot;:&quot;@req.data.depositAmount&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;deposit&quot;,&#10;    }&#10;}"/>
+                    </bpmn:camunda:properties>
+                </bpmn:extensionElements>
+            </bpmn:serviceTask>
+            <bpmn:sequenceFlow id="Flow_1g5yro7" sourceRef="account" targetRef="login"/>
+            <bpmn:endEvent id="Event_1t5zntg" name="end">
+                <bpmn:documentation id="Event_1t5zntg_D_1"><![CDATA[sub_user_info 结束]]></bpmn:documentation>
+            </bpmn:endEvent>
+            <bpmn:serviceTask activiti:exclusive="true" id="getBalance" name="getBalance">
+                <bpmn:documentation id="getBalance_D_1"><![CDATA[通过token在行方接口获取余额]]></bpmn:documentation>
+                <bpmn:extensionElements>
+                    <bpmn:camunda:properties>
+                        <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/userAccount/getBalance&quot;,&#10;        &quot;method&quot;: &quot;GET&quot;,&#10;        &quot;params&quot;: {&#10;            &quot;userId&quot;: &quot;@var.verify.response.data.id&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;getBalance&quot;,&#10;    }&#10;}"/>
+                        <bpmn:camunda:property name="task-service" value="rest-service"/>
+                        <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                    </bpmn:camunda:properties>
+                </bpmn:extensionElements>
+            </bpmn:serviceTask>
+            <bpmn:sequenceFlow id="Flow_1bhfb73" sourceRef="login" targetRef="getBalance"/>
+            <bpmn:sequenceFlow id="Flow_1rxsr4o" sourceRef="cost_gateway" targetRef="cost">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[var.balance>0]]></bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_1518o56" sourceRef="cost_gateway" targetRef="deposit">
+                <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression"><![CDATA[var.balance<=0]]></bpmn:conditionExpression>
+            </bpmn:sequenceFlow>
+            <bpmn:sequenceFlow id="Flow_0j5z51w" sourceRef="getBalance" targetRef="cost_gateway">
+                <bpmn:documentation id="Flow_0j5z51w_D_1"><![CDATA[余额是否大于0]]></bpmn:documentation>
+            </bpmn:sequenceFlow>
+            <bpmn:inclusiveGateway gatewayDirection="Unspecified" id="cost_gateway" name="cost_gateway"/>
+            <bpmn:sequenceFlow id="Flow_0k4qw6w" sourceRef="cost" targetRef="Event_1t5zntg"/>
+            <bpmn:sequenceFlow id="Flow_0td8u1s" sourceRef="deposit" targetRef="Event_1t5zntg"/>
+        </bpmn:subProcess>
+        <bpmn:callActivity activiti:exclusive="true" calledElement="sub_account" id="call_sub_account" name="sub_account">
+            <bpmn:documentation id="call_sub_account_D_1"><![CDATA[账户操作 子流程]]></bpmn:documentation>
+        </bpmn:callActivity>
+        <bpmn:sequenceFlow id="Flow_1pj3bp4" sourceRef="asyncGateway" targetRef="call_sub_account"/>
+        <bpmn:sequenceFlow id="Flow_0a3wjt9" sourceRef="call_sub_account" targetRef="response"/>
+        <bpmn:serviceTask activiti:exclusive="true" id="response" name="response">
+            <bpmn:documentation id="response_D_1"><![CDATA[判断是否是管理员用户]]></bpmn:documentation>
+            <bpmn:extensionElements>
+                <bpmn:camunda:properties>
+                    <bpmn:camunda:property name="task-params" value="{&#10;    &quot;request&quot;: {&#10;        &quot;url&quot;: &quot;http://localhost:8888/user/isAdmin&quot;,&#10;        &quot;method&quot;: &quot;GET&quot;,&#10;        &quot;params&quot;: {&#10;            &quot;id&quot;: &quot;@var.verify.response.data.id&quot;&#10;        }&#10;    },&#10;    &quot;config&quot;: {&#10;        &quot;id&quot;: &quot;isAdmin&quot;&#10;    }&#10;}"/>
+                    <bpmn:camunda:property name="task-service" value="response"/>
+                    <bpmn:camunda:property name="task-component" value="KstryFlowService"/>
+                </bpmn:camunda:properties>
+            </bpmn:extensionElements>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="Flow_0sooub4" sourceRef="call_sub_user_info" targetRef="response"/>
+        <bpmn:sequenceFlow id="Flow_05cdwqo" sourceRef="response" targetRef="end"/>
+        <bpmn:serviceTask activiti:exclusive="true" id="Activity_1udmw9c"/>
+    </bpmn:process>
+    <bpmndi:BPMNDiagram documentation="background=#2B2D30;count=1;horizontalcount=2;orientation=0;width=842.4;height=1195.2;imageableWidth=832.4;imageableHeight=1185.2;imageableX=5.0;imageableY=5.0" id="Diagram-_1" name="New Diagram">
+        <bpmndi:BPMNPlane bpmnElement="save_money">
+            <bpmndi:BPMNShape bpmnElement="httpFlow" id="Shape-httpFlow">
+                <dc:Bounds height="32.0" width="32.0" x="252.0" y="302.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="verify" id="Shape-verify">
+                <dc:Bounds height="80.0" width="100.0" x="340.0" y="280.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="asyncGateway" id="Shape-asyncGateway">
+                <dc:Bounds height="32.0" width="32.0" x="500.0" y="295.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="sub_user_info" id="Shape-sub_user_info" isExpanded="true">
+                <dc:Bounds height="330.0" width="748.0" x="471.0" y="-170.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="330.0" width="748.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="end" id="Shape-end">
+                <dc:Bounds height="32.0" width="32.0" x="992.0" y="302.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="call_sub_user_info" id="Shape-call_sub_user_info" isExpanded="false">
+                <dc:Bounds height="80.0" width="100.0" x="590.0" y="200.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="sub_account" id="Shape-sub_account" isExpanded="true">
+                <dc:Bounds height="280.0" width="970.0" x="440.0" y="440.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="280.0" width="970.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="call_sub_account" id="Shape-call_sub_account" isExpanded="false">
+                <dc:Bounds height="80.0" width="100.0" x="590.0" y="340.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="response" id="Shape-response">
+                <dc:Bounds height="80.0" width="100.0" x="810.0" y="280.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="Activity_1udmw9c" id="Shape-Activity_1udmw9c">
+                <dc:Bounds height="80.0" width="100.0" x="300.0" y="90.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="Event_1sq263k" id="Shape-Event_1sq263k">
+                <dc:Bounds height="32.0" width="32.0" x="571.0" y="-28.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="isAdmin" id="Shape-isAdmin">
+                <dc:Bounds height="80.0" width="100.0" x="679.0" y="-50.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="page" id="Shape-page">
+                <dc:Bounds height="80.0" width="100.0" x="979.0" y="20.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="isAdminGateway" id="Shape-isAdminGateway" isMarkerVisible="true">
+                <dc:Bounds height="32.0" width="32.0" x="824.0" y="-35.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="get" id="Shape-get">
+                <dc:Bounds height="80.0" width="100.0" x="979.0" y="-110.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="Event_1820r37" id="Shape-Event_1820r37">
+                <dc:Bounds height="32.0" width="32.0" x="1151.0" y="-28.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="account" id="Shape-account">
+                <dc:Bounds height="32.0" width="32.0" x="480.0" y="552.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="login" id="Shape-login">
+                <dc:Bounds height="80.0" width="100.0" x="570.0" y="530.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="cost" id="Shape-cost">
+                <dc:Bounds height="80.0" width="100.0" x="990.0" y="480.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="deposit" id="Shape-deposit">
+                <dc:Bounds height="80.0" width="100.0" x="990.0" y="590.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="Event_1t5zntg" id="Shape-Event_1t5zntg">
+                <dc:Bounds height="32.0" width="32.0" x="1292.0" y="552.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="getBalance" id="Shape-getBalance">
+                <dc:Bounds height="80.0" width="100.0" x="730.0" y="530.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="80.0" width="100.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNShape bpmnElement="cost_gateway" id="Shape-cost_gateway">
+                <dc:Bounds height="32.0" width="32.0" x="875.0" y="545.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="32.0" width="32.0" x="0.0" y="0.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNShape>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0vq2psv" id="BPMNEdge_Flow_0vq2psv" sourceElement="httpFlow" targetElement="verify">
+                <di:waypoint x="284.0" y="318.0"/>
+                <di:waypoint x="340.0" y="320.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1138ir5" id="BPMNEdge_Flow_1138ir5" sourceElement="get" targetElement="Event_1820r37">
+                <di:waypoint x="1079.0" y="-70.0"/>
+                <di:waypoint x="1115.0" y="-70.0"/>
+                <di:waypoint x="1115.0" y="-10.0"/>
+                <di:waypoint x="1151.0" y="-12.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0z4oiam" id="BPMNEdge_Flow_0z4oiam" sourceElement="page" targetElement="Event_1820r37">
+                <di:waypoint x="1079.0" y="60.0"/>
+                <di:waypoint x="1115.0" y="60.0"/>
+                <di:waypoint x="1115.0" y="-10.0"/>
+                <di:waypoint x="1151.0" y="-12.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1rxsr4o" id="BPMNEdge_Flow_1rxsr4o" sourceElement="cost_gateway" targetElement="cost">
+                <di:waypoint x="898.0" y="570.0"/>
+                <di:waypoint x="950.0" y="570.0"/>
+                <di:waypoint x="950.0" y="520.0"/>
+                <di:waypoint x="990.0" y="520.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1g5yro7" id="BPMNEdge_Flow_1g5yro7" sourceElement="account" targetElement="login">
+                <di:waypoint x="512.0" y="568.0"/>
+                <di:waypoint x="570.0" y="570.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1bml744" id="BPMNEdge_Flow_1bml744" sourceElement="asyncGateway" targetElement="call_sub_user_info">
+                <di:waypoint x="525.0" y="304.0"/>
+                <di:waypoint x="525.0" y="240.0"/>
+                <di:waypoint x="590.0" y="240.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1o4mfnu" id="BPMNEdge_Flow_1o4mfnu" sourceElement="verify" targetElement="asyncGateway">
+                <di:waypoint x="440.0" y="320.0"/>
+                <di:waypoint x="500.0" y="311.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0k4qw6w" id="BPMNEdge_Flow_0k4qw6w" sourceElement="cost" targetElement="Event_1t5zntg">
+                <di:waypoint x="1090.0" y="520.0"/>
+                <di:waypoint x="1191.0" y="520.0"/>
+                <di:waypoint x="1191.0" y="570.0"/>
+                <di:waypoint x="1292.0" y="568.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0j5z51w" id="BPMNEdge_Flow_0j5z51w" sourceElement="getBalance" targetElement="cost_gateway">
+                <di:waypoint x="830.0" y="570.0"/>
+                <di:waypoint x="875.0" y="561.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1518o56" id="BPMNEdge_Flow_1518o56" sourceElement="cost_gateway" targetElement="deposit">
+                <di:waypoint x="898.0" y="570.0"/>
+                <di:waypoint x="950.0" y="570.0"/>
+                <di:waypoint x="950.0" y="630.0"/>
+                <di:waypoint x="990.0" y="630.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1bhfb73" id="BPMNEdge_Flow_1bhfb73" sourceElement="login" targetElement="getBalance">
+                <di:waypoint x="670.0" y="570.0"/>
+                <di:waypoint x="730.0" y="570.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_1pj3bp4" id="BPMNEdge_Flow_1pj3bp4" sourceElement="asyncGateway" targetElement="call_sub_account">
+                <di:waypoint x="525.0" y="318.0"/>
+                <di:waypoint x="525.0" y="380.0"/>
+                <di:waypoint x="590.0" y="380.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0sooub4" id="BPMNEdge_Flow_0sooub4" sourceElement="call_sub_user_info" targetElement="response">
+                <di:waypoint x="690.0" y="240.0"/>
+                <di:waypoint x="750.0" y="240.0"/>
+                <di:waypoint x="750.0" y="320.0"/>
+                <di:waypoint x="810.0" y="320.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0e7xxn5" id="BPMNEdge_Flow_0e7xxn5" sourceElement="isAdminGateway" targetElement="get">
+                <di:waypoint x="849.0" y="-26.0"/>
+                <di:waypoint x="849.0" y="-70.0"/>
+                <di:waypoint x="979.0" y="-70.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0td8u1s" id="BPMNEdge_Flow_0td8u1s" sourceElement="deposit" targetElement="Event_1t5zntg">
+                <di:waypoint x="1090.0" y="630.0"/>
+                <di:waypoint x="1191.0" y="630.0"/>
+                <di:waypoint x="1191.0" y="570.0"/>
+                <di:waypoint x="1292.0" y="568.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_06cg7cq" id="BPMNEdge_Flow_06cg7cq" sourceElement="isAdminGateway" targetElement="page">
+                <di:waypoint x="849.0" y="-12.0"/>
+                <di:waypoint x="849.0" y="60.0"/>
+                <di:waypoint x="979.0" y="60.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0a3wjt9" id="BPMNEdge_Flow_0a3wjt9" sourceElement="call_sub_account" targetElement="response">
+                <di:waypoint x="690.0" y="380.0"/>
+                <di:waypoint x="750.0" y="380.0"/>
+                <di:waypoint x="750.0" y="320.0"/>
+                <di:waypoint x="810.0" y="320.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_05cdwqo" id="BPMNEdge_Flow_05cdwqo" sourceElement="response" targetElement="end">
+                <di:waypoint x="910.0" y="320.0"/>
+                <di:waypoint x="992.0" y="318.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0q97q85" id="BPMNEdge_Flow_0q97q85" sourceElement="Event_1sq263k" targetElement="isAdmin">
+                <di:waypoint x="603.0" y="-12.0"/>
+                <di:waypoint x="679.0" y="-10.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+            <bpmndi:BPMNEdge bpmnElement="Flow_0vkipnp" id="BPMNEdge_Flow_0vkipnp" sourceElement="isAdmin" targetElement="isAdminGateway">
+                <di:waypoint x="779.0" y="-10.0"/>
+                <di:waypoint x="824.0" y="-19.0"/>
+                <bpmndi:BPMNLabel>
+                    <dc:Bounds height="-1.0" width="-1.0" x="-1.0" y="-1.0"/>
+                </bpmndi:BPMNLabel>
+            </bpmndi:BPMNEdge>
+        </bpmndi:BPMNPlane>
+    </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,153 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.formssi.bond</groupId>
+    <artifactId>dcws-backend</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <artifactId>dcws-admin</artifactId>
+  <name>dcws-admin</name>
+  <url>http://maven.apache.org</url>
+
+  <description>
+    web服务入口
+  </description>
+
+  <dependencies>
+
+    <!-- Mysql驱动包 -->
+    <dependency>
+      <groupId>com.mysql</groupId>
+      <artifactId>mysql-connector-j</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-common-doc</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-common-social</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-common-ratelimiter</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-common-mail</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-system</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-job</artifactId>
+    </dependency>
+
+    <!-- 代码生成-->
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-generator</artifactId>
+    </dependency>
+
+    <!--  demo模块  -->
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-demo</artifactId>
+    </dependency>
+
+    <!--  chorflow 模块  -->
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>chorflow</artifactId>
+    </dependency>
+
+    <!--kstry-->
+    <dependency>
+      <artifactId>kstry-core</artifactId>
+      <groupId>cn.kstry.framework</groupId>
+      <version>${kstry.version}</version>
+    </dependency>
+
+    <!--  工作流模块  -->
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-workflow</artifactId>
+    </dependency>
+
+<!--    &lt;!&ndash;  大屏模块  &ndash;&gt;-->
+<!--    <dependency>-->
+<!--      <groupId>com.formssi.bond</groupId>-->
+<!--      <artifactId>dcws-bigscreen</artifactId>-->
+<!--    </dependency>-->
+
+<!--    &lt;!&ndash;  仪表盘模块  &ndash;&gt;-->
+<!--    <dependency>-->
+<!--      <groupId>com.formssi.bond</groupId>-->
+<!--      <artifactId>dcws-dashboard</artifactId>-->
+<!--    </dependency>-->
+
+    <!--  报表模块  -->
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>ureport2-starter</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>de.codecentric</groupId>
+      <artifactId>spring-boot-admin-starter-client</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <finalName>${project.artifactId}</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${maven-jar-plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>${maven-war-plugin.version}</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <warName>${project.artifactId}</warName>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

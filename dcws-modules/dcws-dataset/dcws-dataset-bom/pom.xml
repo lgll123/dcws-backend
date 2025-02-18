@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.formssi.bond</groupId>
+    <artifactId>dcws-dataset</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dcws-dataset-bom</artifactId>
+  <name>dcws-dataset-bom</name>
+  <url>http://maven.apache.org</url>
+  <description>
+    dcws-dataset 依赖项
+  </description>
+
+  <dependencies>
+    <!-- 公共模块 -->
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-dataset-common</artifactId>
+      <scope>compile</scope>
+      <version>${revision}</version>
+    </dependency>
+
+    <!-- 核心模块 -->
+    <dependency>
+      <groupId>com.formssi.bond</groupId>
+      <artifactId>dcws-dataset-core</artifactId>
+      <scope>compile</scope>
+      <version>${revision}</version>
+    </dependency>
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- 公共模块 -->
+      <dependency>
+        <groupId>com.formssi.bond</groupId>
+        <artifactId>dcws-dataset-common</artifactId>
+        <scope>compile</scope>
+        <version>${revision}</version>
+      </dependency>
+
+      <!-- 核心模块 -->
+      <dependency>
+        <groupId>com.formssi.bond</groupId>
+        <artifactId>dcws-dataset-core</artifactId>
+        <scope>compile</scope>
+        <version>${revision}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>

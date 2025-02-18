@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.formssi.bond</groupId>
+        <artifactId>dcws-common</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>dcws-common-idempotent</artifactId>
+    <name>dcws-common-idempotent</name>
+    <url>http://maven.apache.org</url>
+
+    <description>
+        dcws-common-idempotent 幂等功能
+    </description>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-crypto</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.dev33</groupId>
+            <artifactId>sa-token-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-redis</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-json</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+</project>

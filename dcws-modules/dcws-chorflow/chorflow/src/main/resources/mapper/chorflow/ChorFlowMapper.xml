@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.formssi.chorflow.mapper.ChorFlowMapper">
+  <select id="selectPageChorFlowList" resultType="com.formssi.chorflow.domain.vo.ChorFlowVo">
+    SELECT cf.id,
+           cf.api_id,
+           cf.flow_name,
+           cf.description,
+           cf.file_content,
+           cf.img,
+           cf.system_id,
+           cf.module_id,
+           cf.create_time,
+           cf.create_by,
+           cf.update_time,
+           cf.update_by,
+           cf.deleted,
+           sb.system_name  systemName,
+           sbm.module_name moduleName
+    FROM chor_flow cf
+           LEFT JOIN sys_bussys sb
+                     ON
+                       cf.system_id = sb.system_code
+           LEFT JOIN sys_bussys_module sbm
+                     ON
+                       cf.module_id = sbm.module_code
+      ${ew.getCustomSqlSegment}
+  </select>
+</mapper>

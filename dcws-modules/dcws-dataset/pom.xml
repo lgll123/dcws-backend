@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.formssi.bond</groupId>
+    <artifactId>dcws-modules</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>dcws-dataset</artifactId>
+  <packaging>pom</packaging>
+  <name>dcws-dataset</name>
+  <url>http://maven.apache.org</url>
+
+  <description>
+    数据集模块
+  </description>
+
+  <properties>
+    <swagger.annotations.version>1.5.20</swagger.annotations.version>
+    <swagger.bootstrap.version>1.9.6</swagger.bootstrap.version>
+    <commons-lang3.version>3.10</commons-lang3.version>
+    <commons-collections4.version>4.1</commons-collections4.version>
+    <commons-collections.version>3.2.2</commons-collections.version>
+    <guava.version>20.0</guava.version>
+    <guava.sandbox.version>1.19</guava.sandbox.version>
+    <jackson.version.core>2.13.4</jackson.version.core>
+    <json.version>20220320</json.version>
+    <druid.version>1.2.11</druid.version>
+    <lombok.version>1.18.34</lombok.version>
+    <groovy.version>3.0.19</groovy.version>
+    <oracle-database.version>21.5.0.0</oracle-database.version>
+    <mysql.version>5.1.49</mysql.version>
+    <postgresql.version>42.3.3</postgresql.version>
+    <clickhouse.version>0.3.2</clickhouse.version>
+    <commons-io.version>2.2</commons-io.version>
+    <okhttp3.version>4.9.1</okhttp3.version>
+    <vertica.version>10.0.1-0</vertica.version>
+    <es.clients.version>8.0.1</es.clients.version>
+    <sql.server.version>9.4.0.jre8</sql.server.version>
+    <easyexcel.version>2.2.11</easyexcel.version>
+  </properties>
+
+  <modules>
+    <module>dcws-dataset-bom</module>
+    <module>dcws-dataset-common</module>
+    <module>dcws-dataset-core</module>
+  </modules>
+
+</project>

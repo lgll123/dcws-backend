@@ -1,0 +1,93 @@
+#公共配置
+server:
+  port: 8888
+spring:
+  application:
+    name: kstry-app
+  profiles:
+    active: mysql
+  jpa:
+    # 默认情况下，data.sql 脚本在 Hibernate 初始化之前执行。这使基于脚本的初始化与其他数据库迁移工具（如 Flyway 和 Liquibase）保持一致。由于我们每次都要重新创建由 Hibernate 生成的 Schema，因此需要设置一个额外的属性：
+    defer-datasource-initialization: true
+    #    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      # 自动创建DDL数据库
+      ddl-auto: create-drop
+    show-sql: true
+
+
+#日志打印
+logging:
+  # 配置级别
+  level:
+    #分包配置级别，即不同的目录下可以使用不同的级别
+    com: debug
+
+# actuator 配置
+management:
+  endpoints:
+    # Web端点的配置属性
+    web:
+      # 设置端点访问的URL前缀，默认为/actuator
+      base-path: /actuator
+      exposure:
+        #  开放端点的ID集合（eg:['health','info','beans','env']），配置为“*”表示全部
+        include: '*'
+        #  不暴露的端点集合
+        exclude: 'info'
+    # JMX 端点配置
+    jmx:
+      exposure:
+        exclude: 'info'
+        include: '*'
+# kstry配置
+kstry:
+  thread:
+    pool:
+      core-size: 8 # Kstry 线程池核心线程数。 默认：CPU核心数>2时取CPU核心数，否则取2
+      max-size: 16 #  Kstry 线程池最大线程数。 默认：核心线程数*2
+      keep-alive-time: 10 # Kstry 线程池空闲存活时间。 默认：10分钟，单位：分钟
+      queue-size: 5000 # Kstry 线程池阻塞队列长度。  默认：10000
+      shutdown-await: 3000 # 调用线程池 shutdown() 之后，时隔几毫秒后check关闭状态。 默认：3000，单位：毫秒
+      shutdown-now-await: 3000 # 调用线程池 shutdown() 失败之后再调用 shutdownNow() 时隔几毫秒后check关闭状态。 默认：5000，单位：毫秒
+      monitor:
+        enable: true # 是否开启线程池的监控日志。 默认：true
+        delay: 5000 # 线程池监控日志打印间隔时间。 默认：10000ms，单位：毫秒
+    open-virtual: true # 使用JDK21+时，可以使用该参数开启虚拟线程
+  story:
+    request-id: traceId # 自定义请求ID名，默认：ks-request-id
+    tracking:
+      log: true # 是否开启回溯日志。 默认：false
+      type: service # 链路回溯策略。 默认：none
+    success-code: 200 # Story 执行成功后的 code。 默认：200
+    timeout: 3000 # Story 任务超时时间。 默认：3000ms，单位：毫秒
+
+
+#springdoc:
+#  group-configs:
+#    - group: 'user'
+#      paths-to-match: '/user/**'
+#      packages-to-scan: com.formssi.chorflow.controller
+#
+#  swagger-ui:
+#    path: /swagger-ui.html
+#    tags-sorter: alpha
+#    operations-sorter: alpha
+#  api-docs:
+#    path: /v3/api-docs
+#    enabled: true
+##  group-configs:
+##    - group: "user"
+##      paths-to-match: '/user/**'
+##      packages-to-scan: 'com.nongda.controller'
+##    - group: "manager"
+##      paths-to-match: '/manager/**'
+##      packages-to-scan: 'com.nongda.controller'
+#knife4j:
+#  enable: true
+#  setting:
+#    language: zh_cn
+#  basic:
+#    enable: true
+#    username: root
+#    password: root

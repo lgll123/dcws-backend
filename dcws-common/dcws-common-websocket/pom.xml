@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.formssi.bond</groupId>
+        <artifactId>dcws-common</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>dcws-common-websocket</artifactId>
+    <name>dcws-common-websocket</name>
+    <url>http://maven.apache.org</url>
+
+    <description>
+        dcws-common-websocket 模块
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-redis</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-satoken</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-json</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

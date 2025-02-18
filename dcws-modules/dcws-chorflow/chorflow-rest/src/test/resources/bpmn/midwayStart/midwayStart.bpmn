@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0001" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="Process_1732758413768" name="业务流程_1732758413768" isExecutable="true">
+    <bpmn:startEvent id="MidwayStart001" name="MidwayStart001">
+      <bpmn:documentation>MidwayStart001</bpmn:documentation>
+      <bpmn:outgoing>Flow_0sfx9m5</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="init" name="init">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-component" value="MidwayStartComponent" />
+          <camunda:property name="task-service" value="init" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0sfx9m5</bpmn:incoming>
+      <bpmn:outgoing>Flow_0in4yk6</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0sfx9m5" sourceRef="MidwayStart001" targetRef="init" />
+    <bpmn:endEvent id="end" name="end">
+      <bpmn:documentation>end</bpmn:documentation>
+      <bpmn:incoming>Flow_0nbi8q2</bpmn:incoming>
+      <bpmn:incoming>Flow_1dxm44a</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0in4yk6" sourceRef="init" targetRef="Gateway_07ufxjg" />
+    <bpmn:inclusiveGateway id="Gateway_07ufxjg">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="midway-start-id" value="midway-001" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0in4yk6</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ldggky</bpmn:outgoing>
+      <bpmn:outgoing>Flow_04b2z07</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:serviceTask id="addition" name="addition">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-service" value="addition" />
+          <camunda:property name="task-component" value="MidwayStartComponent" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ldggky</bpmn:incoming>
+      <bpmn:outgoing>Flow_0nbi8q2</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ldggky" sourceRef="Gateway_07ufxjg" targetRef="addition" />
+    <bpmn:serviceTask id="subtraction" name="subtraction">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-component" value="MidwayStartComponent" />
+          <camunda:property name="task-service" value="subtraction" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_04b2z07</bpmn:incoming>
+      <bpmn:outgoing>Flow_1dxm44a</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_04b2z07" sourceRef="Gateway_07ufxjg" targetRef="subtraction" />
+    <bpmn:sequenceFlow id="Flow_0nbi8q2" sourceRef="addition" targetRef="end" />
+    <bpmn:sequenceFlow id="Flow_1dxm44a" sourceRef="subtraction" targetRef="end" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1732758413768">
+      <bpmndi:BPMNShape id="Event_1hogd19_di" bpmnElement="MidwayStart001">
+        <dc:Bounds x="472" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="451" y="345" width="79" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1arlfr7_di" bpmnElement="init">
+        <dc:Bounds x="560" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_07ufxjg_di" bpmnElement="Gateway_07ufxjg">
+        <dc:Bounds x="725" y="295" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1s1hnis" bpmnElement="addition">
+        <dc:Bounds x="820" y="170" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1bizken_di" bpmnElement="end">
+        <dc:Bounds x="1082" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1091" y="345" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1qagjft" bpmnElement="subtraction">
+        <dc:Bounds x="820" y="380" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0sfx9m5_di" bpmnElement="Flow_0sfx9m5">
+        <di:waypoint x="508" y="320" />
+        <di:waypoint x="560" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0in4yk6_di" bpmnElement="Flow_0in4yk6">
+        <di:waypoint x="660" y="320" />
+        <di:waypoint x="725" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ldggky_di" bpmnElement="Flow_1ldggky">
+        <di:waypoint x="750" y="295" />
+        <di:waypoint x="750" y="210" />
+        <di:waypoint x="820" y="210" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04b2z07_di" bpmnElement="Flow_04b2z07">
+        <di:waypoint x="750" y="345" />
+        <di:waypoint x="750" y="420" />
+        <di:waypoint x="820" y="420" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0nbi8q2_di" bpmnElement="Flow_0nbi8q2">
+        <di:waypoint x="920" y="210" />
+        <di:waypoint x="1001" y="210" />
+        <di:waypoint x="1001" y="320" />
+        <di:waypoint x="1082" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1dxm44a_di" bpmnElement="Flow_1dxm44a">
+        <di:waypoint x="920" y="420" />
+        <di:waypoint x="1001" y="420" />
+        <di:waypoint x="1001" y="320" />
+        <di:waypoint x="1082" y="320" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

@@ -1,0 +1,6 @@
+com.formssi.common.core.config.ApplicationConfig
+com.formssi.common.core.config.AsyncConfig
+com.formssi.common.core.config.LceAdminConfig
+com.formssi.common.core.config.ThreadPoolConfig
+com.formssi.common.core.config.ValidatorConfig
+com.formssi.common.core.utils.SpringUtils

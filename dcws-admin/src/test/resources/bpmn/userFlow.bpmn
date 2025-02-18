@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0001" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="save_money" name="save_money" isExecutable="true">
+    <bpmn:documentation>存钱</bpmn:documentation>
+    <bpmn:startEvent id="userFlow" name="userFlow">
+      <bpmn:documentation>user流程</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="idempotent" value="true" />
+          <camunda:property name="idempotent-keys" value="[&#34;data.id&#34;,&#34;data.name&#34;]" />
+          <camunda:property name="transactional-suspend" value="false" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_0vq2psv</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="register" name="register">
+      <bpmn:documentation>注冊</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-service" value="rest-service" />
+          <camunda:property name="task-component" value="KstryFlowService" />
+          <camunda:property name="task-params" value="{&#10;    &#34;request&#34;:{&#10;        &#34;url&#34;:&#34;http://localhost:8081/user/register&#34;,&#10;        &#34;method&#34;:&#34;POST&#34;,&#10;        &#34;body&#34;:{&#10;            &#34;name&#34;:&#34;@req.data.name&#34;,&#10;            &#34;pwd&#34;:&#34;@req.data.pwd&#34;&#10;        },&#10;        &#34;successCode&#34;: &#34;200&#34;,&#10;        &#34;successJsonPath&#34;: &#34;code&#34;,&#10;        &#34;errorMessageJsonPath&#34;: &#34;msg&#34;&#10;    },&#10;    &#34;config&#34;:{&#10;        &#34;id&#34;:&#34;register&#34;,&#10;        &#34;transactional&#34;:false,&#10;        &#34;transactional-red&#34;:false&#10;    }&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0vq2psv</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ja7ey4</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0vq2psv" sourceRef="userFlow" targetRef="register" />
+    <bpmn:serviceTask id="login" name="login">
+      <bpmn:documentation>登录</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-service" value="rest-service" />
+          <camunda:property name="task-component" value="KstryFlowService" />
+          <camunda:property name="task-params" value="{&#10;    &#34;request&#34;:{&#10;        &#34;url&#34;:&#34;http://localhost:8081/user/login&#34;,&#10;        &#34;method&#34;:&#34;POST&#34;,&#10;        &#34;body&#34;:{&#10;            &#34;name&#34;:&#34;@req.data.name&#34;,&#10;            &#34;pwd&#34;:&#34;@req.data.pwd&#34;&#10;        },&#10;        &#34;successCode&#34;: &#34;200&#34;,&#10;        &#34;successJsonPath&#34;: &#34;code&#34;,&#10;        &#34;errorMessageJsonPath&#34;: &#34;msg&#34;&#10;    },&#10;    &#34;config&#34;:{&#10;        &#34;id&#34;:&#34;login&#34;,&#10;        &#34;transactional&#34;:false,&#10;        &#34;transactional-red&#34;:false&#10;    }&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ja7ey4</bpmn:incoming>
+      <bpmn:outgoing>Flow_00ax9ic</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1ja7ey4" sourceRef="register" targetRef="login" />
+    <bpmn:serviceTask id="cost" name="cost">
+      <bpmn:documentation>消费</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-service" value="rest-service" />
+          <camunda:property name="task-component" value="KstryFlowService" />
+          <camunda:property name="task-params" value="{&#10;    &#34;request&#34;:{&#10;        &#34;url&#34;:&#34;http://localhost:8081/user/cost&#34;,&#10;        &#34;method&#34;:&#34;POST&#34;,&#10;        &#34;body&#34;:{&#10;            &#34;userId&#34;:&#34;@var.register.response.data.userId&#34;,&#10;            &#34;consumptions&#34;:&#34;@req.data.consumptions&#34;&#10;        },&#10;        &#34;successCode&#34;: &#34;200&#34;,&#10;        &#34;successJsonPath&#34;: &#34;code&#34;,&#10;        &#34;errorMessageJsonPath&#34;: &#34;msg&#34;&#10;    },&#10;    &#34;config&#34;:{&#10;        &#34;id&#34;:&#34;cost&#34;,&#10;        &#34;transactional&#34;:false,&#10;        &#34;transactional-red&#34;:false&#10;    }&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1d31owo</bpmn:incoming>
+      <bpmn:outgoing>Flow_1obhznk</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_00ax9ic" sourceRef="login" targetRef="Gateway_0qr5ea2" />
+    <bpmn:inclusiveGateway id="Gateway_0qr5ea2">
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="open-async" value="true" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_00ax9ic</bpmn:incoming>
+      <bpmn:outgoing>Flow_1d31owo</bpmn:outgoing>
+      <bpmn:outgoing>Flow_155sbcc</bpmn:outgoing>
+    </bpmn:inclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1d31owo" sourceRef="Gateway_0qr5ea2" targetRef="cost" />
+    <bpmn:serviceTask id="deposit" name="deposit">
+      <bpmn:documentation>储蓄</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-service" value="rest-service" />
+          <camunda:property name="task-component" value="KstryFlowService" />
+          <camunda:property name="task-params" value="{&#10;    &#34;request&#34;:{&#10;        &#34;url&#34;:&#34;http://localhost:8081/user/deposit&#34;,&#10;        &#34;method&#34;:&#34;POST&#34;,&#10;        &#34;body&#34;:{&#10;            &#34;userId&#34;:&#34;@var.register.response.data.userId&#34;,&#10;            &#34;deposit&#34;:&#34;@req.data.deposit&#34;&#10;        },&#10;        &#34;successCode&#34;: &#34;200&#34;,&#10;        &#34;successJsonPath&#34;: &#34;code&#34;,&#10;        &#34;errorMessageJsonPath&#34;: &#34;msg&#34;&#10;    },&#10;    &#34;config&#34;:{&#10;        &#34;id&#34;:&#34;deposit&#34;,&#10;        &#34;transactional&#34;:false,&#10;        &#34;transactional-red&#34;:false&#10;    }&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_155sbcc</bpmn:incoming>
+      <bpmn:outgoing>Flow_138ko5a</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_155sbcc" sourceRef="Gateway_0qr5ea2" targetRef="deposit" />
+    <bpmn:serviceTask id="getBalance" name="getBalance">
+      <bpmn:documentation>获取余额</bpmn:documentation>
+      <bpmn:extensionElements>
+        <camunda:properties>
+          <camunda:property name="task-service" value="rest-service" />
+          <camunda:property name="midway-start-id" value="getBalance" />
+          <camunda:property name="task-component" value="KstryFlowService" />
+          <camunda:property name="task-params" value="{&#10;    &#34;request&#34;:{&#10;        &#34;url&#34;:&#34;http://localhost:8081/user/getBalance&#34;,&#10;        &#34;method&#34;:&#34;GET&#34;,&#10;        &#34;params&#34;:{&#10;            &#34;userId&#34;:&#34;@var.register.response.data.userId&#34;&#10;        },&#10;        &#34;successCode&#34;: &#34;200&#34;,&#10;        &#34;successJsonPath&#34;: &#34;code&#34;,&#10;        &#34;errorMessageJsonPath&#34;: &#34;msg&#34;&#10;    },&#10;    &#34;config&#34;:{&#10;        &#34;id&#34;:&#34;getBalance&#34;,&#10;        &#34;transactional&#34;:false,&#10;        &#34;transactional-red&#34;:false&#10;    }&#10;}" />
+        </camunda:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1obhznk</bpmn:incoming>
+      <bpmn:incoming>Flow_138ko5a</bpmn:incoming>
+      <bpmn:outgoing>Flow_0gdn936</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1obhznk" sourceRef="cost" targetRef="getBalance" />
+    <bpmn:sequenceFlow id="Flow_138ko5a" sourceRef="deposit" targetRef="getBalance" />
+    <bpmn:endEvent id="end" name="end">
+      <bpmn:documentation>end</bpmn:documentation>
+      <bpmn:incoming>Flow_0gdn936</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0gdn936" sourceRef="getBalance" targetRef="end" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="save_money">
+      <bpmndi:BPMNShape id="Event_1hogd19_di" bpmnElement="userFlow">
+        <dc:Bounds x="252" y="302" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="250" y="345" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_02tz2wt" bpmnElement="register">
+        <dc:Bounds x="380" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0spj0mr" bpmnElement="login">
+        <dc:Bounds x="550" y="280" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_00685b8" bpmnElement="cost">
+        <dc:Bounds x="800" y="200" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0qr5ea2_di" bpmnElement="Gateway_0qr5ea2">
+        <dc:Bounds x="700" y="295" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1r2fphm" bpmnElement="deposit">
+        <dc:Bounds x="800" y="360" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0mb9cb3" bpmnElement="getBalance">
+        <dc:Bounds x="1000" y="270" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_08caul9_di" bpmnElement="end">
+        <dc:Bounds x="1172" y="292" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1181" y="335" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0vq2psv_di" bpmnElement="Flow_0vq2psv">
+        <di:waypoint x="288" y="320" />
+        <di:waypoint x="380" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ja7ey4_di" bpmnElement="Flow_1ja7ey4">
+        <di:waypoint x="480" y="320" />
+        <di:waypoint x="550" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_00ax9ic_di" bpmnElement="Flow_00ax9ic">
+        <di:waypoint x="650" y="320" />
+        <di:waypoint x="700" y="320" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d31owo_di" bpmnElement="Flow_1d31owo">
+        <di:waypoint x="725" y="295" />
+        <di:waypoint x="725" y="240" />
+        <di:waypoint x="800" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_155sbcc_di" bpmnElement="Flow_155sbcc">
+        <di:waypoint x="725" y="345" />
+        <di:waypoint x="725" y="400" />
+        <di:waypoint x="800" y="400" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1obhznk_di" bpmnElement="Flow_1obhznk">
+        <di:waypoint x="900" y="240" />
+        <di:waypoint x="950" y="240" />
+        <di:waypoint x="950" y="310" />
+        <di:waypoint x="1000" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_138ko5a_di" bpmnElement="Flow_138ko5a">
+        <di:waypoint x="900" y="400" />
+        <di:waypoint x="950" y="400" />
+        <di:waypoint x="950" y="310" />
+        <di:waypoint x="1000" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0gdn936_di" bpmnElement="Flow_0gdn936">
+        <di:waypoint x="1100" y="310" />
+        <di:waypoint x="1172" y="310" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

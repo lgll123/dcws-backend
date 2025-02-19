@@ -3,6 +3,7 @@ package com.formssi.system.service;
 import com.formssi.system.domain.bo.SysUserBo;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
+import com.formssi.system.domain.vo.HrUserVo;
 import com.formssi.system.domain.vo.SysUserExportVo;
 import com.formssi.system.domain.vo.SysUserVo;
 
@@ -15,6 +16,14 @@ import java.util.List;
  */
 public interface ISysUserService {
 
+    //查询所有用户信息
+    List<HrUserVo> selectAllUserList();
+    //逻辑删除人事系统不存在的用户
+    int deleteUserByIdFromHr(List<String> userIdList);
+    //新增用户信息
+    int insertUserFromHr(List<HrUserVo> userList);
+    //更新用户信息
+    int updateUserFromHr(List<HrUserVo> userList);
 
     TableDataInfo<SysUserVo> selectPageUserList(SysUserBo user, PageQuery pageQuery);
 

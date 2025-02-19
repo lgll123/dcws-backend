@@ -2,6 +2,7 @@ package com.formssi.system.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.formssi.system.domain.bo.SysDeptBo;
+import com.formssi.system.domain.vo.HrDeptVo;
 import com.formssi.system.domain.vo.SysDeptVo;
 
 import java.util.List;
@@ -12,6 +13,17 @@ import java.util.List;
  * @author Lion Li
  */
 public interface ISysDeptService {
+
+
+    //查询所有部门数据
+    List<HrDeptVo> selectAllDeptList();
+    //新增部门--人事系统数据
+    int insertDeptFromHr(List<HrDeptVo> hrDeptList);
+    //删除部门
+    int deleteDeptByIdFromHr(List<String> deptIdList);
+    //更新部门信息
+    int updateDeptFromHr(List<HrDeptVo> deptList);
+
     /**
      * 查询部门管理数据
      *

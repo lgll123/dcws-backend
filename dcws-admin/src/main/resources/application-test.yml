@@ -43,7 +43,7 @@ spring:
         master:
           type: ${spring.datasource.type}
           driverClassName: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://10.101.128.4:3306/low_code_engine?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://10.101.128.4:3306/low_code_engine?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
           password: 123456
         # 从库数据源
@@ -51,7 +51,7 @@ spring:
           lazy: true
           type: ${spring.datasource.type}
           driverClassName: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://10.101.128.4:3306/low_code_engine?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://10.101.128.4:3306/low_code_engine?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
           password: 123456
       #        oracle:

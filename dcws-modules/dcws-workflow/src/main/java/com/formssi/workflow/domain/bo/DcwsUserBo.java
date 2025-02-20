@@ -25,4 +25,9 @@ public class DcwsUserBo extends BaseEntity {
      */
     private String userId;
 
+    /**
+     * 办理人名称
+     */
+    private String userName;
+
 }

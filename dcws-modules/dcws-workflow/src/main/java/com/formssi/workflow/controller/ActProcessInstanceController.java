@@ -1,8 +1,13 @@
 package com.formssi.workflow.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.core.utils.DateUtils;
+import com.formssi.common.core.utils.StreamUtils;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.workflow.domain.bo.DcwsApproveBo;
 import com.formssi.workflow.domain.vo.DcwsApproveVo;
+import com.formssi.workflow.domain.vo.DcwsHisVo;
 import com.formssi.workflow.service.CommonApproveService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,13 +26,11 @@ import com.formssi.workflow.domain.bo.TaskUrgingBo;
 import com.formssi.workflow.domain.vo.ActHistoryInfoVo;
 import com.formssi.workflow.domain.vo.ProcessInstanceVo;
 import com.formssi.workflow.service.IActProcessInstanceService;
+import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 流程实例管理 控制层
@@ -86,11 +89,54 @@ public class ActProcessInstanceController extends BaseController {
     /**
      * 获取审批记录
      *
-     * @param businessKey 业务id
      */
-    @GetMapping("/getHistoryRecord/{businessKey}")
-    public R<List<ActHistoryInfoVo>> getHistoryRecord(@NotBlank(message = "业务id不能为空") @PathVariable String businessKey) {
-        return R.ok(actProcessInstanceService.getHistoryRecord(businessKey));
+    @PostMapping("/getHistoryRecord")
+    public R<List<ActHistoryInfoVo>> getHistoryRecord(@RequestBody ProcessInstanceBo processInstanceBo) {
+        if ("2".equals(processInstanceBo.getWfType())){
+            DcwsApproveVo dcwsApproveVo = commonApproveService.queryById(Long.valueOf(processInstanceBo.getKey()));
+            if (StringUtils.isNotEmpty(dcwsApproveVo.getBusinessKey())){
+                //标准流程中新增的非标准流程，审批记录需合并
+                List<ActHistoryInfoVo> list = actProcessInstanceService.getHistoryRecord(dcwsApproveVo.getBusinessKey());
+                List<DcwsHisVo> commonList = commonApproveService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
+                for (DcwsHisVo dcwsHisVo : commonList){
+                    ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
+                    actHistoryInfoVo.setName(dcwsApproveVo.getTaskName());
+                    actHistoryInfoVo.setUserName(dcwsHisVo.getUserName());
+                    actHistoryInfoVo.setStatus(dcwsHisVo.getStatus());
+                    actHistoryInfoVo.setStatusName(BusinessStatusEnum.findByStatus(dcwsHisVo.getStatus()));
+                    actHistoryInfoVo.setComment(dcwsHisVo.getComment());
+                    actHistoryInfoVo.setStartTime(dcwsHisVo.getCreateTime());
+                    actHistoryInfoVo.setEndTime(dcwsHisVo.getUpdateTime());
+                    if (!Objects.isNull(dcwsHisVo.getCreateTime()) && !Objects.isNull(dcwsHisVo.getUpdateTime())){
+                        actHistoryInfoVo.setRunDuration(DateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
+                    }
+                    list.add(actHistoryInfoVo);
+                }
+                list = StreamUtils.sorted(list, Comparator.comparing(ActHistoryInfoVo::getStartTime, Comparator.nullsFirst(Date::compareTo)).reversed());
+                return R.ok(list);
+            }else {
+                //标准流程外新增的非标准流程，单独显示审批记录
+                List<DcwsHisVo> list = commonApproveService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
+                List<ActHistoryInfoVo> tempList = new ArrayList<>();
+                for (DcwsHisVo dcwsHisVo : list){
+                    ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
+                    actHistoryInfoVo.setName(dcwsApproveVo.getTaskName());
+                    actHistoryInfoVo.setUserName(dcwsHisVo.getUserName());
+                    actHistoryInfoVo.setStatus(dcwsHisVo.getStatus());
+                    actHistoryInfoVo.setStatusName(BusinessStatusEnum.findByStatus(dcwsHisVo.getStatus()));
+                    actHistoryInfoVo.setComment(dcwsHisVo.getComment());
+                    actHistoryInfoVo.setStartTime(dcwsHisVo.getCreateTime());
+                    actHistoryInfoVo.setEndTime(dcwsHisVo.getUpdateTime());
+                    if (!Objects.isNull(dcwsHisVo.getCreateTime()) && !Objects.isNull(dcwsHisVo.getUpdateTime())){
+                        actHistoryInfoVo.setRunDuration(DateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
+                    }
+                    tempList.add(actHistoryInfoVo);
+                }
+                return R.ok(tempList);
+            }
+        }else {
+            return R.ok(actProcessInstanceService.getHistoryRecord(processInstanceBo.getBusinessKey()));
+        }
     }
 
     /**
@@ -158,9 +204,11 @@ public class ActProcessInstanceController extends BaseController {
             if (CollUtil.isNotEmpty(list)){
                 for (DcwsApproveVo dcwsApproveVo : list){
                     ProcessInstanceVo processInstanceVo = new ProcessInstanceVo();
-                    processInstanceVo.setProcessDefinitionName("非标准流程");
+                    processInstanceVo.setProcessDefinitionName(dcwsApproveVo.getTaskName());
                     processInstanceVo.setBusinessStatus(dcwsApproveVo.getStatus());
                     processInstanceVo.setStartTime(dcwsApproveVo.getCreateTime());
+                    processInstanceVo.setWfType("2");
+                    processInstanceVo.setId(String.valueOf(dcwsApproveVo.getTaskId()));
                     listTemp.add(processInstanceVo);
                 }
             }

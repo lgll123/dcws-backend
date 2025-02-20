@@ -30,4 +30,9 @@ public class DcwsUserVo implements Serializable {
      */
     private String userId;
 
+    /**
+     * 办理人名称
+     */
+    private String userName;
+
 }

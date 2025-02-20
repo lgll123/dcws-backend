@@ -55,4 +55,9 @@ public class DcwsHisVo implements Serializable {
      */
     private Date updateTime;
 
+    /**
+     * 任务名称
+     */
+    private String taskName;
+
 }

@@ -4,15 +4,28 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.formssi.workflow.mapper.DcwsHisMapper">
 
-    <update id="updateByTaskId" parameterType="com.formssi.workflow.domain.DcwsHis">
-        UPDATE dcws_common_approve_his
-        <set>
-            <if test="comment != null" >
-                comment=#{comment},
-            </if>
-        </set>
-        update_time = sysdate
+    <resultMap type="com.formssi.workflow.domain.vo.DcwsHisVo" id="DcwsHisVoResult">
+        <result property="taskId" column="task_Id"/>
+        <result property="userName" column="user_Name"/>
+        <result property="status" column="status"/>
+        <result property="comment" column="comment"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <update id="updateByTaskId">
+        UPDATE dcws_nonstandard_approve_his set comment=#{comment},update_time = CURRENT_TIMESTAMP
         WHERE task_id = #{taskId} and user_Id = #{userId}
     </update>
 
+    <delete id="deleteByTaskId">
+        delete from dcws_nonstandard_approve_his where task_id = #{taskId}
+    </delete>
+
+    <select id="getHistoryRecord" resultMap="DcwsHisVoResult">
+        SELECT AHP.task_Id, AHP.user_Name,AHP.status,AHP.comment,AHP.create_time,AHP.update_time
+        FROM dcws_nonstandard_approve_his AHP
+        where AHP.task_Id = #{taskId}
+        ORDER BY AHP.update_time DESC
+    </select>
 </mapper>

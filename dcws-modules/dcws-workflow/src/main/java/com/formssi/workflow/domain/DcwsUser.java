@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("dcws_common_approve_user")
+@TableName("dcws_nonstandard_approve_user")
 public class DcwsUser extends BaseEntity {
 
     @Serial
@@ -26,5 +26,10 @@ public class DcwsUser extends BaseEntity {
      * 办理人id
      */
     private String userId;
+
+    /**
+     * 办理人名称
+     */
+    private String userName;
 
 }

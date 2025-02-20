@@ -13,27 +13,27 @@
     </resultMap>
 
     <delete id="deleteByTaskId">
-        delete from dcws_nonstandard__approve where task_id = #{taskId}
+        delete from dcws_nonstandard_approve where task_id = #{taskId}
     </delete>
 
     <update id="updateByTaskId">
-        UPDATE dcws_nonstandard__approve set status=#{status},user_Id=#{userId},update_time = CURRENT_TIMESTAMP
+        UPDATE dcws_nonstandard_approve set status=#{status},user_Id=#{userId},update_time = CURRENT_TIMESTAMP
         WHERE task_id = #{taskId}
     </update>
 
     <select id="getTaskWaitByPage" resultMap="DcwsApproveVoResult">
         select *
         from (SELECT RES.task_Id,RES.task_Name,RES.status,RES.create_time,AHP.user_Id
-        FROM dcws_nonstandard__approve RES
-        INNER JOIN dcws_nonstandard__approve_user AHP ON RES.task_id = AHP.task_id
+        FROM dcws_nonstandard_approve RES
+        INNER JOIN dcws_nonstandard_approve_user AHP ON RES.task_id = AHP.task_id
         ORDER BY RES.create_time DESC) t ${ew.getCustomSqlSegment}
     </select>
 
     <select id="getTaskFinishByPage" resultMap="DcwsApproveVoResult">
         select *
         from (SELECT distinct RES.task_Id,RES.task_Name,RES.status,RES.create_time,AHP.user_Id
-        FROM dcws_nonstandard__approve RES
-        INNER JOIN dcws_nonstandard__approve_his AHP ON RES.task_id = AHP.task_id
+        FROM dcws_nonstandard_approve RES
+        INNER JOIN dcws_nonstandard_approve_his AHP ON RES.task_id = AHP.task_id
         where AHP.update_time is not null
         ORDER BY RES.create_time DESC) t ${ew.getCustomSqlSegment}
     </select>

@@ -180,4 +180,9 @@ public class TaskVo implements Serializable {
      * 用户任务按钮设置 add by qyh
      */
     List<WfUserTaskButtonVo> userTaskButtonVos;
+
+    /**
+     * 流程分类
+     */
+    private String wfType;
 }

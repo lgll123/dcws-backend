@@ -71,6 +71,8 @@ public class ActHistoryInfoVo implements Serializable {
     @Translation(type = TransConstant.USER_ID_TO_NICKNAME, mapper = "assignee")
     private String nickName;
 
+
+
     /**
      * 办理人id
      */
@@ -90,4 +92,9 @@ public class ActHistoryInfoVo implements Serializable {
      * 审批附件
      */
     private List<Attachment> attachmentList;
+
+    /**
+     * 办理人名称
+     */
+    private String userName;
 }

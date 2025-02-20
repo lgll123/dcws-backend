@@ -95,13 +95,15 @@ public class ActTaskController extends BaseController {
                     TaskVo taskVo = new TaskVo();
                     taskVo.setProcessDefinitionName("非标准流程");
                     taskVo.setBusinessStatus(dcwsApproveVo.getStatus());
-                    taskVo.setStartTime(dcwsApproveVo.getCreateTime());
+                    taskVo.setCreateTime(dcwsApproveVo.getCreateTime());
                     taskVo.setName(dcwsApproveVo.getTaskName());
                     SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(dcwsApproveVo.getUserId()));
                     ParticipantVo participantVo = new ParticipantVo();
                     participantVo.setCandidate(Arrays.asList(Long.valueOf(dcwsApproveVo.getUserId())));
                     participantVo.setCandidateName(Arrays.asList(sysUserVo.getUserName()));
                     taskVo.setParticipantVo(participantVo);
+                    taskVo.setWfType("2");
+                    taskVo.setId(String.valueOf(dcwsApproveVo.getTaskId()));
                     listTemp.add(taskVo);
                 }
             }
@@ -146,6 +148,8 @@ public class ActTaskController extends BaseController {
                     SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(dcwsApproveVo.getUserId()));
                     taskVo.setAssignee(Long.valueOf(dcwsApproveVo.getUserId()));
                     taskVo.setAssigneeName(sysUserVo.getUserName());
+                    taskVo.setWfType("2");
+                    taskVo.setId(String.valueOf(dcwsApproveVo.getTaskId()));
                     listTemp.add(taskVo);
                 }
             }

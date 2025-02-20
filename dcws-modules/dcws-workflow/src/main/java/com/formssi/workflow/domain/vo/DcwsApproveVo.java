@@ -11,6 +11,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 @Data
@@ -80,5 +81,10 @@ public class DcwsApproveVo implements Serializable {
      */
     @ExcelProperty(value = "创建人")
     private String createBy;
+
+    /**
+     * 办理人集合
+     */
+    private List<DcwsUserVo> dcwsUserVoList;
 
 }

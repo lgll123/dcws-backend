@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("dcws_common_approve_his")
+@TableName("dcws_nonstandard_approve_his")
 public class DcwsHis extends BaseEntity {
 
     @Serial

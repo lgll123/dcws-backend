@@ -47,9 +47,9 @@ spring:
 #          url: jdbc:mysql://10.100.216.54:3306/low_code_engine?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
 #          username: test
 #          password: test0527.
-          url: jdbc:mysql://10.101.68.3:3306/low_code_engine?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://10.101.68.29:3306/dcws_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
-          password: 123456
+          password: gZsgC4I0!S
 #          url: jdbc:mysql://10.101.128.4:3306/low_code_engine?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
 #          username: root
 #          password: 123456
@@ -61,9 +61,9 @@ spring:
 #          url: jdbc:mysql://10.100.216.54:3306/low_code_engine?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
 #          username: test
 #          password: test0527.
-          url: jdbc:mysql://10.101.68.3:3306/low_code_engine?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://10.101.68.29:3306/dcws_dev?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
-          password: 123456
+          password: gZsgC4I0!S
 #          url: jdbc:mysql://10.101.128.4:3306/low_code_engine?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
 #          username: root
 #          password: 123456
@@ -106,13 +106,13 @@ spring.data:
   redis:
     # 地址
     #    host: 127.0.0.1
-    host: 10.101.68.2
+    host: 10.101.68.29
     # 端口，默认为6379
     port: 6379
     # 数据库索引
     database: 0
     # redis 密码必须配置
-    password: root
+    password: FCfY5su9
     # 连接超时时间
     timeout: 10s
     # 是否开启ssl

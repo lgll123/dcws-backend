@@ -4,7 +4,9 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.DcwsApproveBo;
 import com.formssi.workflow.domain.bo.TaskBo;
+import com.formssi.workflow.domain.vo.ActHistoryInfoVo;
 import com.formssi.workflow.domain.vo.DcwsApproveVo;
+import com.formssi.workflow.domain.vo.DcwsHisVo;
 import com.formssi.workflow.domain.vo.TaskVo;
 
 import java.util.Collection;
@@ -57,7 +59,26 @@ public interface CommonApproveService {
     DcwsApproveVo updateByBo(DcwsApproveBo bo);
 
     /**
-     * 校验并批量删除非标准流程
+     * 撤销流程申请
+     *
+     * @param id 流程id
+     * @return 结果
      */
-    Boolean deleteWithValidByIds(Collection<Long> ids);
+    boolean cancelProcessApply(String id);
+
+    /**
+     * 运行中的实例 删除程实例，删除历史记录，删除业务与流程关联信息
+     *
+     * @param id 业务id
+     * @return 结果
+     */
+    boolean deleteRunAndHisInstance(String id);
+
+    /**
+     * 获取审批记录
+     *
+     * @param id 流程id
+     * @return 结果
+     */
+    List<DcwsHisVo> getHistoryRecord(Long id);
 }

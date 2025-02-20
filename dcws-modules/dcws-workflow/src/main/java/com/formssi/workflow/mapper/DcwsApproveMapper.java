@@ -11,7 +11,9 @@ import org.apache.ibatis.annotations.Param;
 
 public interface DcwsApproveMapper extends BaseMapperPlus<DcwsApprove, DcwsApproveVo> {
 
-    int updateByTaskId(@Param(Constants.ENTITY) DcwsApprove dcwsApprove);
+    int updateByTaskId(@Param("status")String status,@Param("userId")String userId,@Param("taskId")Long taskId);
+
+    int deleteByTaskId(@Param("taskId")Long taskId);
 
     /**
      * 获取待办信息

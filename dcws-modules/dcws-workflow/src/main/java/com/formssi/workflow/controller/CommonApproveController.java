@@ -13,12 +13,14 @@ import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.DcwsApproveBo;
 import com.formssi.workflow.domain.vo.DcwsApproveVo;
 import com.formssi.workflow.service.CommonApproveService;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Validated
@@ -67,21 +69,32 @@ public class CommonApproveController extends BaseController {
     @SaCheckPermission("common:approve:edit")
     @Log(title = "非标准流程", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
-    @PutMapping()
+    @PostMapping("/edit")
     public R<DcwsApproveVo> edit(@Validated(EditGroup.class) @RequestBody DcwsApproveBo bo) {
         return R.ok(commonApproveService.updateByBo(bo));
     }
 
     /**
-     * 删除非标准流程
+     * 撤销流程申请
      *
-     * @param ids 主键串
+     * @param id 业务id
      */
-    @SaCheckPermission("common:approve:remove")
+    @Log(title = "非标准流程", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/cancelProcessApply/{id}")
+    public R<Void> cancelProcessApply(@NotBlank(message = "业务id不能为空") @PathVariable String id) {
+        return toAjax(commonApproveService.cancelProcessApply(id));
+    }
+
+    /**
+     * 运行中的实例 删除程实例，删除历史记录，删除业务与流程关联信息
+     *
+     * @param id 业务id
+     */
     @Log(title = "非标准流程", businessType = BusinessType.DELETE)
-    @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] ids) {
-        return toAjax(commonApproveService.deleteWithValidByIds(List.of(ids)));
+    @RepeatSubmit()
+    @PostMapping("/deleteRunAndHisInstance/{id}")
+    public R<Void> deleteRunAndHisInstance(@NotNull(message = "业务id不能为空") @PathVariable String id) {
+        return toAjax(commonApproveService.deleteRunAndHisInstance(id));
     }
 }

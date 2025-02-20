@@ -1,42 +1,34 @@
 package com.formssi.workflow.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.formssi.common.core.domain.dto.RoleDTO;
 import com.formssi.common.core.enums.BusinessStatusEnum;
-import com.formssi.common.core.service.WorkflowService;
 import com.formssi.common.core.utils.MapstructUtils;
-import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.satoken.utils.LoginHelper;
-import com.formssi.common.tenant.helper.TenantHelper;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
-import com.formssi.workflow.common.constant.FlowConstant;
 import com.formssi.workflow.domain.DcwsApprove;
 import com.formssi.workflow.domain.DcwsHis;
 import com.formssi.workflow.domain.DcwsUser;
 import com.formssi.workflow.domain.bo.DcwsApproveBo;
 import com.formssi.workflow.domain.vo.DcwsApproveVo;
-import com.formssi.workflow.domain.vo.TaskVo;
-import com.formssi.workflow.domain.vo.WfNodeConfigVo;
+import com.formssi.workflow.domain.vo.DcwsHisVo;
+import com.formssi.workflow.domain.vo.DcwsUserVo;
 import com.formssi.workflow.mapper.DcwsApproveMapper;
 import com.formssi.workflow.mapper.DcwsHisMapper;
 import com.formssi.workflow.mapper.DcwsUserMapper;
 import com.formssi.workflow.service.CommonApproveService;
-import com.formssi.workflow.utils.WorkflowUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -48,7 +40,6 @@ public class CommonApproveServiceImpl implements CommonApproveService {
     private final DcwsApproveMapper baseMapper;
     private final DcwsHisMapper dcwsHisMapper;
     private final DcwsUserMapper dcwsUserMapper;
-    private final WorkflowService workflowService;
     private final ISysUserService iSysUserService;
 
     /**
@@ -56,7 +47,12 @@ public class CommonApproveServiceImpl implements CommonApproveService {
      */
     @Override
     public DcwsApproveVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        DcwsApproveVo dcwsApproveVo = baseMapper.selectVoById(id);
+        LambdaQueryWrapper<DcwsUser> lqw = Wrappers.lambdaQuery();
+        lqw.eq(DcwsUser::getTaskId, dcwsApproveVo.getTaskId());
+        List<DcwsUserVo> list = dcwsUserMapper.selectVoList(lqw);
+        dcwsApproveVo.setDcwsUserVoList(list);
+        return dcwsApproveVo;
     }
 
     /**
@@ -108,6 +104,7 @@ public class CommonApproveServiceImpl implements CommonApproveService {
      * 新增非标准流程
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DcwsApproveVo insertByBo(DcwsApproveBo bo) {
         Long userId = LoginHelper.getUserId();
         DcwsApprove add = MapstructUtils.convert(bo, DcwsApprove.class);
@@ -136,6 +133,8 @@ public class CommonApproveServiceImpl implements CommonApproveService {
                     DcwsUser dcwsUser = new DcwsUser();
                     dcwsUser.setTaskId(add.getTaskId());
                     dcwsUser.setUserId(userIdTemp);
+                    sysUserVo = iSysUserService.selectUserById(Long.valueOf(userIdTemp));
+                    dcwsUser.setUserName(sysUserVo.getUserName());
                     dcwsUserMapper.insert(dcwsUser);
                     //通用审批处理历史表
                     DcwsHis dcwsHisTemp = new DcwsHis();
@@ -143,7 +142,6 @@ public class CommonApproveServiceImpl implements CommonApproveService {
                     dcwsHisTemp.setComment(BusinessStatusEnum.findByStatus(BusinessStatusEnum.WAITING.getStatus()));
                     dcwsHisTemp.setStatus(BusinessStatusEnum.WAITING.getStatus());
                     dcwsHisTemp.setUserId(userIdTemp);
-                    sysUserVo = iSysUserService.selectUserById(Long.valueOf(userIdTemp));
                     dcwsHisTemp.setUserName(sysUserVo.getUserName());
                     dcwsHisMapper.insert(dcwsHisTemp);
                 }
@@ -156,16 +154,13 @@ public class CommonApproveServiceImpl implements CommonApproveService {
      * 修改非标准流程
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public DcwsApproveVo updateByBo(DcwsApproveBo bo) {
         DcwsApprove update = MapstructUtils.convert(bo, DcwsApprove.class);
-        baseMapper.updateByTaskId(update);
+        baseMapper.updateByTaskId(bo.getStatus(),bo.getUserId(),bo.getTaskId());
 
         Long userId = LoginHelper.getUserId();
-        DcwsHis dcwsHis = new DcwsHis();
-        dcwsHis.setTaskId(bo.getTaskId());
-        dcwsHis.setComment(BusinessStatusEnum.findByStatus(bo.getStatus()));
-        dcwsHis.setUserId(String.valueOf(userId));
-        dcwsHisMapper.updateByTaskId(dcwsHis);
+        dcwsHisMapper.updateByTaskId(BusinessStatusEnum.findByStatus(bo.getStatus()),String.valueOf(userId),bo.getTaskId());
 
         //如果状态为待审核，则更新审批处理人表和通用审批处理历史表
         if (BusinessStatusEnum.WAITING.getStatus().equals(bo.getStatus())){
@@ -178,6 +173,8 @@ public class CommonApproveServiceImpl implements CommonApproveService {
                 DcwsUser dcwsUser = new DcwsUser();
                 dcwsUser.setTaskId(bo.getTaskId());
                 dcwsUser.setUserId(userIdTemp);
+                SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(userIdTemp));
+                dcwsUser.setUserName(sysUserVo.getUserName());
                 dcwsUserMapper.insert(dcwsUser);
 
                 //通用审批处理历史表
@@ -186,7 +183,6 @@ public class CommonApproveServiceImpl implements CommonApproveService {
                 dcwsHisTemp.setComment(BusinessStatusEnum.findByStatus(BusinessStatusEnum.WAITING.getStatus()));
                 dcwsHisTemp.setStatus(BusinessStatusEnum.WAITING.getStatus());
                 dcwsHisTemp.setUserId(userIdTemp);
-                SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(userIdTemp));
                 dcwsHisTemp.setUserName(sysUserVo.getUserName());
                 dcwsHisMapper.insert(dcwsHisTemp);
             }
@@ -194,14 +190,23 @@ public class CommonApproveServiceImpl implements CommonApproveService {
         return MapstructUtils.convert(update, DcwsApproveVo.class);
     }
 
-    /**
-     * 批量删除非标准流程
-     */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean deleteWithValidByIds(Collection<Long> ids) {
-        List<String> idList = StreamUtils.toList(ids, String::valueOf);
-        workflowService.deleteRunAndHisInstance(idList);
-        return baseMapper.deleteByIds(ids) > 0;
+    public boolean cancelProcessApply(String id) {
+        Long userId = LoginHelper.getUserId();
+        return baseMapper.updateByTaskId(BusinessStatusEnum.CANCEL.getStatus(),String.valueOf(userId),Long.valueOf(id)) > 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteRunAndHisInstance(String id) {
+        dcwsHisMapper.deleteByTaskId(Long.valueOf(id));
+        dcwsUserMapper.deleteByTaskId(Long.valueOf(id));
+        return baseMapper.deleteByTaskId(Long.valueOf(id)) > 0;
+    }
+
+    @Override
+    public List<DcwsHisVo> getHistoryRecord(Long id) {
+        return dcwsHisMapper.getHistoryRecord(id);
     }
 }

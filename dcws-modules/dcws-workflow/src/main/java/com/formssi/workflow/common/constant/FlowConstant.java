@@ -136,4 +136,9 @@ public interface FlowConstant {
      * 否
      */
     String FALSE = "1";
+
+    /**
+     * 流程自定义人员
+     */
+    String WORKFLOW_ASSIGNEE = "workflowAssignee";
 }

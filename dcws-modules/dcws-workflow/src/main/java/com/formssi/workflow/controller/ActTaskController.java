@@ -379,5 +379,15 @@ public class ActTaskController extends BaseController {
     public R<List<TaskVo>> getListByDeleteMultiInstance(@PathVariable String taskId) {
         return R.ok(actTaskService.getListByDeleteMultiInstance(taskId));
     }
-
+    /**
+     * 获取目标节点（下一个节点）
+     *
+     * @param: nextNodeBo
+     * @return: com.ruoyi.common.core.domain.R<java.util.Map < java.lang.String, java.lang.Object>>
+     * @author: add by yqh
+     */
+    @PostMapping("/getNextNodeInfo")
+    public R<Map<String, Object>> getNextNodeInfo(@RequestBody NextNodeBo nextNodeBo) {
+        return R.ok(actTaskService.getNextNodeInfo(nextNodeBo));
+    }
 }

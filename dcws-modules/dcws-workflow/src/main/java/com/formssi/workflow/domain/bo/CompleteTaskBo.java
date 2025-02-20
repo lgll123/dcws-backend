@@ -54,6 +54,11 @@ public class CompleteTaskBo implements Serializable {
      */
     private Map<String, Object> variables;
 
+    /**
+     * 下一个节点审批人,多个人使用英文逗号分隔 add by yqh
+     */
+    private String assignees;
+
     public Map<String, Object> getVariables() {
         if (variables == null) {
             return new HashMap<>(16);

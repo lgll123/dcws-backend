@@ -181,4 +181,12 @@ public interface IActTaskService {
      * @return 结果
      */
     List<TaskVo> getListByDeleteMultiInstance(String taskId);
+
+    /**
+     * 获取下一个节点 add by yqh
+     *
+     * @param nextNodeBo
+     * @return 结果
+     */
+    Map<String, Object> getNextNodeInfo(NextNodeBo nextNodeBo);
 }

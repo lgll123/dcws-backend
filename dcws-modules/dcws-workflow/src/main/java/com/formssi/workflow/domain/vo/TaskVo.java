@@ -7,6 +7,7 @@ import com.formssi.common.translation.constant.TransConstant;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 任务视图
@@ -170,4 +171,13 @@ public class TaskVo implements Serializable {
      * 节点配置
      */
     private WfNodeConfigVo wfNodeConfigVo;
+
+    /**
+     * 用户任务表单设置
+     */
+    private WfUserTaskButtonVo wfTaskFormVo;
+    /**
+     * 用户任务按钮设置 add by qyh
+     */
+    List<WfUserTaskButtonVo> userTaskButtonVos;
 }

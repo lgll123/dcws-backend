@@ -1,5 +1,6 @@
 package com.formssi.system.service.impl;
 
+import cn.dev33.satoken.secure.BCrypt;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
@@ -86,6 +87,11 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int insertUserFromHr(List<HrUserVo> userList) {
+        //默认初始密码 123456
+        String hashpw = BCrypt.hashpw("123456");
+        userList.forEach(u ->{
+            u.setPassword(hashpw);
+        });
         // 新增用户信息
         int rows = baseMapper.insertUserFromHr(userList);
 //        user.setUserId(sysUser.getUserId());

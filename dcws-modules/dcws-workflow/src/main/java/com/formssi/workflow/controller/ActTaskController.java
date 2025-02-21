@@ -5,7 +5,7 @@ import cn.hutool.core.convert.Convert;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
 import com.formssi.workflow.domain.vo.*;
-import com.formssi.workflow.service.CommonApproveService;
+import com.formssi.workflow.service.NormalTaskService;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import com.formssi.common.core.domain.R;
@@ -47,7 +47,7 @@ public class ActTaskController extends BaseController {
     private TaskService taskService;
     private final IActTaskService actTaskService;
     private final IWfTaskBackNodeService wfTaskBackNodeService;
-    private final CommonApproveService commonApproveService;
+    private final NormalTaskService normalTaskService;
     private final ISysUserService iSysUserService;
 
 
@@ -86,24 +86,24 @@ public class ActTaskController extends BaseController {
         if ("1".equals(taskBo.getWfType())){
             return actTaskService.getPageByTaskWait(taskBo, pageQuery);
         }else {
-            TableDataInfo<DcwsApproveVo> dcwsList = commonApproveService.getPageByTaskWait(new DcwsApproveBo(), pageQuery);
-            List<DcwsApproveVo> list = dcwsList.getRows();
+            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskWait(new DcwsNormalTaskBo(), pageQuery);
+            List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<TaskVo> listTemp = new ArrayList<>();
             TableDataInfo<TaskVo> build = TableDataInfo.build();
             if (CollUtil.isNotEmpty(list)){
-                for (DcwsApproveVo dcwsApproveVo : list){
+                for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     TaskVo taskVo = new TaskVo();
                     taskVo.setProcessDefinitionName("非标准流程");
-                    taskVo.setBusinessStatus(dcwsApproveVo.getStatus());
-                    taskVo.setCreateTime(dcwsApproveVo.getCreateTime());
-                    taskVo.setName(dcwsApproveVo.getTaskName());
-                    SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(dcwsApproveVo.getUserId()));
+                    taskVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
+                    taskVo.setCreateTime(dcwsNormalTaskVo.getCreateTime());
+                    taskVo.setName(dcwsNormalTaskVo.getTaskName());
+                    SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(dcwsNormalTaskVo.getUserId()));
                     ParticipantVo participantVo = new ParticipantVo();
-                    participantVo.setCandidate(Arrays.asList(Long.valueOf(dcwsApproveVo.getUserId())));
+                    participantVo.setCandidate(Arrays.asList(Long.valueOf(dcwsNormalTaskVo.getUserId())));
                     participantVo.setCandidateName(Arrays.asList(sysUserVo.getUserName()));
                     taskVo.setParticipantVo(participantVo);
                     taskVo.setWfType("2");
-                    taskVo.setId(String.valueOf(dcwsApproveVo.getTaskId()));
+                    taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     listTemp.add(taskVo);
                 }
             }
@@ -134,22 +134,22 @@ public class ActTaskController extends BaseController {
         if ("1".equals(taskBo.getWfType())){
             return actTaskService.getPageByTaskFinish(taskBo, pageQuery);
         }else {
-            TableDataInfo<DcwsApproveVo> dcwsList = commonApproveService.getPageByTaskFinish(new DcwsApproveBo(), pageQuery);
-            List<DcwsApproveVo> list = dcwsList.getRows();
+            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskFinish(new DcwsNormalTaskBo(), pageQuery);
+            List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<TaskVo> listTemp = new ArrayList<>();
             TableDataInfo<TaskVo> build = TableDataInfo.build();
             if (CollUtil.isNotEmpty(list)){
-                for (DcwsApproveVo dcwsApproveVo : list){
+                for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     TaskVo taskVo = new TaskVo();
                     taskVo.setProcessDefinitionName("非标准流程");
-                    taskVo.setBusinessStatus(dcwsApproveVo.getStatus());
-                    taskVo.setStartTime(dcwsApproveVo.getCreateTime());
-                    taskVo.setName(dcwsApproveVo.getTaskName());
-                    SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(dcwsApproveVo.getUserId()));
-                    taskVo.setAssignee(Long.valueOf(dcwsApproveVo.getUserId()));
+                    taskVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
+                    taskVo.setStartTime(dcwsNormalTaskVo.getCreateTime());
+                    taskVo.setName(dcwsNormalTaskVo.getTaskName());
+                    SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(dcwsNormalTaskVo.getUserId()));
+                    taskVo.setAssignee(Long.valueOf(dcwsNormalTaskVo.getUserId()));
                     taskVo.setAssigneeName(sysUserVo.getUserName());
                     taskVo.setWfType("2");
-                    taskVo.setId(String.valueOf(dcwsApproveVo.getTaskId()));
+                    taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     listTemp.add(taskVo);
                 }
             }

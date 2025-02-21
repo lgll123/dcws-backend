@@ -5,10 +5,9 @@ import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.utils.DateUtils;
 import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
-import com.formssi.workflow.domain.bo.DcwsApproveBo;
-import com.formssi.workflow.domain.vo.DcwsApproveVo;
-import com.formssi.workflow.domain.vo.DcwsHisVo;
-import com.formssi.workflow.service.CommonApproveService;
+import com.formssi.workflow.domain.bo.*;
+import com.formssi.workflow.domain.vo.*;
+import com.formssi.workflow.service.NormalTaskService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +19,7 @@ import com.formssi.common.log.enums.BusinessType;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
-import com.formssi.workflow.domain.bo.ProcessInstanceBo;
-import com.formssi.workflow.domain.bo.ProcessInvalidBo;
-import com.formssi.workflow.domain.bo.TaskUrgingBo;
-import com.formssi.workflow.domain.vo.ActHistoryInfoVo;
-import com.formssi.workflow.domain.vo.ProcessInstanceVo;
 import com.formssi.workflow.service.IActProcessInstanceService;
-import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +37,7 @@ import java.util.*;
 public class ActProcessInstanceController extends BaseController {
 
     private final IActProcessInstanceService actProcessInstanceService;
-    private final CommonApproveService commonApproveService;
+    private final NormalTaskService normalTaskService;
 
     /**
      * 分页查询正在运行的流程实例
@@ -93,12 +86,12 @@ public class ActProcessInstanceController extends BaseController {
     @PostMapping("/getHistoryRecord")
     public R<List<ActHistoryInfoVo>> getHistoryRecord(@RequestBody ProcessInstanceBo processInstanceBo) {
         if ("2".equals(processInstanceBo.getWfType())){
-            DcwsApproveVo dcwsApproveVo = commonApproveService.queryById(Long.valueOf(processInstanceBo.getKey()));
+            DcwsNormalTaskVo dcwsApproveVo = normalTaskService.queryById(Long.valueOf(processInstanceBo.getKey()));
             if (StringUtils.isNotEmpty(dcwsApproveVo.getBusinessKey())){
                 //标准流程中新增的非标准流程，审批记录需合并
                 List<ActHistoryInfoVo> list = actProcessInstanceService.getHistoryRecord(dcwsApproveVo.getBusinessKey());
-                List<DcwsHisVo> commonList = commonApproveService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
-                for (DcwsHisVo dcwsHisVo : commonList){
+                List<DcwsNormalTaskHandleHisVo> commonList = normalTaskService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
+                for (DcwsNormalTaskHandleHisVo dcwsHisVo : commonList){
                     ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
                     actHistoryInfoVo.setName(dcwsApproveVo.getTaskName());
                     actHistoryInfoVo.setUserName(dcwsHisVo.getUserName());
@@ -116,9 +109,9 @@ public class ActProcessInstanceController extends BaseController {
                 return R.ok(list);
             }else {
                 //标准流程外新增的非标准流程，单独显示审批记录
-                List<DcwsHisVo> list = commonApproveService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
+                List<DcwsNormalTaskHandleHisVo> list = normalTaskService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
                 List<ActHistoryInfoVo> tempList = new ArrayList<>();
-                for (DcwsHisVo dcwsHisVo : list){
+                for (DcwsNormalTaskHandleHisVo dcwsHisVo : list){
                     ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
                     actHistoryInfoVo.setName(dcwsApproveVo.getTaskName());
                     actHistoryInfoVo.setUserName(dcwsHisVo.getUserName());
@@ -197,18 +190,18 @@ public class ActProcessInstanceController extends BaseController {
         if ("1".equals(bo.getWfType())){
             return actProcessInstanceService.getPageByCurrent(bo, pageQuery);
         }else {
-            TableDataInfo<DcwsApproveVo> dcwsList = commonApproveService.queryPageList(new DcwsApproveBo(), pageQuery);
-            List<DcwsApproveVo> list = dcwsList.getRows();
+            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.queryPageList(new DcwsNormalTaskBo(), pageQuery);
+            List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<ProcessInstanceVo> listTemp = new ArrayList<>();
             TableDataInfo<ProcessInstanceVo> build = TableDataInfo.build();
             if (CollUtil.isNotEmpty(list)){
-                for (DcwsApproveVo dcwsApproveVo : list){
+                for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     ProcessInstanceVo processInstanceVo = new ProcessInstanceVo();
-                    processInstanceVo.setProcessDefinitionName(dcwsApproveVo.getTaskName());
-                    processInstanceVo.setBusinessStatus(dcwsApproveVo.getStatus());
-                    processInstanceVo.setStartTime(dcwsApproveVo.getCreateTime());
+                    processInstanceVo.setProcessDefinitionName(dcwsNormalTaskVo.getTaskName());
+                    processInstanceVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
+                    processInstanceVo.setStartTime(dcwsNormalTaskVo.getCreateTime());
                     processInstanceVo.setWfType("2");
-                    processInstanceVo.setId(String.valueOf(dcwsApproveVo.getTaskId()));
+                    processInstanceVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     listTemp.add(processInstanceVo);
                 }
             }

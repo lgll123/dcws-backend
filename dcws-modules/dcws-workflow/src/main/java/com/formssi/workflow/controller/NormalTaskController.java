@@ -10,34 +10,30 @@ import com.formssi.common.log.enums.BusinessType;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
-import com.formssi.workflow.domain.bo.DcwsApproveBo;
-import com.formssi.workflow.domain.vo.DcwsApproveVo;
-import com.formssi.workflow.service.CommonApproveService;
+import com.formssi.workflow.domain.bo.DcwsNormalTaskBo;
+import com.formssi.workflow.domain.vo.DcwsNormalTaskVo;
+import com.formssi.workflow.service.NormalTaskService;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/common/approve1")
-public class CommonApproveController extends BaseController {
+@RequestMapping("/common/approve")
+public class NormalTaskController extends BaseController {
 
-    private final CommonApproveService commonApproveService;
+    private final NormalTaskService normalTaskService;
 
     /**
      * 查询非标准流程列表
      */
     @SaCheckPermission("common:approve:list")
     @GetMapping("/list")
-    public TableDataInfo<DcwsApproveVo> list(DcwsApproveBo bo, PageQuery pageQuery) {
-        return commonApproveService.queryPageList(bo, pageQuery);
+    public TableDataInfo<DcwsNormalTaskVo> list(DcwsNormalTaskBo bo, PageQuery pageQuery) {
+        return normalTaskService.queryPageList(bo, pageQuery);
     }
 
     /**
@@ -47,9 +43,8 @@ public class CommonApproveController extends BaseController {
      */
     @SaCheckPermission("common:approve:query")
     @GetMapping("/{id}")
-    public R<DcwsApproveVo> getInfo(@NotNull(message = "主键不能为空")
-                                  @PathVariable Long id) {
-        return R.ok(commonApproveService.queryById(id));
+    public R<DcwsNormalTaskVo> getInfo(@NotNull(message = "主键不能为空")  @PathVariable Long id) {
+        return R.ok(normalTaskService.queryById(id));
     }
 
     /**
@@ -59,8 +54,8 @@ public class CommonApproveController extends BaseController {
     @Log(title = "非标准流程", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
-    public R<DcwsApproveVo> add(@Validated(AddGroup.class) @RequestBody DcwsApproveBo bo) {
-        return R.ok(commonApproveService.insertByBo(bo));
+    public R<DcwsNormalTaskVo> add(@Validated(AddGroup.class) @RequestBody DcwsNormalTaskBo bo) {
+        return R.ok(normalTaskService.insertByBo(bo));
     }
 
     /**
@@ -70,8 +65,8 @@ public class CommonApproveController extends BaseController {
     @Log(title = "非标准流程", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PostMapping("/edit")
-    public R<DcwsApproveVo> edit(@Validated(EditGroup.class) @RequestBody DcwsApproveBo bo) {
-        return R.ok(commonApproveService.updateByBo(bo));
+    public R<DcwsNormalTaskVo> edit(@Validated(EditGroup.class) @RequestBody DcwsNormalTaskBo bo) {
+        return R.ok(normalTaskService.updateByBo(bo));
     }
 
     /**
@@ -83,7 +78,7 @@ public class CommonApproveController extends BaseController {
     @RepeatSubmit()
     @PostMapping("/cancelProcessApply/{id}")
     public R<Void> cancelProcessApply(@NotBlank(message = "业务id不能为空") @PathVariable String id) {
-        return toAjax(commonApproveService.cancelProcessApply(id));
+        return toAjax(normalTaskService.cancelProcessApply(id));
     }
 
     /**
@@ -95,6 +90,6 @@ public class CommonApproveController extends BaseController {
     @RepeatSubmit()
     @PostMapping("/deleteRunAndHisInstance/{id}")
     public R<Void> deleteRunAndHisInstance(@NotNull(message = "业务id不能为空") @PathVariable String id) {
-        return toAjax(commonApproveService.deleteRunAndHisInstance(id));
+        return toAjax(normalTaskService.deleteRunAndHisInstance(id));
     }
 }

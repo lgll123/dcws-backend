@@ -1,9 +1,7 @@
 package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.formssi.workflow.domain.DcwsNormalTaskUser;
-import com.formssi.workflow.domain.DcwsUser;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 

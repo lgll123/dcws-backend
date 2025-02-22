@@ -116,7 +116,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                     String apiUrl2 = API_URL + "licenses/" + assetId + "/seats/" + seatId;
                     ObjectMapper objectMapperOut = new ObjectMapper();
                     Map<String, String> requestBodyMapOut = new HashMap<>();
-                    requestBodyMapOut.put("assigned_to", "1"); //先写死用户（协同用户） todo
+                    requestBodyMapOut.put("assigned_to", "4"); //先写死用户（协同用户） todo
                     String requestBodyOut = null;
                     try {
                         requestBodyOut = objectMapperOut.writeValueAsString(requestBodyMapOut);
@@ -167,7 +167,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             }
             //四、消耗品---无需更换领用人
 
-            //五、组件
+            //五、组件---无需更换领用人
 
 
 

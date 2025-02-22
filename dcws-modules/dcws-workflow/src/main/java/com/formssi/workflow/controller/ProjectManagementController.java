@@ -78,4 +78,15 @@ public class ProjectManagementController extends BaseController {
     public R<DcwsProjectVo> edit(@Validated(EditGroup.class) @RequestBody DcwsProjectBo bo) {
         return R.ok(projectService.updateByBo(bo));
     }
+
+    /**
+     * 修改任务
+     */
+    @SaCheckPermission("project:management:edit")
+    @Log(title = "项目", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/edittask")
+    public R<DcwsProjectTaskVo> edittask(@Validated(EditGroup.class) @RequestBody DcwsProjectTaskBo bo) {
+        return R.ok(projectService.updateByTaskBo(bo));
+    }
 }

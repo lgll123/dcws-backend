@@ -3,6 +3,7 @@ package com.formssi.workflow.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.satoken.utils.LoginHelper;
@@ -104,7 +105,25 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     @Transactional(rollbackFor = Exception.class)
     public DcwsProjectVo updateByBo(DcwsProjectBo bo) {
         DcwsProject update = MapstructUtils.convert(bo, DcwsProject.class);
-        projectMapper.updateByProjectId(bo.getProjectStatus(),bo.getProjectId());
+        projectMapper.updateById(update);
+        //修改项目为已完成时判断项目下所有任务是否已完成
+        if (BusinessStatusEnum.FINISH.getStatus().equals(update.getProjectStatus())){
+            LambdaQueryWrapper<DcwsProjectTask> lqw = Wrappers.lambdaQuery();
+            lqw.eq(DcwsProjectTask::getProjectId, bo.getProjectId());
+            List<DcwsProjectTaskVo> list = dcwsProjectTaskMapper.selectVoList(lqw);
+            for (DcwsProjectTaskVo dcwsProjectTaskVo : list){
+                if (BusinessStatusEnum.DRAFT.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())||BusinessStatusEnum.INPROGRESS.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())){
+                    throw new ServiceException("该项目下还有任务未完成");
+                }
+            }
+        }
         return MapstructUtils.convert(update, DcwsProjectVo.class);
+    }
+
+    @Override
+    public DcwsProjectTaskVo updateByTaskBo(DcwsProjectTaskBo bo) {
+        DcwsProjectTask update = MapstructUtils.convert(bo, DcwsProjectTask.class);
+        dcwsProjectTaskMapper.updateById(update);
+        return MapstructUtils.convert(update, DcwsProjectTaskVo.class);
     }
 }

@@ -95,8 +95,7 @@ public class TaskNodeDataController extends BaseController {
             throw new RuntimeException(e);
         }
 */
-        String jsonString = JSON.toJSONString("{\"color\":\"red\", \"size\":10}");
-        bo.setApplicantId(LoginHelper.getUserId());// TODO yqh
+        String jsonString = JSON.toJSONString("{\"color\":\"red\", \"size\":10}"); // TODO yqh
         return R.ok(applyService.insertByBo(bo));
     }
 

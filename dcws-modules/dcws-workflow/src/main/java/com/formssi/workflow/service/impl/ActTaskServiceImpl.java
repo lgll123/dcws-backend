@@ -203,7 +203,7 @@ public class ActTaskServiceImpl implements IActTaskService {
             runtimeService.updateBusinessStatus(task.getProcessInstanceId(), BusinessStatusEnum.WAITING.getStatus());
             //办理监听
             flowProcessEventHandler.processTaskHandler(processInstance.getProcessDefinitionKey(), task.getTaskDefinitionKey(),
-                task.getId(), processInstance.getBusinessKey());
+                task.getId(), processInstance.getBusinessKey(),completeTaskBo.getVariables());
             //办理意见
             taskService.addComment(completeTaskBo.getTaskId(), task.getProcessInstanceId(), TaskStatusEnum.PASS.getStatus(), StringUtils.isBlank(completeTaskBo.getMessage()) ? "同意" : completeTaskBo.getMessage());
             //办理任务
@@ -225,6 +225,10 @@ public class ActTaskServiceImpl implements IActTaskService {
                 List<Task> list = QueryUtils.taskQuery(task.getProcessInstanceId()).list();
                 List<ProcessNode> nextNodeinfo = ModelUtils.getNextNodeinfo((TaskEntity) task);//TODO yqh
                 for (Task t : list) {
+                    //办理监听
+                    flowProcessEventHandler.processTaskHandler(processInstance.getProcessDefinitionKey(), t.getTaskDefinitionKey(),
+                            t.getId(), processInstance.getBusinessKey(),completeTaskBo.getVariables());
+
                     if (ModelUtils.isUserTask(t.getProcessDefinitionId(), t.getTaskDefinitionKey())) {
                         List<HistoricIdentityLink> links = historyService.getHistoricIdentityLinksForTask(t.getId());
                         if (CollUtil.isEmpty(links) && StringUtils.isBlank(t.getAssignee())) {

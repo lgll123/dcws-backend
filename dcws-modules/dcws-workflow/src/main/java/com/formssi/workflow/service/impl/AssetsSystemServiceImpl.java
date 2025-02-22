@@ -26,8 +26,9 @@ import java.util.Map;
 @Service
 @Slf4j
 public class AssetsSystemServiceImpl implements IAssetsSystemService {
-    private static final String API_URL = "http://10.100.218.4/api/v1/";
-    private static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMDE1YTgxM2ZhMGFlNzkxMzc3Mzc1MmEzZmMxYjc2MzU1NjAxZDU0NzZmZDk3YjJlNzgwMTA5NjE5ZTA2N2Y3MWUzMTM0YTI3OTU1MmFiYmUiLCJpYXQiOjE3Mzg4OTkzNzAuMjIxMjAxLCJuYmYiOjE3Mzg4OTkzNzAuMjIxMjA0LCJleHAiOjIyMTIxOTg1NzAuMjEwNzU5LCJzdWIiOiI3NDEiLCJzY29wZXMiOltdfQ.0hcozE2jwP7nkrt3oKLrF4sG8R2NSva3cVJHRzdM13cyLscGs4-J6IXoZnZc29CSWJJ3uedINH8bfG-vixFDCjZop3C800LnjSz4y4zwvP3-tqAy9PbufEvJYJW4X-84jRHQY14XWcRjM2LE1gleW6yiJfAZV4X3BqXoH3p6jjMlyP9AQAvRjqWMfnEv5gquj2_CJCXjHr-oaPvJDDQccFUiRLWS3vFq7r2ePqj4KhpEmheCwup5lcxJfZnMxIC6eIQmFqOQMqyFON2ukSOeqZsEdFVD__2TGlbMHsc2uGZDAHI3zRY8vZnYQvq4elNXKTkCNapmzARdKOXBMh_i0T3Qu9RQ7sdqdIGDPksp78SaXVsD-JtAn4m6RyEeZEwYV_UWXZDgcj2AF_PmmXgLPQjo-SMl6V0mSNDIVn8LYen_oLvU5Z8MzzbrgQO9nww3XO7Mp0CTWz0y643mFBdkFdYrPeVstoO38Y5Mn7fvwo07MOGuKYtPfP5vbGq8qT0QqJjw3J7swCIZQCAjsp1Mu8yMnTdcV37Qw_e4iqIsOKOjUciJ-H5EfLjU3b13l5mcvGZImEW3mkhC32lqO4Gmw1egM2rkbfW57ZWY6CFX_8ehuOD0vi3uFKnC0mzlfYFcaMrlbwOO5SBgBzp0jSuB9zudn1wP1iD0-8MHKAfhilY";
+    private static final String API_URL = "http://10.101.68.29:8000/api/v1/";
+//    private static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMDE1YTgxM2ZhMGFlNzkxMzc3Mzc1MmEzZmMxYjc2MzU1NjAxZDU0NzZmZDk3YjJlNzgwMTA5NjE5ZTA2N2Y3MWUzMTM0YTI3OTU1MmFiYmUiLCJpYXQiOjE3Mzg4OTkzNzAuMjIxMjAxLCJuYmYiOjE3Mzg4OTkzNzAuMjIxMjA0LCJleHAiOjIyMTIxOTg1NzAuMjEwNzU5LCJzdWIiOiI3NDEiLCJzY29wZXMiOltdfQ.0hcozE2jwP7nkrt3oKLrF4sG8R2NSva3cVJHRzdM13cyLscGs4-J6IXoZnZc29CSWJJ3uedINH8bfG-vixFDCjZop3C800LnjSz4y4zwvP3-tqAy9PbufEvJYJW4X-84jRHQY14XWcRjM2LE1gleW6yiJfAZV4X3BqXoH3p6jjMlyP9AQAvRjqWMfnEv5gquj2_CJCXjHr-oaPvJDDQccFUiRLWS3vFq7r2ePqj4KhpEmheCwup5lcxJfZnMxIC6eIQmFqOQMqyFON2ukSOeqZsEdFVD__2TGlbMHsc2uGZDAHI3zRY8vZnYQvq4elNXKTkCNapmzARdKOXBMh_i0T3Qu9RQ7sdqdIGDPksp78SaXVsD-JtAn4m6RyEeZEwYV_UWXZDgcj2AF_PmmXgLPQjo-SMl6V0mSNDIVn8LYen_oLvU5Z8MzzbrgQO9nww3XO7Mp0CTWz0y643mFBdkFdYrPeVstoO38Y5Mn7fvwo07MOGuKYtPfP5vbGq8qT0QqJjw3J7swCIZQCAjsp1Mu8yMnTdcV37Qw_e4iqIsOKOjUciJ-H5EfLjU3b13l5mcvGZImEW3mkhC32lqO4Gmw1egM2rkbfW57ZWY6CFX_8ehuOD0vi3uFKnC0mzlfYFcaMrlbwOO5SBgBzp0jSuB9zudn1wP1iD0-8MHKAfhilY";
+    private static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZjRhNDM1MDFmMmFiMWQ1OWRjNzE3NjY5ZWU1MWVkMGE0ZTY2NDA4Mzc2MmY4NmVjNGUxNzU5NTZiN2UyZThlOTM2ZmFjNTNkMWVmODViODUiLCJpYXQiOjE3NDAxMTg2MjcuNDI4OTM2LCJuYmYiOjE3NDAxMTg2MjcuNDI4OTQ2LCJleHAiOjMwMDI0MjI2MjcuNDI2Mjk5LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.VT4tifmGbr9CblfzRiX8xdatgK_VkiD7nWeY7NUZ3n3ww2Gkks1S8L4q7E7a114EgUCEFRyNrNYRrQdFCkV5mh-JqvMMog-89FtWMEdPOCIShtgv-wzgUaUjborBiCM7Ho0nTP3d0ih8-HPL5m8anJfbxjs4pMNo2CZuX82qx7lldzc1i_zc3Hl4W1F89dmM32gQc-CcY9mvWZLT-mmAsrmsNq5HvrHBupscIZwF7XWRWbVwiG5OV4LoniuD-S7r0fU6fr5uNnkJnP5x_UXVUmGOgqwj-SVp37oiGtEYbP5WwHqTGEF8w5GAWdA9qD8FvYP08GtYo53acYAIEMA67t14z-Ey6vHlxiyAtuYra0QFjsmKwHGOZf3DtoLmpFQIGbxdBj-6esWSESARxojkLcKKowGXEzPGVhRj3U9CY-ecRcH1ABGTDGovSArQQT3AiOJJnd6e4Vw-Il-1E257H9bDCA6nCXkcYTEFwgerp5D_d-RVVdBLfp2td-6cVfLv6YfdE8IJ3Nn3i0uhYv9g_-4ULJYHPfGxNGafEUeqdUsPXpMAP42LNCEPJeAmLMtvzheZvOayAsWaepGpLF22TFdPzc0fNEYSss-hHWIcglwPt84agGdevBCvpVVApY5R1UoHS0Uf4IManmCdaqJo_Lz1_3cQdToEEPBTglD8gpQ";
     private final OkHttpClient client = new OkHttpClient();
     @Override
     public List<Map<String,Object>> queryRepertory(AssetsSystemBo bo,String urlPath) {
@@ -52,7 +53,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
                     Map map = objectMapper.readValue(responseBody, Map.class);
                     List<Map<String,Object>> rows = (List<Map<String,Object>>)map.get("rows");
                     Integer remainingQty = (Integer)rows.get(0).get("remaining_qty");
-                    if(rows.isEmpty() || rows.size()>1){
+                    if(rows.isEmpty() || rows.size()==0){
                         throw new ServiceException( "库存查询失败：物料名称或物料型号不正确，result size:  "+rows.size());
                     }
                     return rows;
@@ -112,7 +113,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
     public TableDataInfo<CategoryBo> queryPageCategories(String categoryType, PageQuery pageQuery, String urlPath) {
         try {
             log.info("Calling the external system for Assets with URL: {}", API_URL);
-            String requestData = urlPath+"?category_type" + categoryType+"&search="+"&limit="+pageQuery.getPageSize()+"&offset="+pageQuery.getPageSize()*pageQuery.getPageNum()+"&order="+pageQuery.getIsAsc();
+            String requestData = urlPath+"?category_type=" + categoryType+"&search="+"&limit="+pageQuery.getPageSize()+"&offset="+pageQuery.getPageSize()*pageQuery.getPageNum()+"&order="+pageQuery.getIsAsc();
             Request request = new Request.Builder()
                     .url(API_URL+ requestData)
                     .get()
@@ -153,7 +154,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         try {
             log.info("Calling the external system for Assets with URL: {}", API_URL);
 
-            String requestData = urlPath+"?category_id" + categoryId+"&search="+"&limit="+pageQuery.getPageSize()
+            String requestData = urlPath+"?category_id=" + categoryId+"&search="+"&limit="+pageQuery.getPageSize()
                     +"&offset="+pageQuery.getPageSize()*pageQuery.getPageNum()+"&order="+pageQuery.getIsAsc();
             if("hardware".equals(urlPath)){
                 requestData+="&status=Requestable";
@@ -179,9 +180,13 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
                             AssetsSystemBo assetsSystemBo = new AssetsSystemBo();
                             assetsSystemBo.setId((Integer)t.get("id"));
                             assetsSystemBo.setName((String)t.get("name"));
+                            assetsSystemBo.setSerial((String)t.get("serial"));
+                            assetsSystemBo.setCategoryName(t.get("category")==null?null:(String)((Map<String,Object>)t.get("category")).get("name"));
                             assetsSystemBo.setModelNo(StringUtils.isBlank((String)t.get("model_number"))?(String)((Map<String,Object>)t.get("model")).get("name"):(String)t.get("model_number"));
+                            assetsSystemBo.setModelId(t.get("model")==null?null:((Map<String,Object>)t.get("model")).get("id").toString());
                             assetsSystemBo.setAssetTag((String)t.get("asset_tag"));
                             assetsSystemBo.setAssetStatus((String)((Map<String,Object>)t.get("status_label")).get("status_type"));
+                            assetsSystemBo.setAssetStatusId(((Map<String,Object>)t.get("status_label")).get("id").toString());
                             assetsSystemBos.add(assetsSystemBo);
                         });
                     }else {
@@ -189,6 +194,14 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
                             AssetsSystemBo assetsSystemBo = new AssetsSystemBo();
                             assetsSystemBo.setId((Integer)t.get("id"));
                             assetsSystemBo.setName((String)t.get("name"));
+                            assetsSystemBo.setProductKey((String)t.get("product_key"));
+                            assetsSystemBo.setLicenseEmail((String)t.get("license_email"));
+                            assetsSystemBo.setLicenseName((String)t.get("license_name"));
+                            assetsSystemBo.setPurchaseCost((String)t.get("purchase_cost"));
+                            assetsSystemBo.setPurchaseDate(t.get("purchase_date")==null?null:(String)((Map<String,Object>)t.get("purchase_date")).get("date"));
+                            assetsSystemBo.setManufacturerName(t.get("manufacturer")==null?null:(String)((Map<String,Object>)t.get("manufacturer")).get("name"));
+                            assetsSystemBo.setExpirationDate(t.get("expiration_date")==null?null:(String)((Map<String,Object>)t.get("expiration_date")).get("date"));
+                            assetsSystemBo.setLocationName(t.get("location")==null?null:(String)((Map<String,Object>)t.get("location")).get("name"));
                             assetsSystemBo.setModelNo((String)t.get("model_number"));
                             assetsSystemBo.setQty((Integer)t.get("qty"));
                             assetsSystemBo.setRemainQty((Integer)t.get("remaining_qty"));

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * 流程办理监听
@@ -36,5 +37,8 @@ public class ProcessTaskEvent implements Serializable {
      * 业务id
      */
     private String businessKey;
-
+    /**
+     * 任务数据
+     */
+    private Map<String, Object> variables;
 }

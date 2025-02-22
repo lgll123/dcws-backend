@@ -5,6 +5,8 @@ import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.utils.SpringUtils;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 /**
  * 流程监听服务
  *
@@ -39,12 +41,13 @@ public class FlowProcessEventHandler {
      * @param taskId            任务id
      * @param businessKey       业务id
      */
-    public void processTaskHandler(String key, String taskDefinitionKey, String taskId, String businessKey) {
+    public void processTaskHandler(String key, String taskDefinitionKey, String taskId, String businessKey, Map<String, Object> variables) {
         ProcessTaskEvent processTaskEvent = new ProcessTaskEvent();
         processTaskEvent.setKey(key);
         processTaskEvent.setTaskDefinitionKey(taskDefinitionKey);
         processTaskEvent.setTaskId(taskId);
         processTaskEvent.setBusinessKey(businessKey);
+        processTaskEvent.setVariables(variables);
         SpringUtils.context().publishEvent(processTaskEvent);
     }
 }

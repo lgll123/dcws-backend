@@ -118,13 +118,13 @@ public class AssetsServiceImpl implements IAssetsService {
      */
     @EventListener(condition = "#processEvent.key.startsWith('assets')")
     public void processHandler(ProcessEvent processEvent) {
-        log.info("当前任务执行了{}", processEvent.toString());
-        Assets assets = baseMapper.selectById(Long.valueOf(processEvent.getBusinessKey()));
-        assets.setStatus(processEvent.getStatus());
-        if (processEvent.isSubmit()) {
-            assets.setStatus(BusinessStatusEnum.WAITING.getStatus());
-        }
-        baseMapper.updateById(assets);
+//        log.info("当前任务执行了{}", processEvent.toString());
+//        Assets assets = baseMapper.selectById(Long.valueOf(processEvent.getBusinessKey()));
+//        assets.setStatus(processEvent.getStatus());
+//        if (processEvent.isSubmit()) {
+//            assets.setStatus(BusinessStatusEnum.WAITING.getStatus());
+//        }
+//        baseMapper.updateById(assets);
     }
 
     /**
@@ -140,13 +140,13 @@ public class AssetsServiceImpl implements IAssetsService {
     @EventListener(condition = "#processTaskEvent.key.startsWith('assets')")
     public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
         // 所有demo案例的申请人节点id
-        String[] ids = {"Activity_14633hx", "Activity_19b1i4j", "Activity_0uscrk3",
-            "Activity_0uscrk3", "Activity_0x6b71j", "Activity_0zy3g6j", "Activity_06a55t0"};
-        if (StringUtils.equalsAny(processTaskEvent.getTaskDefinitionKey(), ids)) {
-            log.info("当前任务执行了{}", processTaskEvent.toString());
-            Assets assets = baseMapper.selectById(Long.valueOf(processTaskEvent.getBusinessKey()));
-            assets.setStatus(BusinessStatusEnum.WAITING.getStatus());
-            baseMapper.updateById(assets);
-        }
+//        String[] ids = {"Activity_14633hx", "Activity_19b1i4j", "Activity_0uscrk3",
+//            "Activity_0uscrk3", "Activity_0x6b71j", "Activity_0zy3g6j", "Activity_06a55t0"};
+//        if (StringUtils.equalsAny(processTaskEvent.getTaskDefinitionKey(), ids)) {
+//            log.info("当前任务执行了{}", processTaskEvent.toString());
+//            Assets assets = baseMapper.selectById(Long.valueOf(processTaskEvent.getBusinessKey()));
+//            assets.setStatus(BusinessStatusEnum.WAITING.getStatus());
+//            baseMapper.updateById(assets);
+//        }
     }
 }

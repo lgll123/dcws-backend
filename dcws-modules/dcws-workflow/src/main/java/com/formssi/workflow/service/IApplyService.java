@@ -24,6 +24,10 @@ public interface IApplyService {
      * 查询申请
      */
     TaskNodeDataVo queryById(Long id);
+    /**
+     * 根据任务ID查询申请
+     */
+    TaskNodeDataVo queryByTaskId(String taskId);
 
     /**
      * 查询申请列表
@@ -43,7 +47,7 @@ public interface IApplyService {
     /**
      * 修改申请
      */
-    AssetsVo updateByBo(AssetsBo bo);
+    TaskNodeDataVo updateByBo(TaskNodeDataBo bo);
 
     /**
      * 校验并批量删除申请信息

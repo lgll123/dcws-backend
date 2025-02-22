@@ -2,9 +2,6 @@ package com.formssi.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.validate.AddGroup;
 import com.formssi.common.core.validate.EditGroup;
@@ -39,7 +36,7 @@ import java.util.List;
 @RequestMapping("/workflow/apply")
 public class TaskNodeDataController extends BaseController {
 
-    private final IApplyService assetsService;
+    private final IApplyService applyService;
 
     /**
      * 查询申请列表
@@ -47,7 +44,7 @@ public class TaskNodeDataController extends BaseController {
     @SaCheckPermission("workflow:leave:list")
     @GetMapping("/list")
     public TableDataInfo<TaskNodeDataVo> list(TaskNodeDataBo bo, PageQuery pageQuery) {
-        return assetsService.queryPageList(bo, pageQuery);
+        return applyService.queryPageList(bo, pageQuery);
     }
 
     /**
@@ -57,7 +54,7 @@ public class TaskNodeDataController extends BaseController {
     @Log(title = "申请", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(TaskNodeDataBo bo, HttpServletResponse response) {
-        List<TaskNodeDataVo> list = assetsService.queryList(bo);
+        List<TaskNodeDataVo> list = applyService.queryList(bo);
         ExcelUtil.exportExcel(list, "申请", TaskNodeDataVo.class, response);
     }
 
@@ -69,7 +66,18 @@ public class TaskNodeDataController extends BaseController {
     @SaCheckPermission("workflow:leave:query")
     @GetMapping("/{id}")
     public R<TaskNodeDataVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable Long id) {
-        return R.ok(assetsService.queryById(id));
+        return R.ok(applyService.queryById(id));
+    }
+
+    /**
+     * 根据任务ID获取申请详细信息
+     *
+     * @param taskId 任务id
+     */
+    @SaCheckPermission("workflow:leave:query")
+    @GetMapping("/getTaskNodeDataInfo")
+    public R<TaskNodeDataVo> getTaskNodeDataInfo(@NotNull(message = "任务id不能为空") @PathVariable String taskId) {
+        return R.ok(applyService.queryByTaskId(taskId));
     }
 
     /**
@@ -89,7 +97,7 @@ public class TaskNodeDataController extends BaseController {
 */
         String jsonString = JSON.toJSONString("{\"color\":\"red\", \"size\":10}");
         bo.setApplicantId(LoginHelper.getUserId());// TODO yqh
-        return R.ok(assetsService.insertByBo(bo));
+        return R.ok(applyService.insertByBo(bo));
     }
 
     /**
@@ -99,8 +107,8 @@ public class TaskNodeDataController extends BaseController {
     @Log(title = "申请", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
-    public R<AssetsVo> edit(@Validated(EditGroup.class) @RequestBody AssetsBo bo) {
-        return R.ok(assetsService.updateByBo(bo));
+    public R<TaskNodeDataVo> edit(@Validated(EditGroup.class) @RequestBody TaskNodeDataBo bo) {
+        return R.ok(applyService.updateByBo(bo));
     }
 
     /**
@@ -112,6 +120,6 @@ public class TaskNodeDataController extends BaseController {
     @Log(title = "申请", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable Long[] ids) {
-        return toAjax(assetsService.deleteWithValidByIds(List.of(ids)));
+        return toAjax(applyService.deleteWithValidByIds(List.of(ids)));
     }
 }

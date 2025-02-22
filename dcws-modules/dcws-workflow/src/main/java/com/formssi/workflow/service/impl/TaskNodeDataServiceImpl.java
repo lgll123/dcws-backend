@@ -47,7 +47,7 @@ import java.util.Map;
 @Slf4j
 public class TaskNodeDataServiceImpl implements IApplyService {
 
-    private final TaskNodeDataMapper baseMapper;
+    private final TaskNodeDataMapper taskNodeDataMapper;
     private final TaskNodeDataHisMapper taskNodeDataHisMapper;
     private final WorkflowService workflowService;
 
@@ -56,7 +56,17 @@ public class TaskNodeDataServiceImpl implements IApplyService {
      */
     @Override
     public TaskNodeDataVo queryById(Long id) {
-        return baseMapper.selectVoById(id);
+        return taskNodeDataMapper.selectVoById(id);
+    }
+
+    /**
+     * 根据任务ID查询申请表单信息
+     */
+    @Override
+    public TaskNodeDataVo queryByTaskId(String taskId){
+        LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
+        lqw.eq(TaskNodeData::getTaskId, taskId);
+        return taskNodeDataMapper.selectVoOne(lqw);
     }
 
     /**
@@ -65,7 +75,7 @@ public class TaskNodeDataServiceImpl implements IApplyService {
     @Override
     public TableDataInfo<TaskNodeDataVo> queryPageList(TaskNodeDataBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<TaskNodeData> lqw = buildQueryWrapper(bo);
-        Page<TaskNodeDataVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        Page<TaskNodeDataVo> result = taskNodeDataMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
 
@@ -75,7 +85,7 @@ public class TaskNodeDataServiceImpl implements IApplyService {
     @Override
     public List<TaskNodeDataVo> queryList(TaskNodeDataBo bo) {
         LambdaQueryWrapper<TaskNodeData> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        return taskNodeDataMapper.selectVoList(lqw);
     }
 
     private LambdaQueryWrapper<TaskNodeData> buildQueryWrapper(TaskNodeDataBo bo) {
@@ -94,7 +104,7 @@ public class TaskNodeDataServiceImpl implements IApplyService {
         if (StringUtils.isBlank(add.getStatus())) {
             add.setStatus(BusinessStatusEnum.DRAFT.getStatus());
         }
-        boolean flag = baseMapper.insert(add) > 0;
+        boolean flag = taskNodeDataMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
         }
@@ -105,10 +115,10 @@ public class TaskNodeDataServiceImpl implements IApplyService {
      * 修改申请
      */
     @Override
-    public AssetsVo updateByBo(AssetsBo bo) {
-        Assets update = MapstructUtils.convert(bo, Assets.class);
-//        baseMapper.updateById(update);
-        return MapstructUtils.convert(update, AssetsVo.class);
+    public TaskNodeDataVo updateByBo(TaskNodeDataBo bo) {
+        TaskNodeData update = MapstructUtils.convert(bo, TaskNodeData.class);
+        taskNodeDataMapper.updateById(update);
+        return MapstructUtils.convert(update, TaskNodeDataVo.class);
     }
 
     /**
@@ -119,7 +129,7 @@ public class TaskNodeDataServiceImpl implements IApplyService {
     public Boolean deleteWithValidByIds(Collection<Long> ids) {
         List<String> idList = StreamUtils.toList(ids, String::valueOf);
         workflowService.deleteRunAndHisInstance(idList);
-        return baseMapper.deleteByIds(ids) > 0;
+        return taskNodeDataMapper.deleteByIds(ids) > 0;
     }
 
     /**
@@ -132,12 +142,12 @@ public class TaskNodeDataServiceImpl implements IApplyService {
     @EventListener(condition = "#processEvent.key.startsWith('assets')")
     public void processHandler(ProcessEvent processEvent) {
         log.info("当前任务执行了{}", processEvent.toString());
-        TaskNodeData taskNodeData = baseMapper.selectById(Long.valueOf(processEvent.getBusinessKey()));
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(Long.valueOf(processEvent.getBusinessKey()));
         taskNodeData.setStatus(processEvent.getStatus());
         if (processEvent.isSubmit()) {
             taskNodeData.setStatus(processEvent.getStatus());
         }
-        baseMapper.updateById(taskNodeData);
+        taskNodeDataMapper.updateById(taskNodeData);
     }
 
     /**
@@ -153,7 +163,7 @@ public class TaskNodeDataServiceImpl implements IApplyService {
     @EventListener(condition = "#processTaskEvent.key.startsWith('assets')")
     public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
         log.info("当前任务执行了{}", processTaskEvent.toString());
-        TaskNodeData taskNodeData = baseMapper.selectById(Long.valueOf(processTaskEvent.getBusinessKey()));
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(Long.valueOf(processTaskEvent.getBusinessKey()));
         taskNodeData.setStatus(BusinessStatusEnum.WAITING.getStatus());
         TaskNodeDataBo taskNodeDataBo = null;
         if (CollUtil.isNotEmpty(processTaskEvent.getVariables())) {
@@ -169,7 +179,8 @@ public class TaskNodeDataServiceImpl implements IApplyService {
             }
         }
         taskNodeData.setApplyDetail(taskNodeDataBo.getApplyDetail());
-        baseMapper.updateById(taskNodeData);
+        taskNodeData.setTaskId(processTaskEvent.getTaskId());
+        taskNodeDataMapper.updateById(taskNodeData);
         QueryWrapper<TaskNodeDataHis> query = Wrappers.query();
         query.eq("task_id",processTaskEvent.getTaskId());
         TaskNodeDataHisVo taskNodeDataHisVo = taskNodeDataHisMapper.selectVoOne(query);

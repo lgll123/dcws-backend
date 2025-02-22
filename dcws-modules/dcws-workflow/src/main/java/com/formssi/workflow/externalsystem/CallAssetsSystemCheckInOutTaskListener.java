@@ -111,7 +111,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                             return false;
                         }
                     }).findFirst().get();
-                    String seatId = seatMap.get("id").toString();//席位id
+                    String seatId = String.valueOf(seatMap.get("id"));//席位id
                     //2、根据席位id更换许可证领用人
                     String apiUrl2 = API_URL + "licenses/" + assetId + "/seats/" + seatId;
                     ObjectMapper objectMapperOut = new ObjectMapper();
@@ -127,10 +127,10 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                 });
             }
             //三、附属品
-            if(!CollectionUtils.isEmpty(licenseList)){
+            if(false){
 //                licenseList.forEach(e ->{
                     //1、根据附属品id 查询 附属品用户关联id
-                    String assetId = "1"; //附属品id 先写死 todo
+                    String assetId = "6"; //附属品id 先写死 todo
 //                    String assetId = e.get("id");
                     String userId = "2"; //先写死被领用用户（张三） todo
                     int num = 1; //借出的附属品数量 先写死 todo
@@ -143,24 +143,32 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                             } else {
                                 return false;
                             }
-                    }).map(e -> String.valueOf(e.get("id"))).limit(num).collect(Collectors.toList());
-
-
-//                    String seatId = seatMap.get("id").toString();//席位id
-//                    //2、根据附属品用户关联id更换附属品领用人
-//                    String apiUrl2 = API_URL + "licenses/" + assetId + "/seats" + seatId;
-//                    ObjectMapper objectMapperOut = new ObjectMapper();
-//                    Map<String, String> requestBodyMapOut = new HashMap<>();
-//                    requestBodyMapOut.put("assigned_to", "1"); //先写死用户（协同用户） todo
-//                    String requestBodyOut = null;
-//                    try {
-//                        requestBodyOut = objectMapperOut.writeValueAsString(requestBodyMapOut);
-//                    } catch (JsonProcessingException ex) {
-//                        throw new RuntimeException(ex);
-//                    }
-//                    callPutApi(apiUrl2, requestBodyOut);//调用接口
+                    }).map(e -> String.valueOf(e.get("id")))
+                            .limit(num).collect(Collectors.toList());
+                    //2、根据附属品用户关联id 归还附属品
+                    idList.forEach(id ->{
+                        String apiUrl2 = API_URL + "accessories/" + id + "/checkin";
+                        callPostApi(apiUrl2, "");//调用接口
+                    });
+                    //3、根据附属品id 借出附属品
+                    String apiUrlOut = API_URL + "accessories/" + assetId + "/checkout";
+                    ObjectMapper objectMapperOut = new ObjectMapper();
+                    Map<String, String> requestBodyMapOut = new HashMap<>();
+                    requestBodyMapOut.put("checkout_qty", String.valueOf(num));
+                    requestBodyMapOut.put("assigned_user", "4"); //借出的用户（协同用户）先写死 todo
+                    String requestBodyOut = null;
+                    try {
+                        requestBodyOut = objectMapperOut.writeValueAsString(requestBodyMapOut);
+                    } catch (JsonProcessingException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    callPostApi(apiUrlOut, requestBodyOut);
 //                });
             }
+            //四、消耗品---无需更换领用人
+
+            //五、组件
+
 
 
         } catch (Exception e) {

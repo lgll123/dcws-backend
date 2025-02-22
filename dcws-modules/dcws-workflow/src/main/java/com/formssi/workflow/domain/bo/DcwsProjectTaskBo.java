@@ -58,4 +58,9 @@ public class DcwsProjectTaskBo extends BaseEntity {
      */
     private String createEmpName;
 
+    /**
+     * 业务id
+     */
+    private String businessKey;
+
 }

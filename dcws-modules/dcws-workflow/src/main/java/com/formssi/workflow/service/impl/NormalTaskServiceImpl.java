@@ -117,6 +117,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                  dcwsProjectTask.setTaskType("20");//非标准流程
                  dcwsProjectTask.setProjectId(add.getProjectId());
                  dcwsProjectTask.setTaskName(add.getTaskName());
+                 dcwsProjectTask.setTaskId(add.getTaskId());
                  dcwsProjectTask.setTaskStatus(BusinessStatusEnum.INPROGRESS.getStatus());
                  dcwsProjectTask.setCreateBy(LoginHelper.getUserId());
                  dcwsProjectTask.setCreateEmpName(LoginHelper.getUsername());

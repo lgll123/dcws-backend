@@ -185,4 +185,11 @@ public class TaskVo implements Serializable {
      * 流程分类
      */
     private String wfType;
+
+    /**
+     * 任务是否归属本人
+     */
+    private String taskBelonging;
+
+
 }

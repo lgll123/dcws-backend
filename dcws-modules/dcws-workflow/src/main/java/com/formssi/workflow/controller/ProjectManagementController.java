@@ -10,14 +10,12 @@ import com.formssi.common.log.enums.BusinessType;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.DcwsProjectBo;
 import com.formssi.workflow.domain.bo.DcwsProjectTaskBo;
-import com.formssi.workflow.domain.vo.DcwsProjectTaskVo;
-import com.formssi.workflow.domain.vo.DcwsProjectVo;
+import com.formssi.workflow.domain.vo.*;
 import com.formssi.workflow.service.ProjectManagementService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @Validated
@@ -88,5 +86,17 @@ public class ProjectManagementController extends BaseController {
     @PostMapping("/edittask")
     public R<DcwsProjectTaskVo> edittask(@Validated(EditGroup.class) @RequestBody DcwsProjectTaskBo bo) {
         return R.ok(projectService.updateByTaskBo(bo));
+    }
+
+    /**
+     * 查询任务归属
+     */
+    @SaCheckPermission("project:management:edit")
+    @Log(title = "项目", businessType = BusinessType.UPDATE)
+    @RepeatSubmit()
+    @PostMapping("/querytaskbelonging")
+    public R<TaskVo> querytaskbelonging(@Validated(EditGroup.class) @RequestBody DcwsProjectTaskBo bo) {
+        TaskVo TaskVo = projectService.querytaskbelonging(bo);
+        return R.ok(TaskVo);
     }
 }

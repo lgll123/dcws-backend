@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -61,6 +62,21 @@ public class DcwsProjectTask extends BaseEntity {
      * 创建人姓名
      */
     private String createEmpName;
+
+    /**
+     * 开始时间
+     */
+    private Date createTime;
+
+    /**
+     * 结束时间
+     */
+    private Date updateTime;
+
+    /**
+     * 业务id
+     */
+    private String businessKey;
 
 
 }

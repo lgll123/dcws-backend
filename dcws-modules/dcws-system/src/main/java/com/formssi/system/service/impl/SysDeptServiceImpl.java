@@ -11,6 +11,7 @@ import com.formssi.system.domain.SysDept;
 import com.formssi.system.domain.SysRole;
 import com.formssi.system.domain.SysUser;
 import com.formssi.system.domain.bo.SysDeptBo;
+import com.formssi.system.domain.vo.HrDeptVo;
 import lombok.RequiredArgsConstructor;
 import com.formssi.common.core.constant.CacheNames;
 import com.formssi.common.core.constant.UserConstants;
@@ -48,6 +49,39 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
     private final SysDeptMapper baseMapper;
     private final SysRoleMapper roleMapper;
     private final SysUserMapper userMapper;
+
+
+    @Override
+    public List<HrDeptVo> selectAllDeptList() {
+        return baseMapper.selectAllDeptList();
+    }
+
+    @Override
+    public int insertDeptFromHr(List<HrDeptVo> hrDeptList) {
+        return baseMapper.insertDeptFromHr(hrDeptList);
+    }
+
+    @Override
+    public int deleteDeptByIdFromHr(List<String> deptIdList) {
+        // 防止更新失败导致的数据删除
+        int flag = baseMapper.deleteByIdFromHr(deptIdList);
+        if (flag < 1) {
+            throw new ServiceException("删除部门失败!");
+        }
+        return flag;
+    }
+
+    //更新部门信息
+    @Override
+    public int updateDeptFromHr(List<HrDeptVo> deptList) {
+        // 防止错误更新后导致的数据误删除
+        int flag = baseMapper.updateDeptFromHr(deptList);
+        if (flag < 1) {
+            throw new ServiceException("删除部门失败");
+        }
+        return deptList.size();
+    }
+
 
     /**
      * 查询部门管理数据

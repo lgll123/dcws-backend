@@ -24,6 +24,78 @@
         ${ew.getCustomSqlSegment}
     </select>
 
+
+    <select id="selectAllUserList" resultType="com.formssi.system.domain.vo.HrUserVo">
+        select
+        u.user_id,
+        u.emp_no,
+        u.dept_id,
+        u.nick_name,
+        u.user_name,
+        u.email,
+        u.phonenumber,
+        u.sex,
+        u.status,
+        u.del_flag
+        from sys_user u
+    </select>
+
+    <update id="deleteByIdFromHr" parameterType="java.util.List">
+        update sys_user set del_flag = '1'
+        WHERE user_id in(
+        <foreach collection="list" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </update>
+
+    <update id="updateUserFromHr" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE sys_user
+            SET
+            emp_no = #{item.empNo},
+            dept_id = #{item.deptId},
+            user_name = #{item.userName},
+            nick_name = #{item.nickName},
+            email = #{item.email},
+            phonenumber = #{item.phonenumber},
+            create_time = #{item.createTime},
+            sex = #{item.sex},
+            del_flag = '0'
+            WHERE user_id = #{item.userId}
+        </foreach>
+    </update>
+
+    <insert id="insertUserFromHr" parameterType="java.util.List" >
+        INSERT INTO sys_user (
+        user_id,
+        emp_no,
+        dept_id,
+        user_name,
+        nick_name,
+        email,
+        phonenumber,
+        sex,
+        create_time,
+        password
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.userId},
+            #{item.empNo},
+            #{item.deptId},
+            #{item.userName},
+            #{item.nickName},
+            #{item.email},
+            #{item.phonenumber},
+            #{item.sex},
+            #{item.createTime},
+            #{item.password}
+            )
+        </foreach>
+    </insert>
+
     <select id="selectUserList" resultMap="SysUserResult">
         select
         <if test="ew.getSqlSelect != null">

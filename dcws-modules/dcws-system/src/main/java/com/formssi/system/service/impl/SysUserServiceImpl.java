@@ -1,5 +1,6 @@
 package com.formssi.system.service.impl;
 
+import cn.dev33.satoken.secure.BCrypt;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
@@ -13,6 +14,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.system.domain.*;
 import com.formssi.system.domain.bo.SysUserBo;
+import com.formssi.system.domain.vo.*;
 import com.formssi.system.mapper.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +31,6 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.mybatis.helper.DataBaseHelper;
 import com.formssi.common.satoken.utils.LoginHelper;
-import com.formssi.system.domain.vo.SysPostVo;
-import com.formssi.system.domain.vo.SysRoleVo;
-import com.formssi.system.domain.vo.SysUserExportVo;
-import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -59,6 +57,66 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     private final SysPostMapper postMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysUserPostMapper userPostMapper;
+
+
+    @Override
+    //查询所有用户信息
+    public List<HrUserVo> selectAllUserList() {
+        List<HrUserVo> userList = baseMapper.selectAllUserList();
+        return userList;
+    }
+
+    //逻辑删除人事系统不存在的用户
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteUserByIdFromHr(List<String> userIdList) {
+        // 删除用户与角色关联 todo
+//        userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
+        // 删除用户与岗位表 todo
+//        userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>().eq(SysUserPost::getUserId, userId));
+        // 防止更新失败导致的数据删除
+        int flag = baseMapper.deleteByIdFromHr(userIdList);
+        if (flag < 1) {
+            throw new ServiceException("删除用户失败!");
+        }
+        return flag;
+    }
+
+
+    //新增用户信息
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int insertUserFromHr(List<HrUserVo> userList) {
+        //默认初始密码 123456
+        String hashpw = BCrypt.hashpw("123456");
+        userList.forEach(u ->{
+            u.setPassword(hashpw);
+        });
+        // 新增用户信息
+        int rows = baseMapper.insertUserFromHr(userList);
+//        user.setUserId(sysUser.getUserId());
+//        // 新增用户岗位关联
+//        insertUserPost(user, false);
+//        // 新增用户与角色管理
+//        insertUserRole(user, false);
+        return rows;
+    }
+
+    //更新用户信息
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int updateUserFromHr(List<HrUserVo> userList) {
+        // 新增用户与角色管理 todo
+//        insertUserRole(user, true);
+        // 新增用户与岗位管理 todo
+//        insertUserPost(user, true);
+        // 防止错误更新后导致的数据误删除
+        int flag = baseMapper.updateUserFromHr(userList);
+        if (flag < 1) {
+            throw new ServiceException("删除用户失败");
+        }
+        return userList.size();
+    }
 
     @Override
     public TableDataInfo<SysUserVo> selectPageUserList(SysUserBo user, PageQuery pageQuery) {

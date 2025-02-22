@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.system.domain.SysUser;
+import com.formssi.system.domain.vo.HrUserVo;
 import org.apache.ibatis.annotations.Param;
 import com.formssi.common.mybatis.annotation.DataColumn;
 import com.formssi.common.mybatis.annotation.DataPermission;
@@ -31,6 +32,15 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
         @DataColumn(key = "userName", value = "user_id")
     })
     List<SysUserVo> selectUserList(@Param(Constants.WRAPPER) Wrapper<SysUser> queryWrapper);
+
+    //查询所有用户
+    List<HrUserVo> selectAllUserList();
+    //新增用户
+    int insertUserFromHr(@Param("list")List<HrUserVo> hrUserList);
+    //逻辑删除人事系统不存在的用户
+    int deleteByIdFromHr(@Param("list") List<String> userIdList);
+    //更新用户
+    int updateUserFromHr(@Param("list")List<HrUserVo> hrUserList);
 
     /**
      * 根据条件分页查询用户列表

@@ -18,6 +18,64 @@
         from sys_dept ${ew.getCustomSqlSegment}
     </select>
 
+    <select id="selectAllDeptList" resultType="com.formssi.system.domain.vo.HrDeptVo">
+        select
+        dept_id,
+        parent_id,
+        ancestors,
+        dept_name,
+        order_num,
+        leader,
+        status,
+        del_flag
+        from sys_dept
+    </select>
+
+    <insert id="insertDeptFromHr" parameterType="java.util.List" >
+        INSERT INTO sys_dept (
+        dept_id,
+        dept_name,
+        parent_id,
+        order_num,
+        ancestors,
+        leader
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.deptId},
+            #{item.deptName},
+            #{item.parentId},
+            #{item.orderNum},
+            #{item.ancestors},
+            #{item.leader}
+            )
+        </foreach>
+    </insert>
+
+    <update id="deleteByIdFromHr" parameterType="java.util.List">
+        update sys_dept set del_flag = '1'
+        WHERE dept_id in(
+        <foreach collection="list" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+    </update>
+
+    <update id="updateDeptFromHr" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE sys_dept
+            SET
+            dept_name = #{item.deptName},
+            parent_id = #{item.parentId},
+            leader = #{item.leader},
+            order_num = #{item.orderNum},
+            ancestors = #{item.ancestors},
+            del_flag = '0'
+            WHERE dept_id = #{item.deptId}
+        </foreach>
+    </update>
+
     <select id="countDeptById" resultType="Long">
         select count(*) from sys_dept where del_flag = '0' and dept_id = #{deptId}
     </select>

@@ -47,4 +47,16 @@ public class AssetsSystemBo{
      * 资产状态
      */
     private String assetStatus;
+
+
+
+    /**
+     * 分页偏移量
+     */
+    private Integer offset;
+
+    /**
+     * 每页条数
+     */
+    private Integer limit;
 }

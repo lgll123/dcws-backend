@@ -28,6 +28,12 @@ public enum BusinessStatusEnum {
      * 待审核
      */
     WAITING("waiting", "待审核"),
+
+    /**
+     * 进行中/处理中
+     */
+    INPROGRESS("inprogress", "进行中"),
+
     /**
      * 已完成
      */

@@ -36,7 +36,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
             String name = StringUtils.isBlank(bo.getName()) ? "" : bo.getName();
             String modelNo = StringUtils.isBlank(bo.getModelNo()) ? "" : bo.getModelNo();
 
-            String requestData = urlPath+"?search="+name+"&limit=50&offset=0&order_number=null&sort=created_at&order=desc&expand=false";
+            String requestData = urlPath+"?search="+name+"&limit=" + bo.getLimit() +"&offset=" + bo.getOffset() + "&order_number=null&sort=created_at&order=desc&expand=false";
             Request request = new Request.Builder()
                 .url(API_URL+ requestData)
                 .get()

@@ -7,6 +7,7 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @ExcelIgnoreUnannotated
@@ -69,5 +70,23 @@ public class DcwsProjectTaskVo implements Serializable {
      */
     @ExcelProperty(value = "创建人姓名")
     private String createEmpName;
+
+    /**
+     * 创建时间
+     */
+    @ExcelProperty(value = "创建时间")
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @ExcelProperty(value = "更新时间")
+    private Date updateTime;
+
+    /**
+     * 业务id
+     */
+    @ExcelProperty(value = "业务id")
+    private String businessKey;
 
 }

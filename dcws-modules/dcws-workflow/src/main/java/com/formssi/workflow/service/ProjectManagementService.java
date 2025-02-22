@@ -34,4 +34,9 @@ public interface ProjectManagementService {
      */
     DcwsProjectVo updateByBo(DcwsProjectBo bo);
 
+    /**
+     * 修改任务
+     */
+    DcwsProjectTaskVo updateByTaskBo(DcwsProjectTaskBo bo);
+
 }

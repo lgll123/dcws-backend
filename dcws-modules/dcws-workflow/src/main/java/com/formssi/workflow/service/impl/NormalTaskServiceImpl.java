@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Service
@@ -35,6 +36,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     private final DcwsNormalTaskHandleHisMapper dcwsHisMapper;
     private final DcwsNormalTaskUserMapper dcwsUserMapper;
     private final ISysUserService iSysUserService;
+    private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
 
     /**
      * 查询非标准流程
@@ -109,7 +111,17 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         //新增通用审批表
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
-            bo.setTaskId(add.getTaskId());
+             //项目下新增非标准流程
+             if (!Objects.isNull(add.getProjectId()))  {
+                 DcwsProjectTask dcwsProjectTask = new DcwsProjectTask();
+                 dcwsProjectTask.setTaskType("20");//非标准流程
+                 dcwsProjectTask.setProjectId(add.getProjectId());
+                 dcwsProjectTask.setTaskName(add.getTaskName());
+                 dcwsProjectTask.setTaskStatus(BusinessStatusEnum.INPROGRESS.getStatus());
+                 dcwsProjectTask.setCreateBy(LoginHelper.getUserId());
+                 dcwsProjectTask.setCreateEmpName(LoginHelper.getUsername());
+                 dcwsProjectTaskMapper.insert(dcwsProjectTask);
+             }
             //通用审批处理历史表
             DcwsNormalTaskHandleHis dcwsHis = new DcwsNormalTaskHandleHis();
             dcwsHis.setTaskId(add.getTaskId());

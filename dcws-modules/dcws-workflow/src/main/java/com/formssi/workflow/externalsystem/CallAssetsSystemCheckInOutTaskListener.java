@@ -83,6 +83,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                     String apiUrlOut = API_URL + "hardware/" + assetIdIn + "/checkout";
                     ObjectMapper objectMapperOut = new ObjectMapper();
                     Map<String, String> requestBodyMapOut = new HashMap<>();
+                    requestBodyMapOut.put("status_id",  String.valueOf(e.get("assetStatusId")));
                     requestBodyMapOut.put("checkout_to_type", "user");
                     requestBodyMapOut.put("assigned_user", "4"); //先写死用户（协同用户） todo
                     String requestBodyOut = null;

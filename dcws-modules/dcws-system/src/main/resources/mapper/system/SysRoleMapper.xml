@@ -56,4 +56,8 @@
         WHERE r.del_flag = '0' and r.role_id = #{roleId}
     </select>
 
+    <select id="selectRoleIdMyRoleName" resultType="Long">
+        select role_id from sys_role where role_name = '演示'
+    </select>
+
 </mapper>

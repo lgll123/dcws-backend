@@ -37,7 +37,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -70,10 +72,8 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int deleteUserByIdFromHr(List<String> userIdList) {
-        // 删除用户与角色关联 todo
-//        userRoleMapper.delete(new LambdaQueryWrapper<SysUserRole>().eq(SysUserRole::getUserId, userId));
-        // 删除用户与岗位表 todo
-//        userPostMapper.delete(new LambdaQueryWrapper<SysUserPost>().eq(SysUserPost::getUserId, userId));
+        // 删除用户与角色关联
+        baseMapper.deleteUserRoleFromHr(userIdList);
         // 防止更新失败导致的数据删除
         int flag = baseMapper.deleteByIdFromHr(userIdList);
         if (flag < 1) {
@@ -86,7 +86,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     //新增用户信息
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insertUserFromHr(List<HrUserVo> userList) {
+    public int insertUserFromHr(List<HrUserVo> userList,Long roleId) {
         //默认初始密码 123456
         String hashpw = BCrypt.hashpw("123456");
         userList.forEach(u ->{
@@ -94,11 +94,8 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         });
         // 新增用户信息
         int rows = baseMapper.insertUserFromHr(userList);
-//        user.setUserId(sysUser.getUserId());
-//        // 新增用户岗位关联
-//        insertUserPost(user, false);
-//        // 新增用户与角色管理
-//        insertUserRole(user, false);
+        // 新增用户与角色关联信息
+        baseMapper.insertUserRoleFromHr(userList,roleId);
         return rows;
     }
 
@@ -106,10 +103,6 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateUserFromHr(List<HrUserVo> userList) {
-        // 新增用户与角色管理 todo
-//        insertUserRole(user, true);
-        // 新增用户与岗位管理 todo
-//        insertUserPost(user, true);
         // 防止错误更新后导致的数据误删除
         int flag = baseMapper.updateUserFromHr(userList);
         if (flag < 1) {
@@ -362,6 +355,9 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     @Transactional(rollbackFor = Exception.class)
     public int insertUser(SysUserBo user) {
         SysUser sysUser = MapstructUtils.convert(user, SysUser.class);
+        //生成userId 16位主键
+        Long userId = getUserId();
+        sysUser.setUserId(userId);
         // 新增用户信息
         int rows = baseMapper.insert(sysUser);
         user.setUserId(sysUser.getUserId());
@@ -726,5 +722,18 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
             .eq(SysUser::getStatus, UserConstants.USER_NORMAL)
             .in(CollUtil.isNotEmpty(deptIds), SysUser::getDeptId, deptIds));
         return BeanUtil.copyToList(list, UserDTO.class);
+    }
+
+    public Long getUserId() {
+        // 获取当前日期和时间
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String datePart = sdf.format(new  Date());
+        // 生成随机数部分
+        int randomNum = (int) (Math.random()  * 100); // 保证2位
+        String randomPart = String.format("%02d",  randomNum); // 补零处理
+        // 拼接
+        String userIdStr = datePart + randomPart;
+        // 转换为Long类型
+        return Long.parseLong(userIdStr);
     }
 }

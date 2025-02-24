@@ -23,7 +23,7 @@ public class SyncUserOrgTask {
     /**
      * 同步用户信息
      */
-//    @Scheduled(cron = "${schedule.syncUserCron}") 先注释掉
+//    @Scheduled(cron = "${schedule.syncUserCron}")
     public void syncUserInfo() {
         log.info("开始同步人事系统用户信息...");
         try {
@@ -36,7 +36,7 @@ public class SyncUserOrgTask {
     /**
      * 同步组织信息
      */
-//    @Scheduled(cron = "${schedule.syncOrgCron}") 先注释掉
+//    @Scheduled(cron = "${schedule.syncOrgCron}")
     public void syncOrgInfo() {
         log.info("开始同步人事系统组织信息...");
         try {
@@ -45,4 +45,18 @@ public class SyncUserOrgTask {
             log.error("同步人事系统组织信息失败", e);
         }
     }
+
+
+    /**
+     * 测试更换领用人
+     */
+//    @Scheduled(cron = "${schedule.syncOrgCron}")
+//    public void syncOrgInfo() {
+//        log.info("开始更换领用人...");
+//        try {
+//            syncUserOrgTaskService.testaaa();
+//        } catch (Exception e) {
+//            log.error("更换领用人失败", e);
+//        }
+//    }
 }

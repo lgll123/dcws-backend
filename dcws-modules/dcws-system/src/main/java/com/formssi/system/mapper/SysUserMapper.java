@@ -37,6 +37,10 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     List<HrUserVo> selectAllUserList();
     //新增用户
     int insertUserFromHr(@Param("list")List<HrUserVo> hrUserList);
+    //新增用户角色关系
+    int insertUserRoleFromHr(@Param("list")List<HrUserVo> hrUserList, @Param("roleId")Long roleId);
+    //删除用户角色关系
+    int deleteUserRoleFromHr(@Param("list")List<String> userIdList);
     //逻辑删除人事系统不存在的用户
     int deleteByIdFromHr(@Param("list") List<String> userIdList);
     //更新用户

@@ -27,17 +27,18 @@
 
     <select id="selectAllUserList" resultType="com.formssi.system.domain.vo.HrUserVo">
         select
-        u.user_id,
-        u.emp_no,
-        u.dept_id,
-        u.nick_name,
-        u.user_name,
-        u.email,
-        u.phonenumber,
-        u.sex,
-        u.status,
-        u.del_flag
+            u.user_id,
+            u.emp_no,
+            u.dept_id,
+            u.nick_name,
+            u.user_name,
+            u.email,
+            u.phonenumber,
+            u.sex,
+            u.status,
+            u.del_flag
         from sys_user u
+        where emp_no is not null
     </select>
 
     <update id="deleteByIdFromHr" parameterType="java.util.List">
@@ -95,6 +96,26 @@
             )
         </foreach>
     </insert>
+
+    <insert id="insertUserRoleFromHr">
+        INSERT INTO sys_user_role (user_id, role_id) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.userId},
+            #{roleId}
+            )
+        </foreach>
+    </insert>
+
+    <delete id="deleteUserRoleFromHr" parameterType="java.util.List">
+        delete from sys_user_role where
+        user_id in(
+        <foreach collection="list" item="item" separator=",">
+            #{item}
+        </foreach>
+        )
+
+    </delete>
 
     <select id="selectUserList" resultMap="SysUserResult">
         select

@@ -29,6 +29,11 @@ public class HrUserVo implements Serializable {
     private String userId;
 
     /**
+     * 用户角色ID
+     */
+    private String roleId;
+
+    /**
      * 部门ID
      */
     private String deptId;

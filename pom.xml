@@ -403,11 +403,6 @@
 
       <!--  仪表盘模块  -->
       <dependency>
-        <groupId>com.formssi.bond</groupId>
-        <artifactId>dcws-dashboard</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
         <groupId>org.pf4j</groupId>
         <artifactId>pf4j</artifactId>
         <version>${pf4j.version}</version>

@@ -154,7 +154,6 @@ tenant:
     - module_environment_param
     - doc_param
     - sys_file
-    - sys_ureport_file
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

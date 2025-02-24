@@ -2,9 +2,9 @@ spring:
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://10.100.216.54:3306/low_code_engine?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: test
-    password: test0527.
+    url: jdbc:mysql://10.101.68.29:3306/dcws_dev?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: gZsgC4I0!S
     hikari:
       connection-timeout: 30000
       validation-timeout: 5000

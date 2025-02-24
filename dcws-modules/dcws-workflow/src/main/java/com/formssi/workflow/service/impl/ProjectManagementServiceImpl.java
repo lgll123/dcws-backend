@@ -32,18 +32,18 @@ import java.util.Objects;
 @Slf4j
 public class ProjectManagementServiceImpl implements ProjectManagementService {
 
-    private final DcwsProjectMapper projectMapper;
+    private final DcwsProjectMapper dcwsProjectMapper;
     private final DcwsProjectTaskRefMapper dcwsProjectTaskRefMapper;
     private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
     private final ActTaskMapper actTaskMapper;
-    private final DcwsNormalTaskMapper baseMapper;
+    private final DcwsNormalTaskMapper dcwsNormalTaskMapper;
 
     /**
      * 查询非标准流程
      */
     @Override
     public DcwsProjectVo queryById(Long id) {
-        DcwsProjectVo dcwsProjectVo = projectMapper.selectVoById(id);
+        DcwsProjectVo dcwsProjectVo = dcwsProjectMapper.selectVoById(id);
         return dcwsProjectVo;
     }
 
@@ -58,7 +58,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
             lqw.eq(DcwsProject::getProjectStatus, bo.getProjectStatus());
         }
         lqw.orderByDesc(BaseEntity::getCreateTime);
-        return projectMapper.selectVoList(lqw);
+        return dcwsProjectMapper.selectVoList(lqw);
     }
 
     /**
@@ -83,7 +83,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
         dcwsProject.setProjectLeader(LoginHelper.getUsername());
         dcwsProject.setCreateBy(LoginHelper.getUserId());
         //新增项目表
-        boolean flag = projectMapper.insert(dcwsProject) > 0;
+        boolean flag = dcwsProjectMapper.insert(dcwsProject) > 0;
         if (flag) {
             LambdaQueryWrapper<DcwsProjectTaskRef> lqw = Wrappers.lambdaQuery();
             lqw.eq(DcwsProjectTaskRef::getProjectType, bo.getProjectType());
@@ -114,7 +114,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     @Transactional(rollbackFor = Exception.class)
     public DcwsProjectVo updateByBo(DcwsProjectBo bo) {
         DcwsProject update = MapstructUtils.convert(bo, DcwsProject.class);
-        projectMapper.updateById(update);
+        dcwsProjectMapper.updateById(update);
         //修改项目为已完成时判断项目下所有任务是否已完成
         if (BusinessStatusEnum.FINISH.getStatus().equals(update.getProjectStatus())){
             LambdaQueryWrapper<DcwsProjectTask> lqw = Wrappers.lambdaQuery();
@@ -138,36 +138,41 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
 
     @Override
     public TaskVo querytaskbelonging(DcwsProjectTaskBo bo) {
-        QueryWrapper<TaskVo> queryWrapper = new QueryWrapper<>();
-        List<RoleDTO> roles = LoginHelper.getLoginUser().getRoles();
-        List<String> roleIds = StreamUtils.toList(roles, e -> String.valueOf(e.getRoleId()));
-        String userId = String.valueOf(LoginHelper.getUserId());
-        queryWrapper.eq("t.business_status_", BusinessStatusEnum.WAITING.getStatus());
-        queryWrapper.eq(TenantHelper.isEnable(), "t.tenant_id_", TenantHelper.getTenantId());
-        String ids = StreamUtils.join(roleIds, x -> "'" + x + "'");
-        queryWrapper.and(w1 -> w1.eq("t.assignee_", userId).or(w2 -> w2.isNull("t.assignee_").apply("exists ( select LINK.ID_ from ACT_RU_IDENTITYLINK LINK where LINK.TASK_ID_ = t.ID_ and LINK.TYPE_ = 'candidate' and (LINK.USER_ID_ = {0} or ( LINK.GROUP_ID_ IN (" + ids + ") ) ))", userId)));
-        queryWrapper.eq("t.BUSINESS_KEY_", bo.getBusinessKey());
-        PageQuery pageQuery = new PageQuery();
-        pageQuery.setPageNum(1);
-        pageQuery.setPageSize(10);
-        Page<TaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
-        List<TaskVo> taskList = page.getRecords();
-        if (CollUtil.isNotEmpty(taskList)) {
-            TaskVo taskVo = taskList.get(0);
-            taskVo.setTaskBelonging("true");
-            return taskVo;
-        }
-        QueryWrapper<DcwsNormalTaskVo> wrapper = new QueryWrapper<>();
-        wrapper.eq("t.status", BusinessStatusEnum.WAITING.getStatus());
-        wrapper.eq("t.user_Id", LoginHelper.getUserId());
-        wrapper.eq("t.task_id", bo.getTaskId());
-        wrapper.orderByDesc("t.create_time");
-        Page<DcwsNormalTaskVo> pageTemp = baseMapper.getTaskWaitByPage(pageQuery.build(), wrapper);
-        List<DcwsNormalTaskVo> taskTempList = pageTemp.getRecords();
-        if (CollUtil.isNotEmpty(taskTempList)) {
-            TaskVo taskVo = new TaskVo();
-            taskVo.setTaskBelonging("true");
-            return taskVo;
+        if (!"20".equals(bo.getTaskType())){
+            QueryWrapper<TaskVo> queryWrapper = new QueryWrapper<>();
+            List<RoleDTO> roles = LoginHelper.getLoginUser().getRoles();
+            List<String> roleIds = StreamUtils.toList(roles, e -> String.valueOf(e.getRoleId()));
+            String userId = String.valueOf(LoginHelper.getUserId());
+            queryWrapper.eq("t.business_status_", BusinessStatusEnum.WAITING.getStatus());
+            queryWrapper.eq(TenantHelper.isEnable(), "t.tenant_id_", TenantHelper.getTenantId());
+            String ids = StreamUtils.join(roleIds, x -> "'" + x + "'");
+            queryWrapper.and(w1 -> w1.eq("t.assignee_", userId).or(w2 -> w2.isNull("t.assignee_").apply("exists ( select LINK.ID_ from ACT_RU_IDENTITYLINK LINK where LINK.TASK_ID_ = t.ID_ and LINK.TYPE_ = 'candidate' and (LINK.USER_ID_ = {0} or ( LINK.GROUP_ID_ IN (" + ids + ") ) ))", userId)));
+            queryWrapper.eq("t.BUSINESS_KEY_", bo.getBusinessKey());
+            PageQuery pageQuery = new PageQuery();
+            pageQuery.setPageNum(1);
+            pageQuery.setPageSize(1);
+            Page<TaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
+            List<TaskVo> taskList = page.getRecords();
+            if (CollUtil.isNotEmpty(taskList)) {
+                TaskVo taskVo = taskList.get(0);
+                taskVo.setTaskBelonging("true");
+                return taskVo;
+            }
+        }else{
+            QueryWrapper<DcwsNormalTaskVo> wrapper = new QueryWrapper<>();
+            wrapper.eq("t.status", BusinessStatusEnum.WAITING.getStatus());
+            wrapper.eq("t.user_Id", LoginHelper.getUserId());
+            wrapper.eq("t.task_id", bo.getTaskId());
+            PageQuery pageQuery = new PageQuery();
+            pageQuery.setPageNum(1);
+            pageQuery.setPageSize(1);
+            Page<DcwsNormalTaskVo> pageTemp = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), wrapper);
+            List<DcwsNormalTaskVo> taskTempList = pageTemp.getRecords();
+            if (CollUtil.isNotEmpty(taskTempList)) {
+                TaskVo taskVo = new TaskVo();
+                taskVo.setTaskBelonging("true");
+                return taskVo;
+            }
         }
         TaskVo taskVo = new TaskVo();
         taskVo.setTaskBelonging("false");

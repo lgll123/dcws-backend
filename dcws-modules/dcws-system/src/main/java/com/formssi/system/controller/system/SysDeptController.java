@@ -35,7 +35,6 @@ public class SysDeptController extends BaseController {
     /**
      * 获取部门列表
      */
-    @SaCheckPermission("system:dept:list")
     @GetMapping("/list")
     public R<List<SysDeptVo>> list(SysDeptBo dept) {
         List<SysDeptVo> depts = deptService.selectDeptList(dept);

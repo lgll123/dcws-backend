@@ -32,7 +32,7 @@ import java.util.Objects;
 @Slf4j
 public class NormalTaskServiceImpl implements NormalTaskService {
 
-    private final DcwsNormalTaskMapper baseMapper;
+    private final DcwsNormalTaskMapper dcwsNormalTaskMapper;
     private final DcwsNormalTaskHandleHisMapper dcwsHisMapper;
     private final DcwsNormalTaskUserMapper dcwsUserMapper;
     private final ISysUserService iSysUserService;
@@ -43,7 +43,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
      */
     @Override
     public DcwsNormalTaskVo queryById(Long id) {
-        DcwsNormalTaskVo dcwsApproveVo = baseMapper.selectVoById(id);
+        DcwsNormalTaskVo dcwsApproveVo = dcwsNormalTaskMapper.selectVoById(id);
         LambdaQueryWrapper<DcwsNormalTaskUser> lqw = Wrappers.lambdaQuery();
         lqw.eq(DcwsNormalTaskUser::getTaskId, dcwsApproveVo.getTaskId());
         List<DcwsNormalTaskUserVo> list = dcwsUserMapper.selectVoList(lqw);
@@ -58,7 +58,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     public TableDataInfo<DcwsNormalTaskVo> queryPageList(DcwsNormalTaskBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<DcwsNormalTask> lqw = buildQueryWrapper(bo);
         lqw.eq(DcwsNormalTask::getCreateBy, LoginHelper.getUserId());
-        Page<DcwsNormalTaskVo> result = baseMapper.selectVoPage(pageQuery.build(), lqw);
+        Page<DcwsNormalTaskVo> result = dcwsNormalTaskMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
 
@@ -68,7 +68,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         queryWrapper.eq("t.status", BusinessStatusEnum.WAITING.getStatus());
         queryWrapper.eq("t.user_Id", LoginHelper.getUserId());
         queryWrapper.orderByDesc("t.create_time");
-        Page<DcwsNormalTaskVo> page = baseMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
+        Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);
     }
 
@@ -77,7 +77,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         QueryWrapper<DcwsNormalTaskVo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("t.user_Id", LoginHelper.getUserId());
         queryWrapper.orderByDesc("t.create_time");
-        Page<DcwsNormalTaskVo> page = baseMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);
+        Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);
     }
 
@@ -87,7 +87,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Override
     public List<DcwsNormalTaskVo> queryList(DcwsNormalTaskBo bo) {
         LambdaQueryWrapper<DcwsNormalTask> lqw = buildQueryWrapper(bo);
-        return baseMapper.selectVoList(lqw);
+        return dcwsNormalTaskMapper.selectVoList(lqw);
     }
 
     private LambdaQueryWrapper<DcwsNormalTask> buildQueryWrapper(DcwsNormalTaskBo bo) {
@@ -109,7 +109,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             add.setCreateBy(userId);
         }
         //新增通用审批表
-        boolean flag = baseMapper.insert(add) > 0;
+        boolean flag = dcwsNormalTaskMapper.insert(add) > 0;
         if (flag) {
              //项目下新增非标准流程
              if (!Objects.isNull(add.getProjectId()))  {
@@ -164,7 +164,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Transactional(rollbackFor = Exception.class)
     public DcwsNormalTaskVo updateByBo(DcwsNormalTaskBo bo) {
         DcwsNormalTask update = MapstructUtils.convert(bo, DcwsNormalTask.class);
-        baseMapper.updateByTaskId(bo.getStatus(),bo.getUserId(),bo.getTaskId());
+        dcwsNormalTaskMapper.updateByTaskId(bo.getStatus(),bo.getUserId(),bo.getTaskId());
 
         Long userId = LoginHelper.getUserId();
         dcwsHisMapper.updateByTaskId(BusinessStatusEnum.findByStatus(bo.getStatus()),String.valueOf(userId),bo.getTaskId());
@@ -201,7 +201,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Transactional(rollbackFor = Exception.class)
     public boolean cancelProcessApply(String id) {
         Long userId = LoginHelper.getUserId();
-        return baseMapper.updateByTaskId(BusinessStatusEnum.CANCEL.getStatus(),String.valueOf(userId),Long.valueOf(id)) > 0;
+        return dcwsNormalTaskMapper.updateByTaskId(BusinessStatusEnum.CANCEL.getStatus(),String.valueOf(userId),Long.valueOf(id)) > 0;
     }
 
     @Override
@@ -209,7 +209,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     public boolean deleteRunAndHisInstance(String id) {
         dcwsHisMapper.deleteByTaskId(Long.valueOf(id));
         dcwsUserMapper.deleteByTaskId(Long.valueOf(id));
-        return baseMapper.deleteByTaskId(Long.valueOf(id)) > 0;
+        return dcwsNormalTaskMapper.deleteByTaskId(Long.valueOf(id)) > 0;
     }
 
     @Override

@@ -35,6 +35,7 @@ public class SysDeptController extends BaseController {
     /**
      * 获取部门列表
      */
+    @SaCheckPermission("system:dept:list")
     @GetMapping("/list")
     public R<List<SysDeptVo>> list(SysDeptBo dept) {
         List<SysDeptVo> depts = deptService.selectDeptList(dept);
@@ -51,7 +52,7 @@ public class SysDeptController extends BaseController {
     public R<List<SysDeptVo>> excludeChild(@PathVariable(value = "deptId", required = false) Long deptId) {
         List<SysDeptVo> depts = deptService.selectDeptList(new SysDeptBo());
         depts.removeIf(d -> d.getDeptId().equals(deptId)
-            || StringUtils.splitList(d.getAncestors()).contains(Convert.toStr(deptId)));
+                || StringUtils.splitList(d.getAncestors()).contains(Convert.toStr(deptId)));
         return R.ok(depts);
     }
 

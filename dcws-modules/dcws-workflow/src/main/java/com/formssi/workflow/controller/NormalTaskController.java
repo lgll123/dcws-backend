@@ -1,6 +1,5 @@
 package com.formssi.workflow.controller;
 
-import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.validate.AddGroup;
 import com.formssi.common.core.validate.EditGroup;
@@ -30,7 +29,6 @@ public class NormalTaskController extends BaseController {
     /**
      * 查询非标准流程列表
      */
-    @SaCheckPermission("common:approve:list")
     @GetMapping("/list")
     public TableDataInfo<DcwsNormalTaskVo> list(DcwsNormalTaskBo bo, PageQuery pageQuery) {
         return normalTaskService.queryPageList(bo, pageQuery);
@@ -41,7 +39,6 @@ public class NormalTaskController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("common:approve:query")
     @GetMapping("/{id}")
     public R<DcwsNormalTaskVo> getInfo(@NotNull(message = "主键不能为空")  @PathVariable Long id) {
         return R.ok(normalTaskService.queryById(id));
@@ -50,7 +47,6 @@ public class NormalTaskController extends BaseController {
     /**
      * 新增非标准流程
      */
-    @SaCheckPermission("common:approve:add")
     @Log(title = "非标准流程", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -61,7 +57,6 @@ public class NormalTaskController extends BaseController {
     /**
      * 修改非标准流程
      */
-    @SaCheckPermission("common:approve:edit")
     @Log(title = "非标准流程", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PostMapping("/edit")

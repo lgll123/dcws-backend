@@ -154,22 +154,6 @@ tenant:
     - module_environment_param
     - doc_param
     - sys_file
-    - big_screen_page
-    - big_screen_file
-    - big_screen_page_template
-    - big_screen_type
-    - big_screen_biz_component
-    - big_screen_map
-    - dashboard_file
-    - dashboard_page
-    - dashboard_page_template
-    - dashboard_type
-    - dashboard_biz_component
-    - ds_category_tree
-    - ds_datasource
-    - ds_dataset
-    - ds_label
-    - ds_dataset_label
     - sys_ureport_file
 
 # MyBatisPlus配置

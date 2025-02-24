@@ -12,15 +12,9 @@
   <name>dcws-modules</name>
   <url>http://maven.apache.org</url>
   <modules>
-    <module>dcws-dataset</module>
-    <module>dcws-bigscreen</module>
-    <module>dcws-dashboard</module>
-    <module>dcws-demo</module>
-    <module>dcws-generator</module>
     <module>dcws-job</module>
     <module>dcws-system</module>
     <module>dcws-workflow</module>
-    <module>dcws-ureport2</module>
     <module>dcws-chorflow</module>
   </modules>
 

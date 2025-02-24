@@ -63,12 +63,6 @@
       <artifactId>dcws-generator</artifactId>
     </dependency>
 
-    <!--  demo模块  -->
-    <dependency>
-      <groupId>com.formssi.bond</groupId>
-      <artifactId>dcws-demo</artifactId>
-    </dependency>
-
     <!--  chorflow 模块  -->
     <dependency>
       <groupId>com.formssi.bond</groupId>
@@ -86,24 +80,6 @@
     <dependency>
       <groupId>com.formssi.bond</groupId>
       <artifactId>dcws-workflow</artifactId>
-    </dependency>
-
-<!--    &lt;!&ndash;  大屏模块  &ndash;&gt;-->
-<!--    <dependency>-->
-<!--      <groupId>com.formssi.bond</groupId>-->
-<!--      <artifactId>dcws-bigscreen</artifactId>-->
-<!--    </dependency>-->
-
-<!--    &lt;!&ndash;  仪表盘模块  &ndash;&gt;-->
-<!--    <dependency>-->
-<!--      <groupId>com.formssi.bond</groupId>-->
-<!--      <artifactId>dcws-dashboard</artifactId>-->
-<!--    </dependency>-->
-
-    <!--  报表模块  -->
-    <dependency>
-      <groupId>com.formssi.bond</groupId>
-      <artifactId>ureport2-starter</artifactId>
     </dependency>
 
     <dependency>

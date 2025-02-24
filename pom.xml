@@ -160,15 +160,6 @@
         <version>${justauth.version}</version>
       </dependency>
 
-      <!-- common 的依赖配置-->
-<!--      <dependency>-->
-<!--        <groupId>com.formssi.bond</groupId>-->
-<!--        <artifactId>dcws-bom</artifactId>-->
-<!--        <version>${revision}</version>-->
-<!--        <type>pom</type>-->
-<!--        <scope>import</scope>-->
-<!--      </dependency>-->
-
       <dependency>
         <groupId>org.springdoc</groupId>
         <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
@@ -410,34 +401,12 @@
         <version>${revision}</version>
       </dependency>
 
-      <!--  大屏模块  -->
-      <dependency>
-        <groupId>com.formssi.bond</groupId>
-        <artifactId>dcws-bigscreen</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
       <!--  仪表盘模块  -->
       <dependency>
         <groupId>com.formssi.bond</groupId>
         <artifactId>dcws-dashboard</artifactId>
         <version>${revision}</version>
       </dependency>
-
-      <!--  数据集模块  -->
-      <dependency>
-        <groupId>com.formssi.bond</groupId>
-        <artifactId>dcws-dataset-bom</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!--  报表模块  -->
-      <dependency>
-        <groupId>com.formssi.bond</groupId>
-        <artifactId>ureport2-starter</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.pf4j</groupId>
         <artifactId>pf4j</artifactId>

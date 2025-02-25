@@ -10,7 +10,7 @@ services:
       # root 密码
       MYSQL_ROOT_PASSWORD: root
       # 初始化数据库(后续的初始化sql会在这个库执行)
-      MYSQL_DATABASE: ry-vue
+      MYSQL_DATABASE: dcws_dev
     ports:
       - "3306:3306"
     volumes:
@@ -100,22 +100,22 @@ services:
     network_mode: "host"
 
   lce-server1:
-    image: lce/lce-server:5.2.2
-    container_name: lce-server1
+    image: dcws/dcws-server:5.2.2
+    container_name: dcws-server1
     environment:
       # 时区上海
       TZ: Asia/Shanghai
       SERVER_PORT: 8080
     volumes:
       # 配置文件
-      - /docker/server1/logs/:/lce/server/logs/
+      - /docker/server1/logs/:/dcws/server/logs/
       # skywalking 探针
 #      - /docker/skywalking/agent/:/lce/skywalking/agent
     privileged: true
     network_mode: "host"
 
   lce-server2:
-    image: lce/lce-server:5.2.2
+    image: dcws/dcws-server:5.2.2
     container_name: lce-server2
     environment:
       # 时区上海
@@ -123,26 +123,26 @@ services:
       SERVER_PORT: 8081
     volumes:
       # 配置文件
-      - /docker/server2/logs/:/lce/server/logs/
+      - /docker/server2/logs/:/dcws/server/logs/
       # skywalking 探针
 #      - /docker/skywalking/agent/:/lce/skywalking/agent
     privileged: true
     network_mode: "host"
 
   dcws--monitor-admin:
-    image: lce/dcws-monitor-admin:5.2.2
-    container_name: loe-code-monitor-admin
+    image: dcws/dcws-monitor-admin:5.2.2
+    container_name: dcws-monitor-admin
     environment:
       # 时区上海
       TZ: Asia/Shanghai
     volumes:
       # 配置文件
-      - /docker/monitor/logs/:/lce/monitor/logs
+      - /docker/monitor/logs/:/dcws/monitor/logs
     privileged: true
     network_mode: "host"
 
   dcws-snailjob-server:
-    image: lce/dcws-snailjob-server:5.2.2
+    image: dcws/dcws-snailjob-server:5.2.2
     container_name: dcws-snailjob-server
     environment:
       # 时区上海
@@ -151,6 +151,6 @@ services:
       - "8800:8800"
       - "17888:17888"
     volumes:
-      - /docker/snailjob/logs/:/lce/snailjob/logs
+      - /docker/snailjob/logs/:/dcws/snailjob/logs
     privileged: true
     network_mode: "host"

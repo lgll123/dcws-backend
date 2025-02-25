@@ -19,13 +19,10 @@ import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.TaskNodeData;
-import com.formssi.workflow.domain.Assets;
 import com.formssi.workflow.domain.TaskNodeDataHis;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
-import com.formssi.workflow.domain.bo.AssetsBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
-import com.formssi.workflow.domain.vo.AssetsVo;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
 import com.formssi.workflow.service.IApplyService;
@@ -45,7 +42,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Service
 @Slf4j
-public class TaskNodeDataServiceImpl implements IApplyService {
+public class ApplyServiceImpl implements IApplyService {
 
     private final TaskNodeDataMapper taskNodeDataMapper;
     private final TaskNodeDataHisMapper taskNodeDataHisMapper;
@@ -188,41 +185,25 @@ public class TaskNodeDataServiceImpl implements IApplyService {
 //        TaskNodeDataHis add = MapstructUtils.convert(taskNodeDataBo, TaskNodeDataHis.class);
         if(taskNodeDataHisVo!=null){
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
-            taskNodeDataHis.setApplicant(taskNodeDataBo.getApplicant());
-            taskNodeDataHis.setApplyDate(taskNodeDataBo.getApplyDate());
-            taskNodeDataHis.setProjTaskId(taskNodeDataHisVo.getProjTaskId());
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
-            taskNodeDataHis.setApplyReson(taskNodeDataBo.getApplyReson());
-            taskNodeDataHis.setApplyRemarks(taskNodeDataBo.getApplyRemarks());
-            taskNodeDataHis.setCompletedDate(taskNodeDataBo.getCompletedDate());
-            taskNodeDataHis.setApplyDept(taskNodeDataBo.getApplyDept());
-            taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeDataHisVo.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
-            taskNodeDataHis.setCreateBy(taskNodeDataBo.getCreateBy());
-            taskNodeDataHis.setCreateTime(taskNodeDataBo.getCreateTime());
-            taskNodeDataHis.setUpdateBy(taskNodeDataBo.getUpdateBy());
-            taskNodeDataHis.setUpdateTime(taskNodeDataBo.getUpdateTime());
             taskNodeDataHisMapper.updateById(taskNodeDataHis);
         }else {
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
             taskNodeDataHis.setApplicant(taskNodeDataBo.getApplicant());
+            taskNodeDataHis.setApplicantId(taskNodeDataBo.getApplicantId());
             taskNodeDataHis.setApplyDate(taskNodeDataBo.getApplyDate());
-            taskNodeDataHis.setProjTaskId(taskNodeDataBo.getProjTaskId());
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
             taskNodeDataHis.setApplyReson(taskNodeDataBo.getApplyReson());
             taskNodeDataHis.setApplyRemarks(taskNodeDataBo.getApplyRemarks());
-            taskNodeDataHis.setCompletedDate(taskNodeDataBo.getCompletedDate());
+            taskNodeDataHis.setRequiredDate(taskNodeDataBo.getRequiredDate());
             taskNodeDataHis.setApplyDept(taskNodeDataBo.getApplyDept());
             taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeData.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
-            taskNodeDataHis.setCreateBy(taskNodeDataBo.getCreateBy());
-            taskNodeDataHis.setCreateTime(taskNodeDataBo.getCreateTime());
-            taskNodeDataHis.setUpdateBy(taskNodeDataBo.getUpdateBy());
-            taskNodeDataHis.setUpdateTime(taskNodeDataBo.getUpdateTime());
             taskNodeDataHisMapper.insert(taskNodeDataHis);
         }
 

@@ -7,8 +7,7 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.AssetsSystemBo;
 import com.formssi.workflow.domain.bo.CategoryBo;
-import com.formssi.workflow.domain.vo.AssetsVo;
-import com.formssi.workflow.service.IAssetsSystemService;
+import com.formssi.workflow.externalsystem.assets.service.IAssetsSystemService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class AssetsSystemController  extends BaseController {
     @SaCheckPermission("workflow:leave:list")
     @PostMapping("/accessories/query")
     public R<Map<String, Object>> query(@RequestBody @Validated AssetsSystemBo bo) {
-        List<Map<String, Object>> maps = assetsSystemService.queryRepertory(bo,"accessories");
+        List<Map<String, Object>> maps = assetsSystemService.queryRepertory(bo);
         return R.ok(maps.isEmpty()?null:maps.get(0));
     }
 
@@ -43,7 +42,7 @@ public class AssetsSystemController  extends BaseController {
     @SaCheckPermission("workflow:leave:list")
     @PostMapping("/accessories/queryQtyById")
     public R<AssetsSystemBo> queryQtyById(@RequestBody @Validated AssetsSystemBo bo) {
-        AssetsSystemBo assetsSystemBo = assetsSystemService.queryQtyById(bo,"accessories");
+        AssetsSystemBo assetsSystemBo = assetsSystemService.queryQtyById(bo,"categories");
 
         return R.ok(assetsSystemBo);
     }

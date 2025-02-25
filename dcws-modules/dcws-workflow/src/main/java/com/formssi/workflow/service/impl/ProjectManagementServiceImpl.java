@@ -10,6 +10,7 @@ import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.satoken.utils.LoginHelper;
@@ -132,6 +133,9 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     @Override
     public DcwsProjectTaskVo updateByTaskBo(DcwsProjectTaskBo bo) {
         DcwsProjectTask update = MapstructUtils.convert(bo, DcwsProjectTask.class);
+        if (StringUtils.isNotEmpty(update.getBusinessKey())){
+            update.setTaskId(null);
+        }
         dcwsProjectTaskMapper.updateById(update);
         return MapstructUtils.convert(update, DcwsProjectTaskVo.class);
     }

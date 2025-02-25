@@ -4,6 +4,7 @@ package com.formssi.workflow.service;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
+import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 
 import java.util.Collection;
@@ -24,7 +25,7 @@ public interface IApplyService {
     /**
      * 根据任务ID查询申请
      */
-    TaskNodeDataVo queryByTaskId(String taskId);
+    TaskNodeDataHisVo queryByTaskId(String taskId);
 
     /**
      * 查询申请列表

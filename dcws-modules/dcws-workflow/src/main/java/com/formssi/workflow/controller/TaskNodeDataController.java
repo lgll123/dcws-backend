@@ -13,6 +13,7 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
+import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.service.IApplyService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -72,8 +73,8 @@ public class TaskNodeDataController extends BaseController {
      * @param taskId 任务id
      */
     @SaCheckPermission("workflow:leave:query")
-    @GetMapping("/getTaskNodeDataInfo")
-    public R<TaskNodeDataVo> getTaskNodeDataInfo(@NotNull(message = "任务id不能为空") @PathVariable String taskId) {
+    @GetMapping("/getTaskNodeDataHisInfo")
+    public R<TaskNodeDataHisVo> getTaskNodeDataInfo(@NotNull(message = "任务id不能为空") @PathVariable String taskId) {
         return R.ok(applyService.queryByTaskId(taskId));
     }
 

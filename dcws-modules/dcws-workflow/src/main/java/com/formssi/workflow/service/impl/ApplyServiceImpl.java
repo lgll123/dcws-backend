@@ -60,10 +60,10 @@ public class ApplyServiceImpl implements IApplyService {
      * 根据任务ID查询申请表单信息
      */
     @Override
-    public TaskNodeDataVo queryByTaskId(String taskId){
-        LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
-        lqw.eq(TaskNodeData::getTaskId, taskId);
-        return taskNodeDataMapper.selectVoOne(lqw);
+    public TaskNodeDataHisVo queryByTaskId(String taskId){
+        LambdaQueryWrapper<TaskNodeDataHis> lqw = Wrappers.lambdaQuery();
+        lqw.eq(TaskNodeDataHis::getTaskId, taskId);
+        return taskNodeDataHisMapper.selectVoOne(lqw);
     }
 
     /**

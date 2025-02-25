@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # ./dcws.sh start 启动 stop 停止 restart 重启 status 状态
 AppName=dcws-admin.jar
 

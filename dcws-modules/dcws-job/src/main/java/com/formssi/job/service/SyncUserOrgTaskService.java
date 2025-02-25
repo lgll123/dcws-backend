@@ -1,19 +1,19 @@
-package com.formssi.common.job.service;
+package com.formssi.job.service;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.exception.ServiceException;
-import com.formssi.system.mapper.SysRoleMapper;
-import lombok.RequiredArgsConstructor;
-import com.formssi.common.job.config.SyncUserOrgTask;
+import com.formssi.job.snailjob.SyncUserOrgTask;
 import com.formssi.system.domain.vo.HrDeptVo;
 import com.formssi.system.domain.vo.HrResultVo;
 import com.formssi.system.domain.vo.HrUserVo;
+import com.formssi.system.mapper.SysRoleMapper;
 import com.formssi.system.service.ISysDeptService;
 import com.formssi.system.service.ISysHrService;
 import com.formssi.system.service.ISysUserService;
+import lombok.RequiredArgsConstructor;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

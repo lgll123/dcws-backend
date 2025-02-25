@@ -3,6 +3,7 @@ package com.formssi.workflow.externalsystem;
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.formssi.common.core.constant.HttpStatus;
 import com.formssi.common.core.exception.ApiCallException;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
@@ -17,7 +18,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
-
 public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
     private final String beanName = "assets" + IExternalSystemAPIStrategy.BASE_NAME;
     private final IAssetsCheckOutRecordService iAssetsCheckOutRecordService = SpringUtils.getBean(IAssetsCheckOutRecordService.class);
@@ -118,7 +118,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                                 bo.setStatus("0");//失败
                             }
                         } catch (ApiCallException e) {
-                            if(e.getCode()>0 && e.getCode()!=200){
+                            if(e.getCode()>0 && e.getCode()!= HttpStatus.SUCCESS){
                                 bo.setStatus("3");//失败待处理
                             }
                             bo.setMessage(e.getMessage());

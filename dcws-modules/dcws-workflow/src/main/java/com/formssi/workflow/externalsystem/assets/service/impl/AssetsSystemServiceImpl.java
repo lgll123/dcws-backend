@@ -21,12 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AssetsSystemServiceImpl implements IAssetsSystemService {
-    private static final String HARDWARE_PATH = "hardware";
-    private static final String STATUS_REQUESTABLE = "Requestable";
     private static final String beanName = "assets" + IExternalSystemAPIStrategy.BASE_NAME;
     @Autowired
     private final Map<String, AssetProcessor> processors;
@@ -34,20 +34,20 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
     @Override
     public List<Map<String, Object>> queryRepertory(AssetsSystemBo bo) {
         Map<String, String> params = new HashMap<>();
-        params.put("search", StringUtils.defaultIfBlank(bo.getName(), ""));
-        params.put("limit", String.valueOf(bo.getLimit()));
-        params.put("offset", String.valueOf(bo.getOffset()));
-        params.put("order_number", "null");
-        params.put("sort", "created_at");
-        params.put("order", "desc");
-        params.put("expand", "false");
+        params.put(SEARCH, StringUtils.defaultIfBlank(bo.getName(), ""));
+        params.put(LIMIT, String.valueOf(bo.getLimit()));
+        params.put(OFFSET, String.valueOf(bo.getOffset()));
+        params.put(ORDER_NUMBER, "null");
+        params.put(SORT, "created_at");
+        params.put(ORDER, "desc");
+        params.put(EXPAND, "false");
 
         if (!SpringUtils.containsBean(beanName)) {
             throw new ServiceException("外系统类型不正确!");
         }
         IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
-        Map<String, Object> responseMap = instance.process(params, "APIType","get");
-        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get("rows");
+        Map<String, Object> responseMap = instance.process(params, "APIType",REQUEST_TYPE_GET);
+        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get(ROWS);
         if (rows.isEmpty()) {
             throw new ServiceException("库存查询失败：无匹配数据");
         }
@@ -61,38 +61,38 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
             throw new ServiceException("外系统类型不正确!");
         }
         IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
-        Map<String, Object> responseMap = instance.process(null,fullUrl,"get");
+        Map<String, Object> responseMap = instance.process(null,fullUrl,REQUEST_TYPE_GET);
         AssetsSystemBo result = new AssetsSystemBo();
-        result.setId(TypeSafeUtils.safeGetInteger(responseMap, "id"));
-        result.setQty(TypeSafeUtils.safeGetInteger(responseMap, "qty"));
-        result.setRemainQty(TypeSafeUtils.safeGetInteger(responseMap, "remaining_qty"));
-        result.setCheckoutsCount(TypeSafeUtils.safeGetInteger(responseMap, "checkouts_count"));
+        result.setId(TypeSafeUtils.safeGetInteger(responseMap, ID));
+        result.setQty(TypeSafeUtils.safeGetInteger(responseMap, QTY));
+        result.setRemainQty(TypeSafeUtils.safeGetInteger(responseMap, REMAINING_QTY));
+        result.setCheckoutsCount(TypeSafeUtils.safeGetInteger(responseMap, CHECKOUTS_COUNT));
         return result;
     }
 
     @Override
     public TableDataInfo<CategoryBo> queryPageCategories(String categoryType, PageQuery pageQuery, String pathUrl) {
         Map<String, String> params = new HashMap<>();
-        params.put("category_type", categoryType);
-        params.put("search", "");
-        params.put("limit", String.valueOf(pageQuery.getPageSize()));
-        params.put("offset", String.valueOf(pageQuery.getPageSize() * pageQuery.getPageNum()));
-        params.put("order", pageQuery.getIsAsc());
+        params.put(CATEGORY_TYPE, categoryType);
+        params.put(SEARCH, "");
+        params.put(LIMIT, String.valueOf(pageQuery.getPageSize()));
+        params.put(OFFSET, String.valueOf(pageQuery.getPageSize() * pageQuery.getPageNum()));
+        params.put(ORDER, pageQuery.getIsAsc());
 
         if (!SpringUtils.containsBean(beanName)) {
             throw new ServiceException("外系统类型不正确!");
         }
         IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
-        Map<String, Object> responseMap = instance.process(params, pathUrl,"get");
-        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get("rows");
-        Integer total = TypeSafeUtils.safeGetInteger(responseMap, "total");
+        Map<String, Object> responseMap = instance.process(params, pathUrl,REQUEST_TYPE_GET);
+        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get(ROWS);
+        Integer total = TypeSafeUtils.safeGetInteger(responseMap, TOTAL);
 
         List<CategoryBo> categoryBos = new ArrayList<>();
         rows.forEach(row -> {
             CategoryBo categoryBo = new CategoryBo();
-            categoryBo.setId(TypeSafeUtils.safeGetInteger(row, "id"));
-            categoryBo.setCategoryType(TypeSafeUtils.safeGetString(row, "category_type"));
-            categoryBo.setName(TypeSafeUtils.safeGetString(row, "name"));
+            categoryBo.setId(TypeSafeUtils.safeGetInteger(row, ID));
+            categoryBo.setCategoryType(TypeSafeUtils.safeGetString(row, CATEGORY_TYPE));
+            categoryBo.setName(TypeSafeUtils.safeGetString(row, NAME));
             categoryBos.add(categoryBo);
         });
         return new TableDataInfo<>(categoryBos, total.longValue());
@@ -102,28 +102,28 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
     @Override
     public TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId, PageQuery pageQuery,String categories) {
         Map<String, String> params = new HashMap<>();
-        params.put("category_id", String.valueOf(categoryId));
-        params.put("search", "");
-        params.put("limit", String.valueOf(pageQuery.getPageSize()));
-        params.put("offset", String.valueOf(pageQuery.getPageSize() * pageQuery.getPageNum()));
-        params.put("order", pageQuery.getIsAsc());
+        params.put(CATEGORY_ID, String.valueOf(categoryId));
+        params.put(SEARCH, "");
+        params.put(LIMIT, String.valueOf(pageQuery.getPageSize()));
+        params.put(OFFSET, String.valueOf(pageQuery.getPageSize() * pageQuery.getPageNum()));
+        params.put(ORDER, pageQuery.getIsAsc());
 
-        if (HARDWARE_PATH.equals(categories)) {
-            params.put("status", STATUS_REQUESTABLE);
+        if (CATEGORIES_HARDWARE.equals(categories)) {
+            params.put(STATUS, STATUS_REQUESTABLE);
         }
         if (!SpringUtils.containsBean(beanName)) {
             throw new ServiceException("外系统类型不正确!");
         }
         IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
-        Map<String, Object> responseMap = instance.process(params, categories,"get");
-        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get("rows");
-        Integer total = TypeSafeUtils.safeGetInteger(responseMap, "total");
+        Map<String, Object> responseMap = instance.process(params, categories,REQUEST_TYPE_GET);
+        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get(ROWS);
+        Integer total = TypeSafeUtils.safeGetInteger(responseMap, TOTAL);
 
         List<AssetsSystemBo> assetsBos = new ArrayList<>();
         rows.forEach(row -> {
             AssetsSystemBo bo = new AssetsSystemBo();
-            bo.setId(TypeSafeUtils.safeGetInteger(row, "id"));
-            bo.setName(TypeSafeUtils.safeGetString(row, "name"));
+            bo.setId(TypeSafeUtils.safeGetInteger(row, ID));
+            bo.setName(TypeSafeUtils.safeGetString(row, NAME));
             // 根据urlPath选择处理策略
             AssetProcessor processor = processors.get(categories + "Processor");
             if (processor != null) {

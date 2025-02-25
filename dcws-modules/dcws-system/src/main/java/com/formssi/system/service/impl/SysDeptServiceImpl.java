@@ -57,6 +57,12 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
     }
 
     @Override
+    public List<HrDeptVo> selectFirstDeptList() {
+        return baseMapper.selectFirstDeptList();
+    }
+
+
+    @Override
     public int insertDeptFromHr(List<HrDeptVo> hrDeptList) {
         return baseMapper.insertDeptFromHr(hrDeptList);
     }

@@ -9,9 +9,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 
-/**
- * 同步人事系统用户、部门信息的定时任务
- */
 @Component
 @RequiredArgsConstructor
 public class SyncUserOrgTask {
@@ -21,30 +18,50 @@ public class SyncUserOrgTask {
     private static final Logger log = LoggerFactory.getLogger(SyncUserOrgTask.class);
 
     /**
-     * 同步用户信息
+     * 同步用户信息：人事系统->OA系统
      */
-    @Scheduled(cron = "${schedule.syncUserCron}")
+//    @Scheduled(cron = "${schedule.syncUserCron}")
     public void syncUserInfo() {
-        log.info("开始同步人事系统用户信息...");
+        log.info("开始同步用户信息：人事系统->OA系统...");
         try {
             syncUserOrgTaskService.syncUserInfo();
         } catch (Exception e) {
-            log.error("同步人事系统用户信息失败", e);
+            log.error("同步用户信息：人事系统->OA系统，失败", e);
         }
     }
 
     /**
-     * 同步组织信息
+     * 同步组织信息：人事系统->OA系统
      */
 //    @Scheduled(cron = "${schedule.syncOrgCron}")
     public void syncOrgInfo() {
-        log.info("开始同步人事系统组织信息...");
+        log.info("开始同步组织信息：人事系统->OA系统...");
         try {
             syncUserOrgTaskService.syncOrgInfo();
         } catch (Exception e) {
-            log.error("同步人事系统组织信息失败", e);
+            log.error("同步组织信息：人事系统->OA系统，失败", e);
         }
     }
+
+    /**
+     * 同步组织信息：OA系统->资产系统
+     */
+//    @Scheduled(cron = "${schedule.syncAssetOrgCron}")
+    public void syncOrgInfoToAsset() {
+        log.info("开始同步组织信息：OA系统->资产系统...");
+        try {
+            syncUserOrgTaskService.syncOrgInfoToAsset();
+        } catch (Exception e) {
+            log.error("同步组织信息：OA系统->资产系统，失败", e);
+        }
+    }
+
+
+
+
+
+
+
 
 
     /**

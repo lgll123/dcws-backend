@@ -38,6 +38,8 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
 
     //查询所有部门数据
     List<HrDeptVo> selectAllDeptList();
+    //查询所有一级部门数据
+    List<HrDeptVo> selectFirstDeptList();
     //新增部门--人事系统数据
     int insertDeptFromHr(@Param("list")List<HrDeptVo> hrDeptList);
     //逻辑删除人事系统不存在的部门

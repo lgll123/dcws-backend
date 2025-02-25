@@ -17,12 +17,16 @@ public interface ISysDeptService {
 
     //查询所有部门数据
     List<HrDeptVo> selectAllDeptList();
+    //查询所有一级部门数据
+    List<HrDeptVo> selectFirstDeptList();
     //新增部门--人事系统数据
     int insertDeptFromHr(List<HrDeptVo> hrDeptList);
     //删除部门
     int deleteDeptByIdFromHr(List<String> deptIdList);
     //更新部门信息
     int updateDeptFromHr(List<HrDeptVo> deptList);
+
+
 
     /**
      * 查询部门管理数据

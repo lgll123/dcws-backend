@@ -417,3 +417,5 @@ hr-system:
 schedule:
   syncUserCron: "0 * * * * *"
   syncOrgCron: "50 * * * * *"
+  syncAssetUserCron: "0 * * * * *"
+  syncAssetOrgCron: "50 * * * * *"

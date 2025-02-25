@@ -134,6 +134,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
         List<SysMenu> menus;
         if (LoginHelper.isSuperAdmin(userId)) {
             menus = baseMapper.selectMenuTreeAll();
+            menus.forEach(obj -> obj.setVisible("0"));
         } else {
             menus = baseMapper.selectMenuTreeByUserId(userId);
         }

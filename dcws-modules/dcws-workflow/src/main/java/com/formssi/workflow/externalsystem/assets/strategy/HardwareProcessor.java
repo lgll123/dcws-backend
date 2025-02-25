@@ -15,7 +15,7 @@ public class HardwareProcessor implements AssetProcessor {
         bo.setModelNo(TypeSafeUtils.safeGetNestedString(data, "model", "name"));
         bo.setSerial((String)data.get("serial"));
         bo.setAssetTag((String)data.get("asset_tag"));
-        bo.setAssetStatus((String)((Map<String,Object>)data.get("status_label")).get("status_type"));
+        bo.setAssetStatus(TypeSafeUtils.safeGetNestedString(data, "status_label", "status_type"));
         bo.setAssetStatusId(((Map<String,Object>)data.get("status_label")).get("id").toString());
     }
 }

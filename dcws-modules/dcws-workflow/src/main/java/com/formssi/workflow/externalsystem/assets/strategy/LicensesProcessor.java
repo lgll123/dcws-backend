@@ -16,12 +16,11 @@ public class LicensesProcessor implements AssetProcessor {
         bo.setLicenseEmail((String)data.get("license_email"));
         bo.setLicenseName((String)data.get("license_name"));
         bo.setPurchaseCost((String)data.get("purchase_cost"));
-        bo.setPurchaseDate(data.get("purchase_date")==null?null:(String)((Map<String,Object>)data.get("purchase_date")).get("date"));
-        bo.setLocationName(data.get("location")==null?null:(String)((Map<String,Object>)data.get("location")).get("name"));
         bo.setModelNo((String)data.get("model_number"));
         bo.setQty((Integer)data.get("seats"));
         bo.setRemainQty((Integer)data.get("free_seats_count"));
-        bo.setCategoryName(data.get("category")==null?null:(String)((Map<String,Object>)data.get("category")).get("name"));
-        bo.setPurchaseDate(data.get("purchase_date")==null?null:(String)((Map<String,Object>)data.get("purchase_date")).get("date"));
+        bo.setCategoryName(TypeSafeUtils.safeGetNestedString(data, "category", "name"));
+        bo.setPurchaseDate(TypeSafeUtils.safeGetNestedString(data, "purchase_date", "date"));
+        bo.setLocationName(TypeSafeUtils.safeGetNestedString(data, "location", "name"));
     }
 }

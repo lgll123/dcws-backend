@@ -13,18 +13,16 @@ public class ComponentsProcessor implements AssetProcessor {
     public void process(Map<String, Object> data, AssetsSystemBo bo) {
         bo.setManufacturerName(TypeSafeUtils.safeGetNestedString(data, "manufacturer", "name"));
         bo.setExpirationDate(TypeSafeUtils.safeGetNestedString(data, "expiration_date", "date"));
-        bo.setCategoryName(data.get("category")==null?null:(String)((Map<String,Object>)data.get("category")).get("name"));
-        bo.setPurchaseDate(data.get("purchase_date")==null?null:(String)((Map<String,Object>)data.get("purchase_date")).get("date"));
+        bo.setCategoryName(TypeSafeUtils.safeGetNestedString(data, "category", "name"));
+        bo.setPurchaseDate(TypeSafeUtils.safeGetNestedString(data, "purchase_date", "date"));
         bo.setProductKey((String)data.get("product_key"));
         bo.setLicenseEmail((String)data.get("license_email"));
         bo.setLicenseName((String)data.get("license_name"));
         bo.setPurchaseCost((String)data.get("purchase_cost"));
-        bo.setPurchaseDate(data.get("purchase_date")==null?null:(String)((Map<String,Object>)data.get("purchase_date")).get("date"));
-        bo.setLocationName(data.get("location")==null?null:(String)((Map<String,Object>)data.get("location")).get("name"));
+        bo.setLocationName(TypeSafeUtils.safeGetNestedString(data, "location", "name"));
         bo.setModelNo((String)data.get("model_number"));
         bo.setQty((Integer)data.get("qty"));
         bo.setRemainQty((Integer)data.get("remaining"));
         bo.setCheckoutsCount((Integer)data.get("checkouts_count"));
-        bo.setCategoryName(data.get("category")==null?null:(String)((Map<String,Object>)data.get("category")).get("name"));
     }
 }

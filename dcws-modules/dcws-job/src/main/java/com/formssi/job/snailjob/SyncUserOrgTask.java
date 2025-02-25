@@ -1,7 +1,7 @@
-package com.formssi.common.job.config;
+package com.formssi.job.snailjob;
 
 
-import com.formssi.common.job.service.SyncUserOrgTaskService;
+import com.formssi.job.service.SyncUserOrgTaskService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,7 @@ public class SyncUserOrgTask {
     /**
      * 同步用户信息
      */
-//    @Scheduled(cron = "${schedule.syncUserCron}")
+    @Scheduled(cron = "${schedule.syncUserCron}")
     public void syncUserInfo() {
         log.info("开始同步人事系统用户信息...");
         try {

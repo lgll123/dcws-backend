@@ -2,8 +2,10 @@ package com.formssi.workflow.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.formssi.common.core.constant.UserConstants;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StringUtils;
@@ -11,6 +13,7 @@ import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.satoken.utils.LoginHelper;
+import com.formssi.system.domain.SysDept;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
 import com.formssi.workflow.domain.*;
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -131,6 +135,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             dcwsHis.setUserId(userId);
             SysUserVo sysUserVo = iSysUserService.selectUserById(userId);
             dcwsHis.setUserName(sysUserVo.getUserName());
+            dcwsHis.setCreateTime(new Date());
             dcwsHis.setUpdateTime(new Date());
             dcwsHisMapper.insert(dcwsHis);
             if (!StringUtils.isBlank(add.getUserId())){
@@ -150,6 +155,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                     dcwsHisTemp.setStatus(BusinessStatusEnum.WAITING.getStatus());
                     dcwsHisTemp.setUserId(Long.valueOf(userIdTemp));
                     dcwsHisTemp.setUserName(sysUserVo.getUserName());
+                    dcwsHisTemp.setCreateTime(new Date());
                     dcwsHisMapper.insert(dcwsHisTemp);
                 }
             }
@@ -164,35 +170,24 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Transactional(rollbackFor = Exception.class)
     public DcwsNormalTaskVo updateByBo(DcwsNormalTaskBo bo) {
         DcwsNormalTask update = MapstructUtils.convert(bo, DcwsNormalTask.class);
-        dcwsNormalTaskMapper.updateByTaskId(bo.getStatus(),bo.getUserId(),bo.getTaskId());
 
-        Long userId = LoginHelper.getUserId();
-        dcwsHisMapper.updateByTaskId(BusinessStatusEnum.findByStatus(bo.getStatus()),String.valueOf(userId),bo.getTaskId());
+        dcwsNormalTaskMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTask>()
+                .set(DcwsNormalTask::getStatus, bo.getStatus())
+                .eq(DcwsNormalTask::getTaskId, bo.getTaskId()));
 
-        //如果状态为待审核，则更新审批处理人表和通用审批处理历史表
-        if (BusinessStatusEnum.WAITING.getStatus().equals(bo.getStatus())){
+        dcwsHisMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTaskHandleHis>()
+                .set(DcwsNormalTaskHandleHis::getStatus, bo.getStatus())
+                .set(DcwsNormalTaskHandleHis::getComment,BusinessStatusEnum.findByStatus(bo.getStatus()))
+                .set(DcwsNormalTaskHandleHis::getUpdateTime,new Date())
+                .eq(DcwsNormalTaskHandleHis::getUserId, LoginHelper.getUserId())
+                .isNull(DcwsNormalTaskHandleHis::getUpdateTime)
+                .eq(DcwsNormalTaskHandleHis::getTaskId, bo.getTaskId()));
 
-            dcwsUserMapper.deleteById(bo.getTaskId());
-
-            String[] users = bo.getUserId().split(",");
-            for (String userIdTemp : users){
-                //新增通用审批处理人表
-                DcwsNormalTaskUser dcwsUser = new DcwsNormalTaskUser();
-                dcwsUser.setTaskId(bo.getTaskId());
-                dcwsUser.setUserId(userIdTemp);
-                SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(userIdTemp));
-                dcwsUser.setUserName(sysUserVo.getUserName());
-                dcwsUserMapper.insert(dcwsUser);
-
-                //通用审批处理历史表
-                DcwsNormalTaskHandleHis dcwsHisTemp = new DcwsNormalTaskHandleHis();
-                dcwsHisTemp.setTaskId(bo.getTaskId());
-                dcwsHisTemp.setComment(BusinessStatusEnum.findByStatus(BusinessStatusEnum.WAITING.getStatus()));
-                dcwsHisTemp.setStatus(BusinessStatusEnum.WAITING.getStatus());
-                dcwsHisTemp.setUserId(Long.valueOf(userIdTemp));
-                dcwsHisTemp.setUserName(sysUserVo.getUserName());
-                dcwsHisMapper.insert(dcwsHisTemp);
-            }
+        if (BusinessStatusEnum.FINISH.getStatus().equals(bo.getStatus()) || BusinessStatusEnum.PASS.getStatus().equals(bo.getStatus())){
+            dcwsHisMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTaskHandleHis>()
+                    .set(DcwsNormalTaskHandleHis::getIsDisplay, "N")
+                    .isNull(DcwsNormalTaskHandleHis::getUpdateTime)
+                    .eq(DcwsNormalTaskHandleHis::getTaskId, bo.getTaskId()));
         }
         return MapstructUtils.convert(update, DcwsNormalTaskVo.class);
     }
@@ -200,20 +195,28 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean cancelProcessApply(String id) {
-        Long userId = LoginHelper.getUserId();
-        return dcwsNormalTaskMapper.updateByTaskId(BusinessStatusEnum.CANCEL.getStatus(),String.valueOf(userId),Long.valueOf(id)) > 0;
+        return dcwsNormalTaskMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTask>()
+                .set(DcwsNormalTask::getStatus, BusinessStatusEnum.CANCEL.getStatus())
+                .eq(DcwsNormalTask::getTaskId, id)) > 0;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteRunAndHisInstance(String id) {
-        dcwsHisMapper.deleteByTaskId(Long.valueOf(id));
-        dcwsUserMapper.deleteByTaskId(Long.valueOf(id));
-        return dcwsNormalTaskMapper.deleteByTaskId(Long.valueOf(id)) > 0;
+        dcwsHisMapper.delete(new LambdaQueryWrapper<DcwsNormalTaskHandleHis>()
+                .eq(DcwsNormalTaskHandleHis::getTaskId, id));
+        dcwsUserMapper.delete(new LambdaQueryWrapper<DcwsNormalTaskUser>()
+                .eq(DcwsNormalTaskUser::getTaskId, id));
+        return dcwsNormalTaskMapper.delete(new LambdaQueryWrapper<DcwsNormalTask>()
+                .eq(DcwsNormalTask::getTaskId, id)) > 0;
     }
 
     @Override
     public List<DcwsNormalTaskHandleHisVo> getHistoryRecord(Long id) {
-        return dcwsHisMapper.getHistoryRecord(id);
+        LambdaQueryWrapper<DcwsNormalTaskHandleHis> lqw = Wrappers.lambdaQuery();
+        lqw.eq(DcwsNormalTaskHandleHis::getTaskId, id);
+        lqw.eq(DcwsNormalTaskHandleHis::getIsDisplay, "Y");
+        lqw.orderByDesc(DcwsNormalTaskHandleHis::getUpdateTime);
+        return dcwsHisMapper.selectVoList(lqw);
     }
 }

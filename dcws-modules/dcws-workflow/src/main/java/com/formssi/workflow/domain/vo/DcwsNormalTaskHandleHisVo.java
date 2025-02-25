@@ -73,4 +73,10 @@ public class DcwsNormalTaskHandleHisVo implements Serializable {
     @ExcelProperty(value = "结束时间")
     private Date updateTime;
 
+    /**
+     * 是否显示
+     */
+    @ExcelProperty(value = "是否显示")
+    private String isDisplay;
+
 }

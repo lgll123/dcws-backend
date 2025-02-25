@@ -1,11 +1,9 @@
 package com.formssi.workflow.domain.bo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.formssi.common.core.validate.AddGroup;
 import com.formssi.common.core.validate.EditGroup;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
-import com.formssi.workflow.domain.Assets;
 import com.formssi.workflow.domain.TaskNodeData;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotBlank;

@@ -38,6 +38,7 @@ public class AssetsSystemController  extends BaseController {
 
     /**
      * 根据物料Id查询物料库存
+     * categories：附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
      */
     @SaCheckPermission("workflow:leave:list")
     @GetMapping("/{categories}/queryQtyById")

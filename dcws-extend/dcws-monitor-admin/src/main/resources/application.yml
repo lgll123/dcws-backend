@@ -18,7 +18,7 @@ spring:
   boot:
     admin:
       ui:
-        title: lce-admin服务监控中心
+        title: DCWS服务监控中心
       context-path: /admin
 
 --- # Actuator 监控端点的配置项

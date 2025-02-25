@@ -154,6 +154,7 @@ tenant:
     - module_environment_param
     - doc_param
     - sys_file
+    - dcws_assets_check_out
 
 # MyBatisPlus配置
 # https://baomidou.com/config/
@@ -381,9 +382,11 @@ kstry:
 minio:
   accessKey: minioadmin
   secretKey: minioadmin
-  bucketName: lce-admin
+#  bucketName: lce-admin
+  bucketName: dcws-assets
 #  endpoint: http://127.0.0.1:9005
-  endpoint: http://10.101.68.2:9100
+#  endpoint: http://10.101.68.2:9100
+  endpoint: http://10.101.68.29:9000
 
 gc:
   starter:

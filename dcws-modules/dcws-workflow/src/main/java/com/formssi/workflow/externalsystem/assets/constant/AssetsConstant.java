@@ -54,6 +54,19 @@ public interface AssetsConstant {
      */
     String REMAINING_QTY = "remaining_qty";
     /**
+     * 剩余数量
+     */
+    String REMAINING = "remaining";
+
+    /**
+     * 总的数量
+     */
+    String SEATS = "seats";
+    /**
+     * 剩余数量
+     */
+    String FREE_SEATS_COUNT = "free_seats_count";
+    /**
      * 已借出数量
      */
     String CHECKOUTS_COUNT = "checkouts_count";

@@ -40,9 +40,9 @@ public class AssetsSystemController  extends BaseController {
      * 根据物料Id查询物料库存
      */
     @SaCheckPermission("workflow:leave:list")
-    @PostMapping("/accessories/queryQtyById")
-    public R<AssetsSystemBo> queryQtyById(@RequestBody @Validated AssetsSystemBo bo) {
-        AssetsSystemBo assetsSystemBo = assetsSystemService.queryQtyById(bo,"categories");
+    @GetMapping("/{categories}/queryQtyById")
+    public R<AssetsSystemBo> queryQtyById(@NotBlank(message = "目录路径不能为空") @PathVariable String categories,AssetsSystemBo bo) {
+        AssetsSystemBo assetsSystemBo = assetsSystemService.queryQtyById(bo,categories);
 
         return R.ok(assetsSystemBo);
     }

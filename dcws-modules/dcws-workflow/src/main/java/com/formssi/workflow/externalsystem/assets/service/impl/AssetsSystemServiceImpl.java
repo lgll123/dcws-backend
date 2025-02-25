@@ -64,8 +64,32 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         Map<String, Object> responseMap = instance.process(null,fullUrl,REQUEST_TYPE_GET);
         AssetsSystemBo result = new AssetsSystemBo();
         result.setId(TypeSafeUtils.safeGetInteger(responseMap, ID));
-        result.setQty(TypeSafeUtils.safeGetInteger(responseMap, QTY));
-        result.setRemainQty(TypeSafeUtils.safeGetInteger(responseMap, REMAINING_QTY));
+
+        Integer remainQty = null;
+        Integer qty = null;
+        switch (pathUrl){
+            case CATEGORIES_ACCESSORIES:
+                remainQty=TypeSafeUtils.safeGetInteger(responseMap, REMAINING_QTY);
+                qty=TypeSafeUtils.safeGetInteger(responseMap, QTY);
+                break;
+            case CATEGORIES_COMPONENTS:
+                remainQty=TypeSafeUtils.safeGetInteger(responseMap, REMAINING);
+                qty=TypeSafeUtils.safeGetInteger(responseMap, QTY);
+                break;
+            case CATEGORIES_LICENSES:
+                remainQty=TypeSafeUtils.safeGetInteger(responseMap, SEATS);
+                qty=TypeSafeUtils.safeGetInteger(responseMap, FREE_SEATS_COUNT);
+                break;
+            case CATEGORIES_CONSUMABLES:
+                remainQty=TypeSafeUtils.safeGetInteger(responseMap, REMAINING);
+                qty=TypeSafeUtils.safeGetInteger(responseMap, QTY);
+                break;
+            default:
+                break;
+        }
+        result.setQty(qty);
+        result.setRemainQty(remainQty);
+
         result.setCheckoutsCount(TypeSafeUtils.safeGetInteger(responseMap, CHECKOUTS_COUNT));
         return result;
     }

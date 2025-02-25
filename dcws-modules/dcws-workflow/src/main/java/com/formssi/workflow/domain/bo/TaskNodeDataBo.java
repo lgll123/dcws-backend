@@ -84,9 +84,9 @@ public class TaskNodeDataBo extends BaseEntity {
      */
     private String applyDetail;
     /**
-     * 完成日期
+     * 需求日期/完成日期
      */
-    private String completedDate;
+    private String requiredDate;
     /**
      * 状态
      */

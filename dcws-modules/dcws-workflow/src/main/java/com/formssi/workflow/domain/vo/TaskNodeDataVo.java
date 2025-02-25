@@ -24,11 +24,6 @@ public class TaskNodeDataVo extends BaseEntity {
     private Long id;
 
     /**
-     * 项目任务ID
-     */
-    private Long projTaskId;
-
-    /**
      * 工作流标准任务ID
      */
     private String taskId;
@@ -79,7 +74,7 @@ public class TaskNodeDataVo extends BaseEntity {
      */
     private String  applyRemarks;
     /**
-     * 完成日期
+     * 需求日期/完成日期
      */
-    private String completedDate;
+    private String requiredDate;
 }

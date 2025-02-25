@@ -2,15 +2,14 @@ package com.formssi.workflow.externalsystem;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.formssi.common.core.exception.ServiceException;
-import com.formssi.common.mybatis.core.page.TableDataInfo;
-import com.formssi.workflow.domain.bo.CategoryBo;
+import com.formssi.common.core.exception.ApiCallException;
+import com.formssi.common.core.utils.SpringUtils;
+import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
+import com.formssi.workflow.service.IAssetsCheckOutRecordService;
+import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
-import org.flowable.engine.delegate.BpmnError;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 
@@ -18,65 +17,116 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+
 public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
-    private static final String API_URL = "http://10.101.68.29:8000/api/v1/";
-//    private static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiMDE1YTgxM2ZhMGFlNzkxMzc3Mzc1MmEzZmMxYjc2MzU1NjAxZDU0NzZmZDk3YjJlNzgwMTA5NjE5ZTA2N2Y3MWUzMTM0YTI3OTU1MmFiYmUiLCJpYXQiOjE3Mzg4OTkzNzAuMjIxMjAxLCJuYmYiOjE3Mzg4OTkzNzAuMjIxMjA0LCJleHAiOjIyMTIxOTg1NzAuMjEwNzU5LCJzdWIiOiI3NDEiLCJzY29wZXMiOltdfQ.0hcozE2jwP7nkrt3oKLrF4sG8R2NSva3cVJHRzdM13cyLscGs4-J6IXoZnZc29CSWJJ3uedINH8bfG-vixFDCjZop3C800LnjSz4y4zwvP3-tqAy9PbufEvJYJW4X-84jRHQY14XWcRjM2LE1gleW6yiJfAZV4X3BqXoH3p6jjMlyP9AQAvRjqWMfnEv5gquj2_CJCXjHr-oaPvJDDQccFUiRLWS3vFq7r2ePqj4KhpEmheCwup5lcxJfZnMxIC6eIQmFqOQMqyFON2ukSOeqZsEdFVD__2TGlbMHsc2uGZDAHI3zRY8vZnYQvq4elNXKTkCNapmzARdKOXBMh_i0T3Qu9RQ7sdqdIGDPksp78SaXVsD-JtAn4m6RyEeZEwYV_UWXZDgcj2AF_PmmXgLPQjo-SMl6V0mSNDIVn8LYen_oLvU5Z8MzzbrgQO9nww3XO7Mp0CTWz0y643mFBdkFdYrPeVstoO38Y5Mn7fvwo07MOGuKYtPfP5vbGq8qT0QqJjw3J7swCIZQCAjsp1Mu8yMnTdcV37Qw_e4iqIsOKOjUciJ-H5EfLjU3b13l5mcvGZImEW3mkhC32lqO4Gmw1egM2rkbfW57ZWY6CFX_8ehuOD0vi3uFKnC0mzlfYFcaMrlbwOO5SBgBzp0jSuB9zudn1wP1iD0-8MHKAfhilY";
-    private static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZjRhNDM1MDFmMmFiMWQ1OWRjNzE3NjY5ZWU1MWVkMGE0ZTY2NDA4Mzc2MmY4NmVjNGUxNzU5NTZiN2UyZThlOTM2ZmFjNTNkMWVmODViODUiLCJpYXQiOjE3NDAxMTg2MjcuNDI4OTM2LCJuYmYiOjE3NDAxMTg2MjcuNDI4OTQ2LCJleHAiOjMwMDI0MjI2MjcuNDI2Mjk5LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.VT4tifmGbr9CblfzRiX8xdatgK_VkiD7nWeY7NUZ3n3ww2Gkks1S8L4q7E7a114EgUCEFRyNrNYRrQdFCkV5mh-JqvMMog-89FtWMEdPOCIShtgv-wzgUaUjborBiCM7Ho0nTP3d0ih8-HPL5m8anJfbxjs4pMNo2CZuX82qx7lldzc1i_zc3Hl4W1F89dmM32gQc-CcY9mvWZLT-mmAsrmsNq5HvrHBupscIZwF7XWRWbVwiG5OV4LoniuD-S7r0fU6fr5uNnkJnP5x_UXVUmGOgqwj-SVp37oiGtEYbP5WwHqTGEF8w5GAWdA9qD8FvYP08GtYo53acYAIEMA67t14z-Ey6vHlxiyAtuYra0QFjsmKwHGOZf3DtoLmpFQIGbxdBj-6esWSESARxojkLcKKowGXEzPGVhRj3U9CY-ecRcH1ABGTDGovSArQQT3AiOJJnd6e4Vw-Il-1E257H9bDCA6nCXkcYTEFwgerp5D_d-RVVdBLfp2td-6cVfLv6YfdE8IJ3Nn3i0uhYv9g_-4ULJYHPfGxNGafEUeqdUsPXpMAP42LNCEPJeAmLMtvzheZvOayAsWaepGpLF22TFdPzc0fNEYSss-hHWIcglwPt84agGdevBCvpVVApY5R1UoHS0Uf4IManmCdaqJo_Lz1_3cQdToEEPBTglD8gpQ";
-    private final OkHttpClient client = new OkHttpClient();
+    private final String beanName = "assets" + IExternalSystemAPIStrategy.BASE_NAME;
+    private final IAssetsCheckOutRecordService iAssetsCheckOutRecordService = SpringUtils.getBean(IAssetsCheckOutRecordService.class);
     @Override
     public void notify(DelegateTask delegateTask) {
         Map<String, Object> variables = delegateTask.getVariables();
-        variables.forEach((k,value)->{
-            log.info(k+"---------------"+value.toString());
-        });
         TaskNodeDataBo taskNodeDataBo = null;
         HashMap<String,Object> hashMap =null;
+        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            log.info("Calling the external system for Assets with URL: {}", API_URL);
             Object entity = variables.get("entity");
-
             if(variables.get("entity")!=null) {
-                try {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    taskNodeDataBo = objectMapper.readValue(JSON.toJSONString(entity), TaskNodeDataBo.class);
-                    hashMap = objectMapper.readValue(taskNodeDataBo.getApplyDetail(), HashMap.class);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
-                }
+                taskNodeDataBo = objectMapper.readValue(JSON.toJSONString(entity), TaskNodeDataBo.class);
+                hashMap = objectMapper.readValue(taskNodeDataBo.getApplyDetail(), HashMap.class);
                 ArrayList<Map<String, Object>> assets = (ArrayList<Map<String, Object>>) hashMap.get("asset");
                 ArrayList<Map<String, Object>> licenses = (ArrayList<Map<String, Object>>) hashMap.get("license");
                 ArrayList<Map<String, Object>> hards = (ArrayList<Map<String, Object>>) hashMap.get("hard");
-                Long finalApplicantId = taskNodeDataBo.getApplicantId();
+                Long applicantId = taskNodeDataBo.getApplicantId();
+                Long taskNodeDataId = taskNodeDataBo.getId();
                 if (!CollectionUtil.isEmpty(assets)) {
-                    assets.forEach(m -> {
-                        Integer id = (Integer) m.get("id");
-                        Map<String, Object> requestBodyMap = new HashMap<>();
-                        requestBodyMap.put("status_id",  m.get("assetStatusId"));
+                    for (int i = 0; i < assets.size(); i++) {
+                        DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
+                        bo.setAssetsType("hardware");
+                        bo.setAssetsDetail(JSON.toJSONString(assets.get(i)));
+                        bo.setTaskNodeDataId(taskNodeDataId);
+                        bo.setCheckOutUser(applicantId.toString());
+                        bo.setAutoHandleNum(0);
+                        bo.setStatus("1");//成功
+                        Integer id = (Integer) assets.get(i).get("id");
+                        Map<String, String> requestBodyMap = new HashMap<>();
+                        requestBodyMap.put("status_id",  String.valueOf(assets.get(i).get("assetStatusId")));
                         requestBodyMap.put("checkout_to_type",  "user");
-                        requestBodyMap.put("assigned_user",  finalApplicantId);
+                        requestBodyMap.put("assigned_user",  applicantId.toString());
+                        IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
                         try {
-                            this.callSystem(requestBodyMap, "hardware/"+id+"/checkout");
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                            Map<String, Object> responseMap = instance.process(requestBodyMap,"hardware/"+id+"/checkout","post");
+                            if("error".equals(responseMap.get("status"))){
+                                log.info("后台API接口返回错误：" + responseMap.get("messages"));
+                                bo.setMessage(responseMap.get("messages").toString());
+                                bo.setCode(responseMap.get("status").toString());
+                                bo.setStatus("0");//失败
+                            }
+                        } catch (ApiCallException e) {
+                            if(e.getCode()>0 && e.getCode()!=200){
+                                bo.setStatus("3");//失败待处理
+                            }
+                            bo.setMessage(e.getMessage());
+                            bo.setStatus("0");//失败
+//                            throw e;
                         }
-                    });
+                        // 记录物料checkOut 记录
+                        addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
+                    }
                 }
                 if (!CollectionUtil.isEmpty(licenses)) {
+                    IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
                     for (int i = 0; i < licenses.size(); i++) {
+                        DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
+                        bo.setAssetsType("licenses");
+                        bo.setAssetsDetail(JSON.toJSONString(licenses.get(i)));
+                        bo.setTaskNodeDataId(taskNodeDataId);
+                        bo.setCheckOutUser(applicantId.toString());
+                        bo.setAutoHandleNum(0);
+                        bo.setStatus("1");//成功
                         Integer id = (Integer) licenses.get(i).get("id");
-                        List<Map<String, Object>> maps = callLicensesSysAuery("licenses", String.valueOf(id));
+                        try {
+                        Map<String, Object> responseMap = instance.process(null,"licenses/"+id+"/seats","get");
+                        if("error".equals(responseMap.get("status"))){
+                            log.info("后台API接口返回错误：" + responseMap.get("messages"));
+                            bo.setMessage(responseMap.get("messages").toString());
+                            bo.setCode(responseMap.get("status").toString());
+                            bo.setStatus("0");//失败
+                            // 记录物料checkOut 记录
+                            addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
+                            continue;
+                        }
+                        List<Map<String,Object>> maps = (List<Map<String,Object>>)responseMap.get("rows");
+
                         List<Integer> seatIds = maps.stream().filter(l -> l.get("assigned_user") == null && l.get("location") == null).map(seat -> {
                             return (Integer) seat.get("id");
                         }).collect(Collectors.toList());
-                        Map<String, Object> requestBodyMap = new HashMap<>();
-//                        requestBodyMap.put("id", id);
-//                        requestBodyMap.put("seat_id", seatIds.get(i));
-                        requestBodyMap.put("assigned_to", finalApplicantId);
-                        try {
-                            this.callLicensesSysUpdate(requestBodyMap, "licenses/"+id+"/seats/"+seatIds.get(i));
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
+                        if(seatIds.size()==0){
+                            bo.setMessage("licenses可用库存不足 seatIds："+seatIds.size());
+                            bo.setStatus("0");//失败
+                            // 记录物料checkOut 记录
+                            addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
+                            continue;
                         }
+                        Map<String, String> requestBodyMap = new HashMap<>();
+                        requestBodyMap.put("seat_id", seatIds.get(0).toString());
+                        requestBodyMap.put("assigned_to", applicantId.toString());
+
+                            Map<String, Object> responseMap1 = instance.process(requestBodyMap,"licenses/"+id+"/seats/"+seatIds.get(i),"put");
+                            if("error".equals(responseMap1.get("status"))){
+                                log.info("后台API接口返回错误：" + responseMap1.get("messages"));
+                                bo.setMessage(responseMap1.get("messages").toString());
+                                bo.setCode(responseMap1.get("status").toString());
+                                bo.setStatus("0");//失败
+                            }
+                        } catch (ApiCallException e) {
+                            if(e.getCode()>0 && e.getCode()!=200){
+                                bo.setStatus("3");//失败待处理
+                            }
+                            bo.setMessage(e.getMessage());
+                            bo.setStatus("0");//失败
+//                            throw e;
+                        }
+                        // 记录物料checkOut 记录
+                        addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
                     }
                 }
 
@@ -98,109 +148,30 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
 
 
             }
-
-
         } catch (Exception e) {
             log.error("An error occurred while calling the external system", e);
+            Map<String,Object> entityMap = (Map<String,Object>)variables.get("entity");
+            DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
+            bo.setTaskNodeDataId(Long.valueOf(entityMap.get("id").toString()));
+            bo.setMessage(e.getMessage());
+            bo.setAssetsDetail(entityMap.get("applyDetail").toString());
+            bo.setStatus("2");//部分异常待处理
+            // 记录物料checkOut 记录
+            addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
             // 抛出BPMN错误，触发错误边界事件
-            throw new BpmnError("An error occurred while calling the external system", "调用外部接口失败: " + e.getMessage());
+//            throw new BpmnError("An error occurred while calling the external system", "调用外部接口失败: " + e.getMessage());
         }
     }
 
-    private void callSystem(Map<String, Object> requestBodyMap,String urlPath) throws Exception{
-        MediaType mediaType = MediaType.parse("application/json");
-        String requestBody = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-        requestBody = objectMapper.writeValueAsString(requestBodyMap);
-        RequestBody body = RequestBody.create(requestBody, mediaType);
-        Request request = new Request.Builder()
-                .url(API_URL+urlPath)
-                .post(body)
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", BEARER_TOKEN)
-                .addHeader("content-type", "application/json")
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                String responseBody = response.body().string();
-                // TODO 待优化
-                //{"status":"error","messages":{"asset_tag":["asset tag \u5c5e\u6027\u5fc5\u987b\u552f\u4e00\u3002"]},"payload":null}
-                log.info("External system response: {}", responseBody);
-            } else {
-                log.error("External system call failed with status code: {}", response.code());
-                // 抛出BPMN错误，触发错误边界事件
-                throw new BpmnError("An error occurred while calling the external system", "调用外部接口失败: "+response.toString());
-
-            }
-        }
-    }
-
-    private List<Map<String,Object>> callLicensesSysAuery(String urlPath,String id){
+    private static void addAssetsCheckOutRecord(DcwsAssetsCheckOutBo bo,IAssetsCheckOutRecordService assetsCheckOutRecordService){
         try {
-            log.info("Calling the external system for Assets with URL: {}", API_URL);
-            //sort=name&order=asc&offset=0&limit=20
-            String requestData = urlPath+"/"+id+"/seats"+"?sort=name"+"&order=asc"+"&limit=9999"+"&offset=0";
-            Request request = new Request.Builder()
-                    .url(API_URL+ requestData)
-                    .get()
-                    .addHeader("accept", "application/json")
-                    .addHeader("Authorization", BEARER_TOKEN)
-                    .build();
-
-            try (Response response = client.newCall(request).execute()) {
-                if (response.isSuccessful()) {
-                    String responseBody = response.body().string();
-                    log.info("External system response: {}", responseBody);
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    Map map = objectMapper.readValue(responseBody, Map.class);
-                    List<Map<String,Object>> rows = (List<Map<String,Object>>)map.get("rows");
-                    Integer total = (Integer)map.get("total");
-                    List<CategoryBo> categoryBos = new ArrayList<>();
-                    rows.forEach(t->{
-                        CategoryBo categoryBo = new CategoryBo();
-                        categoryBo.setId((Integer)t.get("id"));
-                        categoryBo.setCategoryType((String)t.get("category_type"));
-                        categoryBo.setName((String)t.get("name"));
-                        categoryBos.add(categoryBo);
-                    });
-                    return rows;
-                } else {
-                    log.error("External system call failed with status code: {}", response.code());
-                    throw new ServiceException( "调用外部接口失败: "+response.toString());
-                }
+            assetsCheckOutRecordService.insertByBo(bo);
+            if(bo.getId()==null){
+                log.info("物料申请借出记录新增失败：id == null");
             }
         } catch (Exception e) {
-            log.error("An error occurred while calling the external system", e);
-            throw new ServiceException( "调用外部接口失败: " + e.getMessage());
+            log.info("物料申请借出记录新增失败：" + e.getMessage(),e);
         }
     }
 
-
-    private void callLicensesSysUpdate(Map<String, Object> requestBodyMap,String urlPath) throws Exception{
-        MediaType mediaType = MediaType.parse("application/json");
-        String requestBody = null;
-        ObjectMapper objectMapper = new ObjectMapper();
-        requestBody = objectMapper.writeValueAsString(requestBodyMap);
-        RequestBody body = RequestBody.create(requestBody, mediaType);
-        Request request = new Request.Builder()
-                .url(API_URL+urlPath)
-                .put(body)
-                .addHeader("accept", "application/json")
-                .addHeader("Authorization", BEARER_TOKEN)
-                .addHeader("content-type", "application/json")
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                String responseBody = response.body().string();
-                log.info("External system response: {}", responseBody);
-            } else {
-                log.error("External system call failed with status code: {}", response.code());
-                // 抛出BPMN错误，触发错误边界事件
-                throw new BpmnError("An error occurred while calling the external system", "调用外部接口失败: "+response.toString());
-
-            }
-        }
-    }
 }

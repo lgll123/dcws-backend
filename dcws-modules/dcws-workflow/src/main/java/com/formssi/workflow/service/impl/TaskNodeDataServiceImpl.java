@@ -188,41 +188,25 @@ public class TaskNodeDataServiceImpl implements IApplyService {
 //        TaskNodeDataHis add = MapstructUtils.convert(taskNodeDataBo, TaskNodeDataHis.class);
         if(taskNodeDataHisVo!=null){
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
-            taskNodeDataHis.setApplicant(taskNodeDataBo.getApplicant());
-            taskNodeDataHis.setApplyDate(taskNodeDataBo.getApplyDate());
-            taskNodeDataHis.setProjTaskId(taskNodeDataHisVo.getProjTaskId());
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
-            taskNodeDataHis.setApplyReson(taskNodeDataBo.getApplyReson());
-            taskNodeDataHis.setApplyRemarks(taskNodeDataBo.getApplyRemarks());
-            taskNodeDataHis.setCompletedDate(taskNodeDataBo.getCompletedDate());
-            taskNodeDataHis.setApplyDept(taskNodeDataBo.getApplyDept());
-            taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeDataHisVo.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
-            taskNodeDataHis.setCreateBy(taskNodeDataBo.getCreateBy());
-            taskNodeDataHis.setCreateTime(taskNodeDataBo.getCreateTime());
-            taskNodeDataHis.setUpdateBy(taskNodeDataBo.getUpdateBy());
-            taskNodeDataHis.setUpdateTime(taskNodeDataBo.getUpdateTime());
             taskNodeDataHisMapper.updateById(taskNodeDataHis);
         }else {
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
             taskNodeDataHis.setApplicant(taskNodeDataBo.getApplicant());
+            taskNodeDataHis.setApplicantId(taskNodeDataBo.getApplicantId());
             taskNodeDataHis.setApplyDate(taskNodeDataBo.getApplyDate());
-            taskNodeDataHis.setProjTaskId(taskNodeDataBo.getProjTaskId());
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
             taskNodeDataHis.setApplyReson(taskNodeDataBo.getApplyReson());
             taskNodeDataHis.setApplyRemarks(taskNodeDataBo.getApplyRemarks());
-            taskNodeDataHis.setCompletedDate(taskNodeDataBo.getCompletedDate());
+            taskNodeDataHis.setRequiredDate(taskNodeDataBo.getRequiredDate());
             taskNodeDataHis.setApplyDept(taskNodeDataBo.getApplyDept());
             taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeData.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
-            taskNodeDataHis.setCreateBy(taskNodeDataBo.getCreateBy());
-            taskNodeDataHis.setCreateTime(taskNodeDataBo.getCreateTime());
-            taskNodeDataHis.setUpdateBy(taskNodeDataBo.getUpdateBy());
-            taskNodeDataHis.setUpdateTime(taskNodeDataBo.getUpdateTime());
             taskNodeDataHisMapper.insert(taskNodeDataHis);
         }
 

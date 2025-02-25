@@ -9,10 +9,12 @@ import okhttp3.RequestBody;
 
 import java.util.Map;
 
+import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
+
 public class HttpUtils {
     public static String buildUrl(String baseUrl, String path, Map<String, String> params,String requestType) {
         HttpUrl.Builder urlBuilder = HttpUrl.parse(baseUrl + path).newBuilder();
-        if(!CollectionUtil.isEmpty(params)&& "get".equals(requestType)){
+        if(!CollectionUtil.isEmpty(params)&& REQUEST_TYPE_GET.equals(requestType)){
             params.forEach(urlBuilder::addQueryParameter);
         }
         return urlBuilder.build().toString();
@@ -20,9 +22,9 @@ public class HttpUtils {
 
     public static Request buildRequest(String url, String token,Map<String,String> requestBodyMap, String requestType) throws Exception {
         return switch (requestType){
-            case "get"-> buildGetRequest(url,token);
-            case "post"-> buildPostRequest(url,requestBodyMap,token);
-            case "put"-> buildPutRequest(url,requestBodyMap,token);
+            case REQUEST_TYPE_GET-> buildGetRequest(url,token);
+            case REQUEST_TYPE_POST-> buildPostRequest(url,requestBodyMap,token);
+            case REQUEST_TYPE_PUT-> buildPutRequest(url,requestBodyMap,token);
             default -> null;
         };
 

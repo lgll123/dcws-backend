@@ -192,18 +192,24 @@ public class ActProcessInstanceController extends BaseController {
         if ("1".equals(bo.getWfType())){
             return actProcessInstanceService.getPageByCurrent(bo, pageQuery);
         }else {
-            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.queryPageList(new DcwsNormalTaskBo(), pageQuery);
+            DcwsNormalTaskBo dcwsNormalTaskBo = new DcwsNormalTaskBo();
+            if(StringUtils.isNotEmpty(bo.getBusinessKey())){
+                dcwsNormalTaskBo.setTaskId(Long.valueOf(bo.getBusinessKey()));
+            }
+            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.queryPageList(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<ProcessInstanceVo> listTemp = new ArrayList<>();
             TableDataInfo<ProcessInstanceVo> build = TableDataInfo.build();
             if (CollUtil.isNotEmpty(list)){
                 for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     ProcessInstanceVo processInstanceVo = new ProcessInstanceVo();
-                    processInstanceVo.setProcessDefinitionName(dcwsNormalTaskVo.getTaskName());
+                    processInstanceVo.setProcessDefinitionName("非标准流程");
                     processInstanceVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
+                    processInstanceVo.setBusinessStatusName(BusinessStatusEnum.findByStatus(dcwsNormalTaskVo.getStatus()));
                     processInstanceVo.setStartTime(dcwsNormalTaskVo.getCreateTime());
                     processInstanceVo.setWfType("2");
                     processInstanceVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
+                    processInstanceVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     listTemp.add(processInstanceVo);
                 }
             }

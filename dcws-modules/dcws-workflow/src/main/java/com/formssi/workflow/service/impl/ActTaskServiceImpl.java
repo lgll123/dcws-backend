@@ -312,6 +312,9 @@ public class ActTaskServiceImpl implements IActTaskService {
         if (StringUtils.isNotBlank(taskBo.getProcessDefinitionKey())) {
             queryWrapper.eq("t.processDefinitionKey", taskBo.getProcessDefinitionKey());
         }
+        if (StringUtils.isNotBlank(taskBo.getProcessDefinitionKey())) {
+            queryWrapper.eq("t.BUSINESS_KEY_", taskBo.getBusinessKey());
+        }
         queryWrapper.orderByDesc("t.CREATE_TIME_");
         Page<TaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
 
@@ -400,6 +403,7 @@ public class ActTaskServiceImpl implements IActTaskService {
         QueryWrapper<TaskVo> queryWrapper = new QueryWrapper<>();
         queryWrapper.like(StringUtils.isNotBlank(taskBo.getName()), "t.name_", taskBo.getName());
         queryWrapper.like(StringUtils.isNotBlank(taskBo.getProcessDefinitionName()), "t.processDefinitionName", taskBo.getProcessDefinitionName());
+        queryWrapper.like(StringUtils.isNotBlank(taskBo.getBusinessKey()), "t.BUSINESS_KEY_", taskBo.getBusinessKey());
         queryWrapper.eq(StringUtils.isNotBlank(taskBo.getProcessDefinitionKey()), "t.processDefinitionKey", taskBo.getProcessDefinitionKey());
         queryWrapper.eq("t.assignee_", userId);
         queryWrapper.orderByDesc("t.START_TIME_");
@@ -434,6 +438,9 @@ public class ActTaskServiceImpl implements IActTaskService {
         }
         if (StringUtils.isNotBlank(taskBo.getProcessDefinitionName())) {
             queryWrapper.like("t.processDefinitionName", taskBo.getProcessDefinitionName());
+        }
+        if (StringUtils.isNotBlank(taskBo.getProcessDefinitionName())) {
+            queryWrapper.like("t.BUSINESS_KEY_", taskBo.getBusinessKey());
         }
         if (StringUtils.isNotBlank(taskBo.getProcessDefinitionKey())) {
             queryWrapper.eq("t.processDefinitionKey", taskBo.getProcessDefinitionKey());

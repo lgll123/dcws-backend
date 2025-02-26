@@ -1,5 +1,6 @@
 package com.formssi.workflow.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
@@ -61,6 +62,9 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Override
     public TableDataInfo<DcwsNormalTaskVo> queryPageList(DcwsNormalTaskBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<DcwsNormalTask> lqw = buildQueryWrapper(bo);
+        if (bo.getTaskId() != null){
+            lqw.eq(DcwsNormalTask::getTaskId, bo.getTaskId());
+        }
         lqw.eq(DcwsNormalTask::getCreateBy, LoginHelper.getUserId());
         Page<DcwsNormalTaskVo> result = dcwsNormalTaskMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
@@ -71,6 +75,12 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         QueryWrapper<DcwsNormalTaskVo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("t.status", BusinessStatusEnum.WAITING.getStatus());
         queryWrapper.eq("t.user_Id", LoginHelper.getUserId());
+        if (dcwsNormalTaskBo.getTaskId() != null){
+            queryWrapper.eq("t.task_Id", dcwsNormalTaskBo.getTaskId());
+        }
+        if (dcwsNormalTaskBo.getTaskName() != null){
+            queryWrapper.like("t.task_Name", dcwsNormalTaskBo.getTaskName());
+        }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);
@@ -80,6 +90,12 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     public TableDataInfo<DcwsNormalTaskVo> getPageByTaskFinish(DcwsNormalTaskBo dcwsNormalTaskBo, PageQuery pageQuery) {
         QueryWrapper<DcwsNormalTaskVo> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("t.user_Id", LoginHelper.getUserId());
+        if (dcwsNormalTaskBo.getTaskId() != null){
+            queryWrapper.eq("t.task_Id", dcwsNormalTaskBo.getTaskId());
+        }
+        if (dcwsNormalTaskBo.getTaskName() != null){
+            queryWrapper.like("t.task_Name", dcwsNormalTaskBo.getTaskName());
+        }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);

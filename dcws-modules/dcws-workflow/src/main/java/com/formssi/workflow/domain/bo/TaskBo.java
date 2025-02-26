@@ -35,4 +35,9 @@ public class TaskBo implements Serializable {
      * 流程分类
      */
     private String wfType;
+
+    /**
+     * 申请号
+     */
+    private String businessKey;
 }

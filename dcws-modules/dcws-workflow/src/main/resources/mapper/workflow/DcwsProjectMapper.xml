@@ -4,8 +4,4 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.formssi.workflow.mapper.DcwsProjectMapper">
 
-    <update id="updateByProjectId">
-        update dcws_project set project_status=#{projectStatus} WHERE project_id = #{projectId}
-    </update>
-
 </mapper>

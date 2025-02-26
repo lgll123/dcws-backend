@@ -94,6 +94,7 @@ public class ActProcessInstanceController extends BaseController {
                 for (DcwsNormalTaskHandleHisVo dcwsHisVo : commonList){
                     ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
                     actHistoryInfoVo.setName(dcwsApproveVo.getTaskName());
+                    actHistoryInfoVo.setAssignee(String.valueOf(dcwsHisVo.getUserId()));
                     actHistoryInfoVo.setUserName(dcwsHisVo.getUserName());
                     actHistoryInfoVo.setStatus(dcwsHisVo.getStatus());
                     actHistoryInfoVo.setStatusName(BusinessStatusEnum.findByStatus(dcwsHisVo.getStatus()));
@@ -115,6 +116,7 @@ public class ActProcessInstanceController extends BaseController {
                     ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
                     actHistoryInfoVo.setName(dcwsApproveVo.getTaskName());
                     actHistoryInfoVo.setUserName(dcwsHisVo.getUserName());
+                    actHistoryInfoVo.setAssignee(String.valueOf(dcwsHisVo.getUserId()));
                     actHistoryInfoVo.setStatus(dcwsHisVo.getStatus());
                     actHistoryInfoVo.setStatusName(BusinessStatusEnum.findByStatus(dcwsHisVo.getStatus()));
                     actHistoryInfoVo.setComment(dcwsHisVo.getComment());

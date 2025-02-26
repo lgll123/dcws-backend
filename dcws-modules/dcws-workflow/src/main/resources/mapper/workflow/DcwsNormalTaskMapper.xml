@@ -12,15 +12,6 @@
         <result property="createTime" column="create_time"/>
     </resultMap>
 
-    <delete id="deleteByTaskId">
-        delete from dcws_normal_task where task_id = #{taskId}
-    </delete>
-
-    <update id="updateByTaskId">
-        UPDATE dcws_normal_task set status=#{status},user_Id=#{userId},update_time = CURRENT_TIMESTAMP
-        WHERE task_id = #{taskId}
-    </update>
-
     <select id="getTaskWaitByPage" resultMap="DcwsNormalTaskVoResult">
         select *
         from (SELECT RES.task_Id,RES.task_Name,RES.status,RES.create_time,AHP.user_id

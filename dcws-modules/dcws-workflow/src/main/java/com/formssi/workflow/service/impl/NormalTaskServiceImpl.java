@@ -195,6 +195,20 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean cancelProcessApply(String id) {
+
+        dcwsHisMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTaskHandleHis>()
+                .set(DcwsNormalTaskHandleHis::getStatus, BusinessStatusEnum.CANCEL.getStatus())
+                .set(DcwsNormalTaskHandleHis::getComment,BusinessStatusEnum.CANCEL.getDesc())
+                .set(DcwsNormalTaskHandleHis::getUpdateTime,new Date())
+                .eq(DcwsNormalTaskHandleHis::getUserId, LoginHelper.getUserId())
+                .isNull(DcwsNormalTaskHandleHis::getUpdateTime)
+                .eq(DcwsNormalTaskHandleHis::getTaskId, Long.valueOf(id)));
+
+        dcwsHisMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTaskHandleHis>()
+                    .set(DcwsNormalTaskHandleHis::getIsDisplay, "N")
+                    .isNull(DcwsNormalTaskHandleHis::getUpdateTime)
+                    .eq(DcwsNormalTaskHandleHis::getTaskId, Long.valueOf(id)));
+
         return dcwsNormalTaskMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTask>()
                 .set(DcwsNormalTask::getStatus, BusinessStatusEnum.CANCEL.getStatus())
                 .eq(DcwsNormalTask::getTaskId, id)) > 0;

@@ -24,6 +24,11 @@ public class HrUserVo implements Serializable {
     private String empNo;
 
     /**
+     * 资产系统用户id
+     */
+    private String assetUserId;
+
+    /**
      * 用户ID
      */
     private String userId;
@@ -37,6 +42,11 @@ public class HrUserVo implements Serializable {
      * 部门ID
      */
     private String deptId;
+
+    /**
+     * 部门名称
+     */
+    private String deptName;
 
     /**
      * 用户账号

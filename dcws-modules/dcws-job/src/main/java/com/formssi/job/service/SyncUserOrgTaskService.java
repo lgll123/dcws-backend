@@ -4,7 +4,6 @@ package com.formssi.job.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.formssi.common.core.exception.ServiceException;
 import com.formssi.job.snailjob.SyncUserOrgTask;
 import com.formssi.system.domain.vo.HrDeptVo;
 import com.formssi.system.domain.vo.HrResultVo;
@@ -15,16 +14,11 @@ import com.formssi.system.service.ISysDeptService;
 import com.formssi.system.service.ISysHrService;
 import com.formssi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
-import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -223,7 +217,6 @@ public class SyncUserOrgTaskService {
         List<Map<String, Object>> assetDeptList = assetService.selectDeptList();
         //OA系统部门（一级部门）
         List<HrDeptVo> oaDeptList = deptService.selectFirstDeptList();
-        log.info("资产系统组织信息: {}", assetDeptList);
         if (CollectionUtils.isEmpty(oaDeptList)) {
             log.error("同步失败：OA系统系统一级部门信息返回空数据");
             return;
@@ -248,6 +241,97 @@ public class SyncUserOrgTaskService {
             }
             log.info("同步组织信息：OA系统->资产系统完成->新增组织:" + deptNameList.size() + "个");
         }
+    }
+
+    /**
+     * 同步用户信息：OA系统->资产系统
+     * @throws JsonProcessingException
+     */
+    @Transactional(rollbackFor = Exception.class)
+    public void syncUserInfoToAsset() throws JsonProcessingException {
+        //查询资产系统已经同步过得部门id、部门名称（用于同步用户时，赋值部门id）
+        List<Map<String, Object>> assetDeptList = assetService.selectDeptList();
+        //查询OA所有用户（不包含OA本身的用户）（其部门层级>=3）,且将部门层级>3的用户的部门id重新赋值为一级部门id
+        List<HrUserVo> oaUserList = userService.selectUserDeptList();
+        List<String> oaUserEmpList = oaUserList.stream().map(HrUserVo::getEmpNo).collect(Collectors.toList());
+        //查询资产系统用户
+        List<Map<String, Object>> assetUserList = assetService.selectUserList();
+        List<String> assetUserEmpList = assetUserList.stream().map(e -> e.get("username").toString()).collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(oaUserList)) {
+            log.error("同步失败：OA系统系统用户信息返回空数据");
+            return;
+        }
+        //将用户部门id赋值为资产系统对应的部门id，将assetUserId赋值为资产系统用户id
+        oaUserList.forEach(u ->{
+            String deptId = assetDeptList.stream()
+                    .filter(e -> e.get("name").toString().equals(u.getDeptName()))
+                    .map(e -> e.get("id"))
+                    .findFirst().get().toString();
+
+            List<Map<String, Object>> empNo = assetUserList.stream()
+                    .filter(e -> e.get("username").toString().equals(u.getEmpNo()))
+                    .collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(empNo)){
+                String userId = empNo.stream().map(e -> e.get("id")).findFirst().get().toString();
+                u.setAssetUserId(userId);
+            }
+            u.setDeptId(deptId);
+
+        });
+        //若资产系统用户为空， OA用户非空，则全量同步
+        if(CollectionUtils.isEmpty(assetUserList)){
+            assetService.insertUserFromOa(oaUserList);
+            log.info("同步用户信息：OA系统->资产系统完成->新增用户:" + oaUserList.size() + "个");
+        }else {
+            //用户只存在资产系统，不存在OA系统，先不处理，先不删除
+            List<String> assetUserEmpList2 = assetUserEmpList.stream()
+                    .filter(e -> !oaUserEmpList.contains(e))
+                    .collect(Collectors.toList());
+            List<Map<String, Object>> userList = assetUserList.stream()
+                    .filter(e -> assetUserEmpList2.contains(e.get("username").toString()))
+                    .collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(userList)){
+                //todo 先不处理
+            }
+            //用户只存在OA系统，不存在资产系统，则新增
+            List<String> oaUserEmpList2 = oaUserEmpList.stream()
+                    .filter(e -> !assetUserEmpList.contains(e))
+                    .collect(Collectors.toList());
+            List<HrUserVo> userList2 = oaUserList.stream()
+                    .filter(e -> oaUserEmpList2.contains(e.getEmpNo()))
+                    .collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(userList2)){
+                assetService.insertUserFromOa(userList2);
+            }
+            //若用户名（工号）存在2系统，则更新资产系统用户的：名字、邮箱、电话、部门
+            List<String> userEmpList = oaUserEmpList.stream()
+                    .filter(e -> assetUserEmpList.contains(e))
+                    .collect(Collectors.toList());
+            List<HrUserVo> userList3 = oaUserList.stream()
+                    .filter(e -> userEmpList.contains(e.getEmpNo()))
+                    .collect(Collectors.toList());
+            if(!CollectionUtils.isEmpty(userList3)){
+                assetService.updateUserFromOa(userList3);
+            }
+
+            //查询同步后的资产系统用户
+            List<Map<String, Object>> assetUserList2 = assetService.selectUserList();
+            //将同步后的资产系统的用户表id，存储到OA系统用户表的asset_user_id字段
+            oaUserList.forEach(u ->{
+                List<Map<String, Object>> empNo = assetUserList2.stream()
+                        .filter(e -> e.get("username").toString().equals(u.getEmpNo()))
+                        .collect(Collectors.toList());
+                if(!CollectionUtils.isEmpty(empNo)){
+                    String userId = empNo.stream().map(e -> e.get("id")).findFirst().get().toString();
+                    u.setAssetUserId(userId);
+                }
+            });
+            userService.updateUserInfo(oaUserList);
+
+            log.info("同步用户信息：OA系统->资产系统完成->新增用户:" + userList2.size() + "个，更新用户：" + userList3.size() +"个");
+        }
+
     }
 
 

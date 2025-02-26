@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.exception.ServiceException;
 import com.formssi.system.domain.AjaxResult;
 import com.formssi.system.domain.vo.HrDeptVo;
+import com.formssi.system.domain.vo.HrUserVo;
 import com.formssi.system.service.ISysAssetService;
 import com.formssi.system.service.ISysHrService;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,10 @@ import static cn.dev33.satoken.SaManager.log;
 @Service
 @RequiredArgsConstructor
 public class SysAssetServiceImpl implements ISysAssetService {
-    private static final String API_URL = "http://10.101.68.29:8000/api/v1/";
-    private static final String BEARER_TOKEN = "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiNDRlMWQ2OTA0ZjM3NTQyNDJmZmU5ZTMxOTk0MjZiNzI1MDRkYzNhMmM4ODhhNTIxZWFjNDdlNDA4MjliZWUxZjBmNWRhOGFhYTA2MDZmMjIiLCJpYXQiOjE3NDAwNDEwNzUuNzY0Nzg5LCJuYmYiOjE3NDAwNDEwNzUuNzY0NzkxLCJleHAiOjMwMDIzNDUwNzUuNzYyMjEzLCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.TowtjDbbsNkWvdLxz16s69Cj3zA1KF8iioV3jOF26W6SwjP8JWA1r4Fvk71rcOXNTlETeZMS-xmFgjeXyZHYOcqeizIOUXwpdppsBXKuzTH8z2XaZKrpYLNVJrrip1hZEYC_xdln6vapWHRtxwVYLM-L-yzz3Ytc97_afab7f5El6-WxsIvPy7lBIhfexwICweOTU-7EgRdyA5DO21Y5YVC6yBGQBb4U4GRqxhNM_WjsKg4msH_MT19FzEBY0JLgIPzDF1sS66IywsGRJr-yBy6cSdk9h4aOxjprSuWZYaI9Lk_B1jHkcE58EB7Tjvrw_jiOofPoUVSPTxx_wGIhpk8Lz_3Yyb-Jzimp59JxbWaek5TPbxcLEaElrsL2MFY6mgbWpAlzdxQTgYzG5VkY9wjqw08NOklGhMIAtukX4-fwK2dHLu_AiyFNojYKcOinCNKb-ybeSIyG-hE9Tk9Iw4H0h2B5RH3TA64GRCwjl1y1RIgurxUR7peKFABxGpNBJ-63R90byn9Q5GXzndtOp9UZplYLg4XME7jt7yarZJUMjIFnW8ef938UTzg2Gig7HetrKeHEE_-Vl8RDFcpYpRn29QxTOrkriSX6SNu8SdH_zE-sL9NStHz0BfwI6jfb96gFretBzArxs2tVcUHZysxwTn-LkenpMcHX4owrNCU";
+    @Value("${assets.api.url}")
+    private String url;
+    @Value("${assets.api.token}")
+    private String token;
     private final OkHttpClient client = new OkHttpClient();
 
 
@@ -38,9 +41,9 @@ public class SysAssetServiceImpl implements ISysAssetService {
      * @return
      */
     public List<Map<String, Object>> selectDeptList() {
-        String apiUrl = API_URL + "departments?order=asc" ;
-        List<Map<String, Object>> depList = callGetApi(apiUrl);//调用接口
-        return depList;
+        String apiUrl = url + "departments?order=asc" ;
+        List<Map<String, Object>> deptList = callGetApi(apiUrl);//调用接口
+        return deptList;
     }
 
 
@@ -49,7 +52,7 @@ public class SysAssetServiceImpl implements ISysAssetService {
      * @return
      */
     public void insertDeptFromOa(List<HrDeptVo> oaDeptList ) {
-        String apiUrl = API_URL + "departments";
+        String apiUrl = url + "departments";
         ObjectMapper objectMapper = new ObjectMapper();
         oaDeptList.forEach(e ->{
             Map<String, String> requestBodyMap = new HashMap<>();
@@ -62,8 +65,69 @@ public class SysAssetServiceImpl implements ISysAssetService {
             }
             callPostApi(apiUrl, requestBody);//调用接口
         });
+    }
 
+    /**
+     * 查询用户列表
+     * @return
+     */
+    public List<Map<String, Object>> selectUserList() {
+        String apiUrl = url + "users?order=asc&deleted=false" ;
+        List<Map<String, Object>> userList = callGetApi(apiUrl);//调用接口
+        return userList;
+    }
 
+    /**
+     * 新增用户信息
+     * @return
+     */
+    public void insertUserFromOa(List<HrUserVo> oaUserList ) {
+        String apiUrl = url + "users";
+        ObjectMapper objectMapper = new ObjectMapper();
+        oaUserList.forEach(e ->{
+            Map<String, String> requestBodyMap = new HashMap<>();
+            requestBodyMap.put("first_name", e.getUserName());
+            requestBodyMap.put("username", e.getEmpNo());
+            requestBodyMap.put("password", "0123456789");
+            requestBodyMap.put("password_confirmation", "0123456789");
+            requestBodyMap.put("department_id", e.getDeptId());
+            requestBodyMap.put("email", e.getEmail());
+            requestBodyMap.put("phone", e.getPhonenumber());
+            requestBodyMap.put("activated", "1");
+            requestBodyMap.put("locale", "zh-CN");
+
+            String requestBody = null;
+            try {
+                requestBody = objectMapper.writeValueAsString(requestBodyMap);
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+            }
+            callPostApi(apiUrl, requestBody);//调用接口
+        });
+    }
+
+    /**
+     * 更新用户信息
+     * @return
+     */
+    public void updateUserFromOa(List<HrUserVo> oaUserList ) {
+        oaUserList.forEach(i ->{
+            String apiUrl = url + "users/" + i.getAssetUserId();
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String, String> requestBodyMap = new HashMap<>();
+            requestBodyMap.put("first_name", i.getUserName());
+            requestBodyMap.put("department_id", i.getDeptId());
+            requestBodyMap.put("email", i.getEmail());
+            requestBodyMap.put("phone", i.getPhonenumber());
+            String requestBody = null;
+            try {
+                requestBody = objectMapper.writeValueAsString(requestBodyMap);
+            } catch (JsonProcessingException ex) {
+                throw new RuntimeException(ex);
+                }
+            callPatchApi(apiUrl, requestBody);//调用接口
+
+        });
     }
 
 
@@ -78,7 +142,31 @@ public class SysAssetServiceImpl implements ISysAssetService {
                 .url(apiUrl)
                 .post(body)
                 .addHeader("accept", "application/json")
-                .addHeader("Authorization", BEARER_TOKEN)
+                .addHeader("Authorization", token)
+                .addHeader("content-type", "application/json")
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                String responseBody = response.body().string();
+                log.info("资产系统成功，返回response: {}", responseBody);
+            } else {
+                log.error("调用资产系统失败，返回code: {}", response.code());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void callPatchApi(String apiUrl, String requestBody) {
+        log.info("调用资产系统URL: {}", apiUrl);
+
+        okhttp3.MediaType mediaType = okhttp3.MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(requestBody, mediaType);
+        Request request = new Request.Builder()
+                .url(apiUrl)
+                .patch(body)
+                .addHeader("accept", "application/json")
+                .addHeader("Authorization", token)
                 .addHeader("content-type", "application/json")
                 .build();
         try (Response response = client.newCall(request).execute()) {
@@ -99,7 +187,7 @@ public class SysAssetServiceImpl implements ISysAssetService {
                 .url(apiUrl)
                 .get()
                 .addHeader("accept", "application/json")
-                .addHeader("Authorization", BEARER_TOKEN)
+                .addHeader("Authorization", token)
                 .addHeader("content-type", "application/json")
                 .build();
         try (Response response = client.newCall(request).execute()) {
@@ -128,7 +216,7 @@ public class SysAssetServiceImpl implements ISysAssetService {
                 .url(apiUrl)
                 .put(body)
                 .addHeader("accept", "application/json")
-                .addHeader("Authorization", BEARER_TOKEN)
+                .addHeader("Authorization", token)
                 .addHeader("content-type", "application/json")
                 .build();
         try (Response response = client.newCall(request).execute()) {

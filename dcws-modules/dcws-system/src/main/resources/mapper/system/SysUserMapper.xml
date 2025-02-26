@@ -41,6 +41,31 @@
         where emp_no is not null
     </select>
 
+    <select id="selectUserDeptList" resultType="com.formssi.system.domain.vo.HrUserVo">
+        select a.*,b.dept_name from (
+            select
+                u.user_id,
+                u.emp_no,
+                u.nick_name,
+                u.user_name,
+                u.email,
+                u.phonenumber,
+                u.sex,
+                u.status,
+                u.del_flag,
+                CASE
+                when (LENGTH(d.ancestors) - LENGTH(REPLACE(d.ancestors, ',', ''))) = 2 then u.dept_id
+                else SUBSTRING_INDEX(SUBSTRING_INDEX(d.ancestors, ',', 4), ',', -1)
+                END as dept_id
+            from sys_user u
+            left join sys_dept d on u.dept_id = d.dept_id
+            where emp_no is not null
+            and LENGTH(d.ancestors) - LENGTH(REPLACE(d.ancestors, ',', '')) >= 2
+        )a
+        left join sys_dept b on a.dept_id = b.dept_id
+    </select>
+
+
     <update id="deleteByIdFromHr" parameterType="java.util.List">
         update sys_user set del_flag = '1'
         WHERE user_id in(
@@ -54,31 +79,40 @@
         <foreach collection="list" item="item" separator=";">
             UPDATE sys_user
             SET
-            emp_no = #{item.empNo},
-            dept_id = #{item.deptId},
-            user_name = #{item.userName},
-            nick_name = #{item.nickName},
-            email = #{item.email},
-            phonenumber = #{item.phonenumber},
-            create_time = #{item.createTime},
-            sex = #{item.sex},
-            del_flag = '0'
+                emp_no = #{item.empNo},
+                dept_id = #{item.deptId},
+                user_name = #{item.userName},
+                nick_name = #{item.nickName},
+                email = #{item.email},
+                phonenumber = #{item.phonenumber},
+                create_time = #{item.createTime},
+                sex = #{item.sex},
+                del_flag = '0'
             WHERE user_id = #{item.userId}
         </foreach>
     </update>
 
+    <update id="updateUserInfo" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE sys_user
+            SET asset_user_id = #{item.assetUserId}
+            WHERE user_id = #{item.userId}
+        </foreach>
+    </update>
+
+
     <insert id="insertUserFromHr" parameterType="java.util.List" >
         INSERT INTO sys_user (
-        user_id,
-        emp_no,
-        dept_id,
-        user_name,
-        nick_name,
-        email,
-        phonenumber,
-        sex,
-        create_time,
-        password
+            user_id,
+            emp_no,
+            dept_id,
+            user_name,
+            nick_name,
+            email,
+            phonenumber,
+            sex,
+            create_time,
+            password
         )
         VALUES
         <foreach collection="list" item="item" separator=",">

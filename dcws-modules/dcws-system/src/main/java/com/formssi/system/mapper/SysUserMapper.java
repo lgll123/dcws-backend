@@ -35,6 +35,8 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
 
     //查询所有用户
     List<HrUserVo> selectAllUserList();
+    //查询一级部门下的用户信息
+    List<HrUserVo> selectUserDeptList();
     //新增用户
     int insertUserFromHr(@Param("list")List<HrUserVo> hrUserList);
     //新增用户角色关系
@@ -45,6 +47,8 @@ public interface SysUserMapper extends BaseMapperPlus<SysUser, SysUserVo> {
     int deleteByIdFromHr(@Param("list") List<String> userIdList);
     //更新用户
     int updateUserFromHr(@Param("list")List<HrUserVo> hrUserList);
+    //更新用户assetUserId字段
+    int updateUserInfo(@Param("list")List<HrUserVo> hrUserList);
 
     /**
      * 根据条件分页查询用户列表

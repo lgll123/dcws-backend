@@ -68,6 +68,13 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         return userList;
     }
 
+    @Override
+    //查询一级部门下的用户信息
+    public List<HrUserVo> selectUserDeptList() {
+        List<HrUserVo> userList = baseMapper.selectUserDeptList();
+        return userList;
+    }
+
     //逻辑删除人事系统不存在的用户
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -110,6 +117,15 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         }
         return userList.size();
     }
+
+    //更新用户assetUserId字段
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserInfo(List<HrUserVo> userList) {
+        baseMapper.updateUserInfo(userList);
+
+    }
+
 
     @Override
     public TableDataInfo<SysUserVo> selectPageUserList(SysUserBo user, PageQuery pageQuery) {

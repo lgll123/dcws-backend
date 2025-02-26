@@ -415,7 +415,7 @@ hr-system:
 
 #定时任务配置
 schedule:
-  syncUserCron: "0 * * * * *"
-  syncOrgCron: "50 * * * * *"
-  syncAssetUserCron: "0 * * * * *"
-  syncAssetOrgCron: "50 * * * * *"
+  syncUserCron: "0 10 * * * *"
+  syncOrgCron: "0 20 * * * *"
+  syncAssetUserCron: "0 30 * * * *"
+  syncAssetOrgCron: "0 40 * * * *"

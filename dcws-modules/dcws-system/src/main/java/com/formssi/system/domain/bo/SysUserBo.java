@@ -30,6 +30,16 @@ public class SysUserBo extends BaseEntity {
     private Long userId;
 
     /**
+     * 人事系统用户工号
+     */
+    private String empNo;
+
+    /**
+     * 资产系统用户id
+     */
+    private Long assetUserId;
+
+    /**
      * 部门ID
      */
     private Long deptId;

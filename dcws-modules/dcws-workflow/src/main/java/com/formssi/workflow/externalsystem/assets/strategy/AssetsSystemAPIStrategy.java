@@ -40,15 +40,11 @@ public class AssetsSystemAPIStrategy implements IExternalSystemAPIStrategy {
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
                     //"客户端id: {} 认证类型：{} 异常!."
-                    log.info("资产管理API调用失败,url:{} 返回信息：{} " + url,response.toString());
-                    throw new ApiCallException(response.toString(),response.code());
+                    log.info("资产管理API调用失败,url:{} 返回信息：{} " + url, response);
+                    throw new ApiCallException(response.body().string(),response.code());
                 }
                 String responseBody = response.body().string();
-                Map<String, Object> responseMap = objectMapper.readValue(responseBody, new TypeReference<>() {});
-                /*if("error".equals(responseMap.get("status"))){
-                    log.info("后台API接口返回错误：" + responseBody);
-                }*/
-                return responseMap;
+                return objectMapper.readValue(responseBody, new TypeReference<>() {});
             }
     } catch (IOException e) {
         log.info("网络请求异常: " +e.getMessage(),e);

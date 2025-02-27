@@ -13,9 +13,12 @@ import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStr
 import com.formssi.workflow.utils.TypeSafeUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -157,6 +160,116 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         });
         return new TableDataInfo<>(assetsBos, total.longValue());
     }
+
+    private OkHttpClient client = new OkHttpClient();
+    @Override
+    public String uploadDocument(MultipartFile file,
+                               String title,
+                               String created,
+                               String correspondentId,
+                               String documentTypeId,
+                               String storagePathId,
+                               String[] tags,
+                               String archiveSerialNumber,
+                               String[] customFields) throws IOException {
+        // 验证文件是否为空
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("File cannot be empty");
+        }
+
+        // 创建多部分请求体
+        MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                // 添加文件部分
+                .addFormDataPart(
+                        "document",
+                        file.getOriginalFilename(),
+                        RequestBody.create(
+                                file.getBytes(),
+                                MediaType.parse(file.getContentType())
+                        )
+                );
+
+        // 添加可选字段（与原实现相同）
+        addOptionalFields(requestBodyBuilder, title, created, correspondentId,
+                documentTypeId, storagePathId, tags,
+                archiveSerialNumber, customFields);
+
+        // 构建请求
+        Request request = new Request.Builder()
+                .url("http://10.100.216.113:8000/api/documents/post_document/")
+                .post(requestBodyBuilder.build())
+                .build();
+
+        // 执行请求
+        setAuthToken("Token bb04390c75d903d1baf536ddac2ce2868b5d31ef");
+        try (Response response = client.newCall(request).execute()) {
+           return  handleResponse(response);
+        }
+    }
+
+    // 专用方法处理可选字段
+    private void addOptionalFields(MultipartBody.Builder builder,
+                                   String title,
+                                   String created,
+                                   String correspondentId,
+                                   String documentTypeId,
+                                   String storagePathId,
+                                   String[] tags,
+                                   String archiveSerialNumber,
+                                   String[] customFields) {
+        if (title != null) builder.addFormDataPart("title", title);
+        if (created != null) builder.addFormDataPart("created", created);
+        if (correspondentId != null) builder.addFormDataPart("correspondent", correspondentId);
+        if (documentTypeId != null) builder.addFormDataPart("document_type", documentTypeId);
+        if (storagePathId != null) builder.addFormDataPart("storage_path", storagePathId);
+        if (archiveSerialNumber != null) builder.addFormDataPart("archive_serial_number", archiveSerialNumber);
+
+        if (tags != null) {
+            for (String tag : tags) {
+                builder.addFormDataPart("tags", tag);
+            }
+        }
+
+        if (customFields != null) {
+            for (String field : customFields) {
+                builder.addFormDataPart("custom_fields", field);
+            }
+        }
+    }
+
+    // 处理响应
+    private String handleResponse(Response response) throws IOException {
+        if (!response.isSuccessful()) {
+            String errorBody = response.body() != null ?
+                    response.body().string() : "No error body";
+            throw new IOException("Request failed. Code: " + response.code()
+                    + ", Error: " + errorBody);
+        }
+
+        try (ResponseBody body = response.body()) {
+            if (body != null) {
+//                log.info("Response: " + body.string());
+                return body.string();
+            }
+        }
+        return null;
+    }
+
+    // 添加认证头（可选）
+    public void setAuthToken(String token) {
+        client = new OkHttpClient.Builder()
+                .addInterceptor(chain -> {
+                    Request original = chain.request();
+                    Request request = original.newBuilder()
+                            .header("Authorization", token)
+                            .build();
+                    return chain.proceed(request);
+                })
+                .build();
+    }
+
+
 
     }
 

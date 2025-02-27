@@ -1,6 +1,7 @@
 package com.formssi.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.util.ObjectUtil;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
@@ -11,9 +12,12 @@ import com.formssi.workflow.externalsystem.assets.service.IAssetsSystemService;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -67,5 +71,38 @@ public class AssetsSystemController  extends BaseController {
     @GetMapping("/{categories}/{categoryId}")
     public TableDataInfo<AssetsSystemBo> queryAccessoriesById(@NotBlank(message = "目录路径不能为空") @PathVariable String categories,@NotNull(message = "目录Id不能为空") @PathVariable Integer categoryId, PageQuery pageQuery) {
         return assetsSystemService.queryAccessoriesById(categoryId,pageQuery,categories);
+    }
+
+    /**
+     * 文件上传到档案系统
+     * @param uploadfile 上传文件
+     * @param objectName 文件名称
+     */
+    @PostMapping(value = "/uploadfile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<String> fileupload(@RequestParam MultipartFile uploadfile,
+                                         @RequestParam(required = false) String objectName) throws Exception {
+        if (ObjectUtil.isNull(uploadfile)) {
+            return R.fail("上传文件不能为空");
+        }
+
+        // 文件上传
+        String s = null;
+        try {
+            s = assetsSystemService.uploadDocument(
+                    uploadfile,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
+            );
+        } catch (IOException e) {
+            return R.fail(e.getMessage());
+        }
+
+        return R.ok(s);
     }
 }

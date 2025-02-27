@@ -41,7 +41,10 @@ public class TaskNodeDataVo extends BaseEntity {
      * 申请人Id
      */
     private Long applicantId;
-
+    /**
+     * 预计使用人
+     */
+    private String checkTo;
     /**
      * 申请日期
      */

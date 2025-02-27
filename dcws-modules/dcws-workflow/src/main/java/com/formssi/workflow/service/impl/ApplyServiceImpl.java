@@ -204,6 +204,7 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeData.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
+            taskNodeDataHis.setCheckTo(taskNodeData.getCheckTo());
             taskNodeDataHisMapper.insert(taskNodeDataHis);
         }
 

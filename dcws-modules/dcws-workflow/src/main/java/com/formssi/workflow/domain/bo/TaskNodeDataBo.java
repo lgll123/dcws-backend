@@ -26,10 +26,6 @@ public class TaskNodeDataBo extends BaseEntity {
      */
     @NotNull(message = "主键不能为空", groups = {EditGroup.class})
     private Long id;
-    /**
-     * 项目任务ID
-     */
-    private Long projTaskId;
 
     /**
      * 任务节点数据表Id
@@ -58,6 +54,12 @@ public class TaskNodeDataBo extends BaseEntity {
     /**
      * 申请类型--M:物料申请 R:资产入库
      */
+
+    /**
+     * 预计使用人
+     */
+    private String checkTo;
+
     private String applyType;
     /**
      * 租户id

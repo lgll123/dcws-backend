@@ -102,6 +102,14 @@ public class AssetsSystemBo{
      * 采购日期
      */
     private String purchaseDate;
+    /**
+     * 借出使用人
+     */
+    private String checkOutUser;
+    /**
+     * 借出使用地点
+     */
+    private String checkOutLocation;
 
 
 

@@ -5,6 +5,7 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.DcwsNormalTaskBo;
 import com.formssi.workflow.domain.vo.DcwsNormalTaskHandleHisVo;
 import com.formssi.workflow.domain.vo.DcwsNormalTaskVo;
+import com.formssi.workflow.domain.vo.DcwsTaskTypeVo;
 
 import java.util.List;
 
@@ -77,4 +78,10 @@ public interface NormalTaskService {
      * @return 结果
      */
     List<DcwsNormalTaskHandleHisVo> getHistoryRecord(Long id);
+
+    /**
+     * 查询流程类型
+     *
+     */
+    List<DcwsTaskTypeVo> queryWfType();
 }

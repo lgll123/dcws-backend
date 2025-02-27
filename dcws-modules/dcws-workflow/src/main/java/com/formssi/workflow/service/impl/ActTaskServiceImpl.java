@@ -7,6 +7,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.formssi.common.core.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.formssi.common.core.domain.dto.RoleDTO;
@@ -315,6 +316,12 @@ public class ActTaskServiceImpl implements IActTaskService {
         if (StringUtils.isNotBlank(taskBo.getProcessDefinitionKey())) {
             queryWrapper.eq("t.BUSINESS_KEY_", taskBo.getBusinessKey());
         }
+        if (!Objects.isNull(taskBo.getStartTime())) {
+            queryWrapper.gt("t.CREATE_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+        }
+        if (!Objects.isNull(taskBo.getEndTime())) {
+            queryWrapper.lt("t.CREATE_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+        }
         queryWrapper.orderByDesc("t.CREATE_TIME_");
         Page<TaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
 
@@ -406,6 +413,12 @@ public class ActTaskServiceImpl implements IActTaskService {
         queryWrapper.like(StringUtils.isNotBlank(taskBo.getBusinessKey()), "t.BUSINESS_KEY_", taskBo.getBusinessKey());
         queryWrapper.eq(StringUtils.isNotBlank(taskBo.getProcessDefinitionKey()), "t.processDefinitionKey", taskBo.getProcessDefinitionKey());
         queryWrapper.eq("t.assignee_", userId);
+        if (!Objects.isNull(taskBo.getStartTime())) {
+            queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+        }
+        if (!Objects.isNull(taskBo.getEndTime())) {
+            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+        }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<TaskVo> page = actTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);
 
@@ -446,6 +459,12 @@ public class ActTaskServiceImpl implements IActTaskService {
             queryWrapper.eq("t.processDefinitionKey", taskBo.getProcessDefinitionKey());
         }
         queryWrapper.eq("t.assignee_", userId);
+        if (!Objects.isNull(taskBo.getStartTime())) {
+            queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+        }
+        if (!Objects.isNull(taskBo.getEndTime())) {
+            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+        }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<TaskVo> page = actTaskMapper.getTaskCopyByPage(pageQuery.build(), queryWrapper);
 

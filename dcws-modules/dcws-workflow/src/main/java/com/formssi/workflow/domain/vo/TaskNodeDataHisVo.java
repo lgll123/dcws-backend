@@ -46,6 +46,10 @@ public class TaskNodeDataHisVo extends BaseEntity {
      */
     private Long applicantId;
     /**
+     * 申请人对应资产系统用户Id
+     */
+    private Long assetUserId;
+    /**
      * 预计使用人
      */
     private String checkTo;

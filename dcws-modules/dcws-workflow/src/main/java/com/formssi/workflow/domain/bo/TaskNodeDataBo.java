@@ -52,15 +52,19 @@ public class TaskNodeDataBo extends BaseEntity {
      */
     private Long applicantId;
     /**
+     * 申请人对应资产系统用户Id
+     */
+    private Long assetUserId;
+    /**
      * 申请类型--M:物料申请 R:资产入库
      */
-
+    private String applyType;
     /**
      * 预计使用人
      */
     private String checkTo;
 
-    private String applyType;
+
     /**
      * 租户id
      */

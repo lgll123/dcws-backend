@@ -10,10 +10,6 @@ import org.apache.ibatis.annotations.Param;
 
 public interface DcwsNormalTaskMapper extends BaseMapperPlus<DcwsNormalTask, DcwsNormalTaskVo> {
 
-    int updateByTaskId(@Param("status")String status, @Param("userId")String userId, @Param("taskId")Long taskId);
-
-    int deleteByTaskId(@Param("taskId")Long taskId);
-
     /**
      * 获取待办信息
      *

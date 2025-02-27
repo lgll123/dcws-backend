@@ -62,4 +62,11 @@ public class DcwsNormalTaskHandleHis extends BaseEntity {
      */
     private Date updateTime;
 
+    /**
+     * 是否显示
+     */
+    private String isDisplay;
+
+
+
 }

@@ -2,6 +2,7 @@ package com.formssi.workflow.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
 import com.formssi.workflow.domain.vo.*;
@@ -86,7 +87,12 @@ public class ActTaskController extends BaseController {
         if ("1".equals(taskBo.getWfType())){
             return actTaskService.getPageByTaskWait(taskBo, pageQuery);
         }else {
-            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskWait(new DcwsNormalTaskBo(), pageQuery);
+            DcwsNormalTaskBo dcwsNormalTaskBo = new DcwsNormalTaskBo();
+            dcwsNormalTaskBo.setTaskName(taskBo.getName());
+            if(StringUtils.isNotEmpty(taskBo.getBusinessKey())){
+                dcwsNormalTaskBo.setTaskId(Long.valueOf(taskBo.getBusinessKey()));
+            }
+            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskWait(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<TaskVo> listTemp = new ArrayList<>();
             TableDataInfo<TaskVo> build = TableDataInfo.build();
@@ -104,6 +110,7 @@ public class ActTaskController extends BaseController {
                     taskVo.setParticipantVo(participantVo);
                     taskVo.setWfType("2");
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
+                    taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     listTemp.add(taskVo);
                 }
             }
@@ -134,7 +141,12 @@ public class ActTaskController extends BaseController {
         if ("1".equals(taskBo.getWfType())){
             return actTaskService.getPageByTaskFinish(taskBo, pageQuery);
         }else {
-            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskFinish(new DcwsNormalTaskBo(), pageQuery);
+            DcwsNormalTaskBo dcwsNormalTaskBo = new DcwsNormalTaskBo();
+            dcwsNormalTaskBo.setTaskName(taskBo.getName());
+            if(StringUtils.isNotEmpty(taskBo.getBusinessKey())){
+                dcwsNormalTaskBo.setTaskId(Long.valueOf(taskBo.getBusinessKey()));
+            }
+            TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskFinish(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<TaskVo> listTemp = new ArrayList<>();
             TableDataInfo<TaskVo> build = TableDataInfo.build();
@@ -148,8 +160,9 @@ public class ActTaskController extends BaseController {
                     SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(dcwsNormalTaskVo.getUserId()));
                     taskVo.setAssignee(Long.valueOf(dcwsNormalTaskVo.getUserId()));
                     taskVo.setAssigneeName(sysUserVo.getUserName());
-                    taskVo.setWfType("2");
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
+                    taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
+                    taskVo.setWfType("2");
                     listTemp.add(taskVo);
                 }
             }

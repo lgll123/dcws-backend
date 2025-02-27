@@ -38,6 +38,10 @@ public class TaskNodeDataVo extends BaseEntity {
      */
     private String applicant;
     /**
+     * 申请人对应资产系统用户Id
+     */
+    private Long assetUserId;
+    /**
      * 申请人Id
      */
     private Long applicantId;

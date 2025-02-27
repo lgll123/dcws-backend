@@ -42,37 +42,38 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) hashMap.get("accessories");
                 ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) hashMap.get("components");
                 ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) hashMap.get("consumables");
-                Long applicantId = taskNodeDataBo.getApplicantId();
+//                Long applicantId = taskNodeDataBo.getApplicantId();
+                Long assetUserId = taskNodeDataBo.getAssetUserId();
                 Long taskNodeDataId = taskNodeDataBo.getId();
                 // 资产-hardware 借出
                 if (!CollectionUtil.isEmpty(hardware)) {
                     Map<String, String> requestBodyMap = new HashMap<>();
                     requestBodyMap.put("checkout_to_type",  "user");
-                    requestBodyMap.put("assigned_user",  applicantId.toString());
-                    checkOutByCategoryType(hardware,applicantId,taskNodeDataId,requestBodyMap,"hardware");
+                    requestBodyMap.put("assigned_user",  assetUserId.toString());
+                    checkOutByCategoryType(hardware,assetUserId,taskNodeDataId,requestBodyMap,"hardware");
                 }
                 // 附属品-accessories 借出
                 if (!CollectionUtil.isEmpty(accessories)) {
                     Map<String, String> requestBodyMap = new HashMap<>();
-                    requestBodyMap.put("assigned_user",  applicantId.toString());
-                    checkOutByCategoryType(accessories,applicantId,taskNodeDataId,requestBodyMap,"accessories");
+                    requestBodyMap.put("assigned_user",  assetUserId.toString());
+                    checkOutByCategoryType(accessories,assetUserId,taskNodeDataId,requestBodyMap,"accessories");
                 }
                 // 组件-components 借出
                 if (!CollectionUtil.isEmpty(components)) {
                     Map<String, String> requestBodyMap = new HashMap<>();
                     //User ID of an asset to check a component out to
-                    requestBodyMap.put("assigned_to",  applicantId.toString());
-                    checkOutByCategoryType(components,applicantId,taskNodeDataId,requestBodyMap,"components");
+                    requestBodyMap.put("assigned_to",  assetUserId.toString());
+                    checkOutByCategoryType(components,assetUserId,taskNodeDataId,requestBodyMap,"components");
                 }
                 // 消耗品-consumables 借出
                 if (!CollectionUtil.isEmpty(consumables)) {
                     Map<String, String> requestBodyMap = new HashMap<>();
-                    requestBodyMap.put("assigned_to",  applicantId.toString());
-                    checkOutByCategoryType(consumables,applicantId,taskNodeDataId,requestBodyMap,"consumables");
+                    requestBodyMap.put("assigned_to",  assetUserId.toString());
+                    checkOutByCategoryType(consumables,assetUserId,taskNodeDataId,requestBodyMap,"consumables");
                 }
                 //许可证-licenses 借出
                 if (!CollectionUtil.isEmpty(licenses)) {
-                    checkOutLicenses(licenses,applicantId,taskNodeDataId);
+                    checkOutLicenses(licenses,assetUserId,taskNodeDataId);
                 }
             }
         } catch (Exception e) {

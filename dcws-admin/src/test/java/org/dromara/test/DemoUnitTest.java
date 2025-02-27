@@ -1,4 +1,4 @@
-package com.formssi.test;
+package org.dromara.test;
 
 import com.formssi.common.core.config.LceAdminConfig;
 import org.junit.jupiter.api.*;

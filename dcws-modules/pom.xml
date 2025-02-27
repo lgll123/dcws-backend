@@ -15,7 +15,6 @@
     <module>dcws-job</module>
     <module>dcws-system</module>
     <module>dcws-workflow</module>
-    <module>dcws-chorflow</module>
   </modules>
 
   <description>

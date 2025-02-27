@@ -5,10 +5,6 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -16,33 +12,59 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Lion Li
  */
-
+@SpringBootTest // 此注解只能在 springboot 主包下使用 需包含 main 方法与 yml 配置文件
+@DisplayName("单元测试案例")
 public class DemoUnitTest {
 
-    public static void main(String[] args) {
-        // 创建一个Date对象（假设为当前日期和时间）
-        Date currentDate = new Date();
+    @Autowired
+    private LceAdminConfig lceAdminConfig;
 
-        // 将Date对象转换为ZonedDateTime对象（需要指定时区）
-        ZonedDateTime zonedDateTime = currentDate.toInstant().atZone(ZoneId.systemDefault());
-
-        // 转换为LocalDate对象（如果只需要日期部分）
-        LocalDate localDate = zonedDateTime.toLocalDate();
-
-        // 将日期增加一天
-        LocalDate newLocalDate = localDate.plusDays(1);
-
-        // 如果需要Date对象，可以将LocalDate转换回ZonedDateTime，再转换为Date
-        ZonedDateTime newZonedDateTime = newLocalDate.atStartOfDay(ZoneId.systemDefault());
-        Date newDate = Date.from(newZonedDateTime.toInstant());
-
-        // 输出结果
-        System.out.println("当前日期: " + currentDate);
-        System.out.println("增加一天后的日期: " + newDate);
-
-        // 如果你只需要LocalDate（不需要时间部分），可以直接输出newLocalDate
-        // System.out.println("增加一天后的日期（LocalDate）: " + newLocalDate);
+    @DisplayName("测试 @SpringBootTest @Test @DisplayName 注解")
+    @Test
+    public void testTest() {
+        System.out.println(lceAdminConfig);
     }
 
+    @Disabled
+    @DisplayName("测试 @Disabled 注解")
+    @Test
+    public void testDisabled() {
+        System.out.println(lceAdminConfig);
+    }
+
+    @Timeout(value = 2L, unit = TimeUnit.SECONDS)
+    @DisplayName("测试 @Timeout 注解")
+    @Test
+    public void testTimeout() throws InterruptedException {
+        Thread.sleep(3000);
+        System.out.println(lceAdminConfig);
+    }
+
+
+    @DisplayName("测试 @RepeatedTest 注解")
+    @RepeatedTest(3)
+    public void testRepeatedTest() {
+        System.out.println(666);
+    }
+
+    @BeforeAll
+    public static void testBeforeAll() {
+        System.out.println("@BeforeAll ==================");
+    }
+
+    @BeforeEach
+    public void testBeforeEach() {
+        System.out.println("@BeforeEach ==================");
+    }
+
+    @AfterEach
+    public void testAfterEach() {
+        System.out.println("@AfterEach ==================");
+    }
+
+    @AfterAll
+    public static void testAfterAll() {
+        System.out.println("@AfterAll ==================");
+    }
 
 }

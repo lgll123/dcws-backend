@@ -57,12 +57,6 @@
       <artifactId>dcws-job</artifactId>
     </dependency>
 
-    <!-- 代码生成-->
-    <dependency>
-      <groupId>com.formssi.bond</groupId>
-      <artifactId>dcws-generator</artifactId>
-    </dependency>
-
     <!--  chorflow 模块  -->
     <dependency>
       <groupId>com.formssi.bond</groupId>

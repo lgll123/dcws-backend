@@ -100,6 +100,7 @@ public class ActTaskController extends BaseController {
                 for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     TaskVo taskVo = new TaskVo();
                     taskVo.setProcessDefinitionName("非标准流程");
+                    taskVo.setName(dcwsNormalTaskVo.getTaskName());
                     taskVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
                     taskVo.setCreateTime(dcwsNormalTaskVo.getCreateTime());
                     taskVo.setName(dcwsNormalTaskVo.getTaskName());
@@ -154,6 +155,7 @@ public class ActTaskController extends BaseController {
                 for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     TaskVo taskVo = new TaskVo();
                     taskVo.setProcessDefinitionName("非标准流程");
+                    taskVo.setName(dcwsNormalTaskVo.getTaskName());
                     taskVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
                     taskVo.setStartTime(dcwsNormalTaskVo.getCreateTime());
                     taskVo.setName(dcwsNormalTaskVo.getTaskName());

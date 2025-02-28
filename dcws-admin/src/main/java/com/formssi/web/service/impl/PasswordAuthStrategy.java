@@ -109,15 +109,33 @@ public class PasswordAuthStrategy implements IAuthStrategy {
     }
 
     private SysUserVo loadUserByUsername(String username) {
-        SysUserVo user = userMapper.selectVoOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getUserName, username));
-        if (ObjectUtil.isNull(user)) {
-            log.info("登录用户：{} 不存在.", username);
+        SysUserVo finalUser = null;
+        SysUserVo user = null;
+        SysUserVo user2 = null;
+        SysUserVo user3 = null;
+        try {
+            user = userMapper.selectVoOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getEmpNo, username));
+            user2 = userMapper.selectVoOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getEmail, username));
+            user3 = userMapper.selectVoOne(new LambdaQueryWrapper<SysUser>().eq(SysUser::getPhonenumber, username));
+        } catch (Exception e) {
+            log.info("登录账号：{} 在系统中重复，请更换其他登录方式.", username);
+            throw new UserException("user.repeat", username);
+        }
+        if (!ObjectUtil.isNull(user)){
+            finalUser = user;
+        }else if(!ObjectUtil.isNull(user2)){
+            finalUser = user2;
+        }else if(!ObjectUtil.isNull(user3)){
+            finalUser = user3;
+        }
+        if (ObjectUtil.isNull(finalUser)) {
+            log.info("登录账号：{} 不存在.", username);
             throw new UserException("user.not.exists", username);
-        } else if (UserStatus.DISABLE.getCode().equals(user.getStatus())) {
-            log.info("登录用户：{} 已被停用.", username);
+        } else if (UserStatus.DISABLE.getCode().equals(finalUser.getStatus())) {
+            log.info("登录账号：{} 已被停用.", username);
             throw new UserException("user.blocked", username);
         }
-        return user;
+        return finalUser;
     }
 
 }

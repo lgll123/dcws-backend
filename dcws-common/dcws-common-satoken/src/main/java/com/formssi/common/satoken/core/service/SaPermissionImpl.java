@@ -22,7 +22,7 @@ public class SaPermissionImpl implements StpInterface {
     public List<String> getPermissionList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
         UserType userType = UserType.getUserType(loginUser.getUserType());
-        if (userType == UserType.SYS_USER) {
+        if (userType == UserType.SYS_USER || userType == UserType.HR_USER) {
             return new ArrayList<>(loginUser.getMenuPermission());
         } else if (userType == UserType.APP_USER) {
             // 其他端 自行根据业务编写
@@ -37,7 +37,7 @@ public class SaPermissionImpl implements StpInterface {
     public List<String> getRoleList(Object loginId, String loginType) {
         LoginUser loginUser = LoginHelper.getLoginUser();
         UserType userType = UserType.getUserType(loginUser.getUserType());
-        if (userType == UserType.SYS_USER) {
+        if (userType == UserType.SYS_USER || userType == UserType.HR_USER) {
             return new ArrayList<>(loginUser.getRolePermission());
         } else if (userType == UserType.APP_USER) {
             // 其他端 自行根据业务编写

@@ -20,6 +20,11 @@ public enum UserType {
     SYS_USER("sys_user"),
 
     /**
+     * pc端
+     */
+    HR_USER("hr_user"),
+
+    /**
      * app端
      */
     APP_USER("app_user");

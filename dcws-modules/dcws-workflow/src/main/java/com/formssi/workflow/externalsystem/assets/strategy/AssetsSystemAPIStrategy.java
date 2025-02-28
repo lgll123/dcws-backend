@@ -2,7 +2,7 @@ package com.formssi.workflow.externalsystem.assets.strategy;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.formssi.common.core.exception.ApiCallException;
+import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.utils.HttpUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

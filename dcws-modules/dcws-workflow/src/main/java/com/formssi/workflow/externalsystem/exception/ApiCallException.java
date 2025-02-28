@@ -1,4 +1,4 @@
-package com.formssi.common.core.exception;
+package com.formssi.workflow.externalsystem.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import java.io.Serial;
 @EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiCallException  extends RuntimeException {
+public class ApiCallException extends RuntimeException {
     @Serial
     private static final long serialVersionUID = 1L;
     /**

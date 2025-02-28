@@ -200,7 +200,9 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
             taskNodeDataHis.setApplyReson(taskNodeDataBo.getApplyReson());
             taskNodeDataHis.setApplyRemarks(taskNodeDataBo.getApplyRemarks());
-            taskNodeDataHis.setRequiredDate(taskNodeDataBo.getRequiredDate());
+            taskNodeDataHis.setRequiredDateType(taskNodeDataBo.getRequiredDateType());
+            taskNodeDataHis.setCompleteDate(taskNodeDataBo.getCompleteDate());
+            taskNodeDataHis.setRequiredDesc(taskNodeDataBo.getRequiredDesc());
             taskNodeDataHis.setApplyDept(taskNodeDataBo.getApplyDept());
             taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());

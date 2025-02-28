@@ -88,6 +88,10 @@ public class TaskNodeDataBo extends BaseEntity {
      */
     private String applyDetail;
     /**
+     * 申请页面输入的物料信息Json(自定义输入)
+     */
+    private String customApplyDetail;
+    /**
      * 需求日期/完成日期
      */
     private String requiredDate;

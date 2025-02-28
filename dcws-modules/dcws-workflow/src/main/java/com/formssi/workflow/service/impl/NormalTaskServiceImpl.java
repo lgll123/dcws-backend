@@ -268,7 +268,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Override
     public List<DcwsTaskTypeVo> queryWfType() {
         LambdaQueryWrapper<DcwsTaskType> lqw = Wrappers.lambdaQuery();
-        lqw.eq(false,DcwsTaskType::getTaskType,20);
+        lqw.notIn(DcwsTaskType::getTaskType,20);
         lqw.orderByDesc(DcwsTaskType::getTaskType);
         return dcwsTaskTypeMapper.selectVoList(lqw);
     }

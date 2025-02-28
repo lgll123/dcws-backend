@@ -20,7 +20,7 @@ public class SyncUserOrgTask {
     /**
      * 同步用户信息：人事系统->OA系统
      */
-    @Scheduled(cron = "${schedule.syncUserCron}")
+//    @Scheduled(cron = "${schedule.syncUserCron}")
     public void syncUserInfo() {
         log.info("开始同步用户信息：人事系统->OA系统...");
         try {
@@ -33,7 +33,7 @@ public class SyncUserOrgTask {
     /**
      * 同步组织信息：人事系统->OA系统
      */
-    @Scheduled(cron = "${schedule.syncOrgCron}")
+//    @Scheduled(cron = "${schedule.syncOrgCron}")
     public void syncOrgInfo() {
         log.info("开始同步组织信息：人事系统->OA系统...");
         try {
@@ -46,7 +46,7 @@ public class SyncUserOrgTask {
     /**
      * 同步组织信息：OA系统->资产系统
      */
-    @Scheduled(cron = "${schedule.syncAssetOrgCron}")
+//    @Scheduled(cron = "${schedule.syncAssetOrgCron}")
     public void syncOrgInfoToAsset() {
         log.info("开始同步组织信息：OA系统->资产系统...");
         try {
@@ -59,7 +59,7 @@ public class SyncUserOrgTask {
     /**
      * 同步用户信息：OA系统->资产系统
      */
-    @Scheduled(cron = "${schedule.syncAssetUserCron}")
+//    @Scheduled(cron = "${schedule.syncAssetUserCron}")
     public void syncUserInfoToAsset() {
         log.info("开始同步用户信息：OA系统->资产系统...");
         try {

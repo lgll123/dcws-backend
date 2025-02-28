@@ -322,6 +322,9 @@ public class ActTaskServiceImpl implements IActTaskService {
         if (!Objects.isNull(taskBo.getEndTime())) {
             queryWrapper.lt("t.CREATE_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
+        if (!Objects.isNull(taskBo.getWfType())) {
+            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
+        }
         queryWrapper.orderByDesc("t.CREATE_TIME_");
         Page<TaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
 
@@ -418,6 +421,9 @@ public class ActTaskServiceImpl implements IActTaskService {
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
             queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+        }
+        if (!Objects.isNull(taskBo.getWfType())) {
+            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
         }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<TaskVo> page = actTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);

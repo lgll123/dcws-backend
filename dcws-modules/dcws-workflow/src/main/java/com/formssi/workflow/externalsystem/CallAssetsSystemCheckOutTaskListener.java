@@ -4,12 +4,12 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.constant.HttpStatus;
-import com.formssi.common.core.exception.ApiCallException;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
 //import com.formssi.workflow.externalsystem.converpdf.ExcelToPDFConverter;
+import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.service.IAssetsCheckOutRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.TaskListener;
@@ -61,7 +61,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 // 组件-components 借出
                 if (!CollectionUtil.isEmpty(components)) {
                     Map<String, String> requestBodyMap = new HashMap<>();
-                    //User ID of an asset to check a component out to
+                    //User ID of an asset to check a component out to 资产ID TODO
                     requestBodyMap.put("assigned_to",  assetUserId.toString());
                     checkOutByCategoryType(components,assetUserId,taskNodeDataId,requestBodyMap,"components");
                 }
@@ -71,7 +71,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                     requestBodyMap.put("assigned_to",  assetUserId.toString());
                     checkOutByCategoryType(consumables,assetUserId,taskNodeDataId,requestBodyMap,"consumables");
                 }
-                //许可证-licenses 借出
+                //许可证-licenses 借出 可以借出到人或资产
                 if (!CollectionUtil.isEmpty(licenses)) {
                     checkOutLicenses(licenses,assetUserId,taskNodeDataId);
                 }

@@ -55,7 +55,7 @@ public class TaskNodeDataVo extends BaseEntity {
     private Date applyDate;
 
     /**
-     * 申请类型--M:物料申请 R:资产入库
+     * 申请类型--申请类型--19:物料申请
      */
     private String applyType;
 
@@ -85,7 +85,17 @@ public class TaskNodeDataVo extends BaseEntity {
      */
     private String  applyRemarks;
     /**
-     * 需求日期/完成日期
+     * 需求日期类型 1:在某月某日下班前须到位 2: 其他（请描述） 3:尽快
      */
-    private String requiredDate;
+    private String requiredDateType;
+    /**
+     * 需求日期 1:在某月某日下班前须到位
+     * 完成日期
+     */
+    private Date completeDate;
+    /**
+     * 需求日期 2: 其他（请描述）
+     * 需求描述
+     */
+    private String requiredDesc;
 }

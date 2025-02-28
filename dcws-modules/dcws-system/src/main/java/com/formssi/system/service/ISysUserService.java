@@ -130,6 +130,14 @@ public interface ISysUserService {
     boolean checkEmailUnique(SysUserBo user);
 
     /**
+     * 校验empNo是否唯一
+     *
+     * @param user 用户信息
+     * @return 结果
+     */
+    boolean checkEmpNoUnique(SysUserBo user);
+
+    /**
      * 校验用户是否允许操作
      *
      * @param userId 用户ID

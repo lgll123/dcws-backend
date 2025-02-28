@@ -163,6 +163,8 @@ public class SysUserController extends BaseController {
             return R.fail("新增用户'" + user.getUserName() + "'失败，手机号码已存在");
         } else if (StringUtils.isNotEmpty(user.getEmail()) && !userService.checkEmailUnique(user)) {
             return R.fail("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
+        }else if (StringUtils.isNotEmpty(user.getEmpNo()) && !userService.checkEmailUnique(user)) {
+            return R.fail("新增用户'" + user.getUserName() + "'失败，工号已存在");
         }
         if (TenantHelper.isEnable()) {
             if (!tenantService.checkAccountBalance(TenantHelper.getTenantId())) {

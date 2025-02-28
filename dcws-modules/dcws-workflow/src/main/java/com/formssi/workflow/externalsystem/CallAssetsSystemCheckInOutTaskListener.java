@@ -69,7 +69,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                     Map<String, String> requestBodyMapOut = new HashMap<>();
                     requestBodyMapOut.put("status_id",  String.valueOf(e.get("assetStatusId")));
                     requestBodyMapOut.put("checkout_to_type", "user");
-                    requestBodyMapOut.put("assigned_user", String.valueOf(((Map<String, Object>)e.get("recipient")).get("id"))); //领用人Id"4"
+                    requestBodyMapOut.put("assigned_user", String.valueOf(((Map<String, Object>)e.get("recipient")).get("assetUserId"))); //领用人Id"4"
                     Map<String, Object> responseMapOut = instance.process(requestBodyMapOut,apiUrlOut,"post");
                     if("error".equals(responseMapOut.get("status"))) {
                         log.info("后台API接口返回错误：" + responseMapOut.get("messages"));

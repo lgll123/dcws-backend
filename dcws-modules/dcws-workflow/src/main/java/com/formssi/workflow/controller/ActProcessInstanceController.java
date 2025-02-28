@@ -85,7 +85,7 @@ public class ActProcessInstanceController extends BaseController {
      */
     @PostMapping("/getHistoryRecord")
     public R<List<ActHistoryInfoVo>> getHistoryRecord(@RequestBody ProcessInstanceBo processInstanceBo) {
-        if ("2".equals(processInstanceBo.getWfType())){
+        if ("20".equals(processInstanceBo.getWfType())){
             DcwsNormalTaskVo dcwsApproveVo = normalTaskService.queryById(Long.valueOf(processInstanceBo.getKey()));
             if (StringUtils.isNotEmpty(dcwsApproveVo.getBusinessKey())){
                 //标准流程中新增的非标准流程，审批记录需合并
@@ -189,12 +189,18 @@ public class ActProcessInstanceController extends BaseController {
      */
     @GetMapping("/getPageByCurrent")
     public TableDataInfo<ProcessInstanceVo> getPageByCurrent(ProcessInstanceBo bo, PageQuery pageQuery) {
-        if ("1".equals(bo.getWfType())){
+        if (!"20".equals(bo.getWfType())){
             return actProcessInstanceService.getPageByCurrent(bo, pageQuery);
         }else {
             DcwsNormalTaskBo dcwsNormalTaskBo = new DcwsNormalTaskBo();
             if(StringUtils.isNotEmpty(bo.getBusinessKey())){
                 dcwsNormalTaskBo.setTaskId(Long.valueOf(bo.getBusinessKey()));
+            }
+            if(!Objects.isNull(bo.getStartTime())){
+                dcwsNormalTaskBo.setStartTime(bo.getStartTime());
+            }
+            if(!Objects.isNull(bo.getEndTime())){
+                dcwsNormalTaskBo.setEndTime(bo.getEndTime());
             }
             TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.queryPageList(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();
@@ -207,7 +213,7 @@ public class ActProcessInstanceController extends BaseController {
                     processInstanceVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
                     processInstanceVo.setBusinessStatusName(BusinessStatusEnum.findByStatus(dcwsNormalTaskVo.getStatus()));
                     processInstanceVo.setStartTime(dcwsNormalTaskVo.getCreateTime());
-                    processInstanceVo.setWfType("2");
+                    processInstanceVo.setWfType("20");
                     processInstanceVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     processInstanceVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     listTemp.add(processInstanceVo);

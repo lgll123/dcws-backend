@@ -84,7 +84,7 @@ public class ActTaskController extends BaseController {
      */
     @GetMapping("/getPageByTaskWait")
     public TableDataInfo<TaskVo> getPageByTaskWait(TaskBo taskBo, PageQuery pageQuery) {
-        if ("1".equals(taskBo.getWfType())){
+        if (!"20".equals(taskBo.getWfType())){
             return actTaskService.getPageByTaskWait(taskBo, pageQuery);
         }else {
             DcwsNormalTaskBo dcwsNormalTaskBo = new DcwsNormalTaskBo();
@@ -100,6 +100,7 @@ public class ActTaskController extends BaseController {
                 for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     TaskVo taskVo = new TaskVo();
                     taskVo.setProcessDefinitionName("非标准流程");
+                    taskVo.setName(dcwsNormalTaskVo.getTaskName());
                     taskVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
                     taskVo.setCreateTime(dcwsNormalTaskVo.getCreateTime());
                     taskVo.setName(dcwsNormalTaskVo.getTaskName());
@@ -108,7 +109,7 @@ public class ActTaskController extends BaseController {
                     participantVo.setCandidate(Arrays.asList(Long.valueOf(dcwsNormalTaskVo.getUserId())));
                     participantVo.setCandidateName(Arrays.asList(sysUserVo.getUserName()));
                     taskVo.setParticipantVo(participantVo);
-                    taskVo.setWfType("2");
+                    taskVo.setWfType("20");
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     listTemp.add(taskVo);
@@ -138,7 +139,7 @@ public class ActTaskController extends BaseController {
      */
     @GetMapping("/getPageByTaskFinish")
     public TableDataInfo<TaskVo> getPageByTaskFinish(TaskBo taskBo, PageQuery pageQuery) {
-        if ("1".equals(taskBo.getWfType())){
+        if (!"20".equals(taskBo.getWfType())){
             return actTaskService.getPageByTaskFinish(taskBo, pageQuery);
         }else {
             DcwsNormalTaskBo dcwsNormalTaskBo = new DcwsNormalTaskBo();
@@ -154,6 +155,7 @@ public class ActTaskController extends BaseController {
                 for (DcwsNormalTaskVo dcwsNormalTaskVo : list){
                     TaskVo taskVo = new TaskVo();
                     taskVo.setProcessDefinitionName("非标准流程");
+                    taskVo.setName(dcwsNormalTaskVo.getTaskName());
                     taskVo.setBusinessStatus(dcwsNormalTaskVo.getStatus());
                     taskVo.setStartTime(dcwsNormalTaskVo.getCreateTime());
                     taskVo.setName(dcwsNormalTaskVo.getTaskName());
@@ -162,7 +164,7 @@ public class ActTaskController extends BaseController {
                     taskVo.setAssigneeName(sysUserVo.getUserName());
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
-                    taskVo.setWfType("2");
+                    taskVo.setWfType("20");
                     listTemp.add(taskVo);
                 }
             }

@@ -47,6 +47,10 @@ public class TaskNodeDataHis extends BaseEntity {
      */
     private Long applicantId;
     /**
+     * 申请人对应资产系统用户Id
+     */
+    private Long assetUserId;
+    /**
      * 预计使用人
      */
     private String checkTo;
@@ -64,6 +68,10 @@ public class TaskNodeDataHis extends BaseEntity {
      * 表单内容
      */
     private String applyDetail;
+    /**
+     * 申请页面输入的物料信息Json(自定义输入)
+     */
+    private String customApplyDetail;
 
     /**
      * 状态

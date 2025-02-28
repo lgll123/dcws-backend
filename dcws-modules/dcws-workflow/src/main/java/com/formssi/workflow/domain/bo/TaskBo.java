@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 任务请求对象
@@ -40,4 +41,14 @@ public class TaskBo implements Serializable {
      * 申请号
      */
     private String businessKey;
+
+    /**
+     * 开始时间
+     */
+    private String startTime;
+
+    /**
+     * 结束时间
+     */
+    private String endTime;
 }

@@ -8,6 +8,8 @@ import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Date;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DcwsNormalTask.class, reverseConvertGenerate = false)
@@ -58,5 +60,15 @@ public class DcwsNormalTaskBo extends BaseEntity {
      * 文件ID
      */
     private String fileId;
+
+    /**
+     * 开始时间
+     */
+    private String startTime;
+
+    /**
+     * 结束时间
+     */
+    private String endTime;
 
 }

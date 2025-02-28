@@ -38,6 +38,10 @@ public class TaskNodeDataVo extends BaseEntity {
      */
     private String applicant;
     /**
+     * 申请人对应资产系统用户Id
+     */
+    private Long assetUserId;
+    /**
      * 申请人Id
      */
     private Long applicantId;
@@ -59,6 +63,10 @@ public class TaskNodeDataVo extends BaseEntity {
      * 表单内容
      */
     private String applyDetail;
+    /**
+     * 申请页面输入的物料信息Json(自定义输入)
+     */
+    private String customApplyDetail;
 
     /**
      * 状态

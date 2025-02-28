@@ -25,6 +25,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -83,6 +85,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
         dcwsProject.setProjectStatus(BusinessStatusEnum.WAITING.getStatus());
         dcwsProject.setProjectLeader(LoginHelper.getUsername());
         dcwsProject.setCreateBy(LoginHelper.getUserId());
+        dcwsProject.setCreateTime(new Date());
         //新增项目表
         boolean flag = dcwsProjectMapper.insert(dcwsProject) > 0;
         if (flag) {
@@ -100,6 +103,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
                     dcwsProjectTask.setTaskStatus(BusinessStatusEnum.DRAFT.getStatus());
                     dcwsProjectTask.setTaskRouteUrl(dcwsProjectTaskRefVo.getTaskRouteUrl());
                     dcwsProjectTask.setCreateBy(LoginHelper.getUserId());
+                    dcwsProjectTask.setCreateTime(new Date());
                     dcwsProjectTask.setCreateEmpName(LoginHelper.getUsername());
                     dcwsProjectTaskMapper.insert(dcwsProjectTask);
                 }

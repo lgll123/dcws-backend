@@ -6,6 +6,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.formssi.common.core.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -628,6 +629,12 @@ public class ActProcessInstanceServiceImpl implements IActProcessInstanceService
         }
         if (StringUtils.isNotBlank(bo.getCategoryCode())) {
             query.processDefinitionCategory(bo.getCategoryCode());
+        }
+        if (!Objects.isNull(bo.getStartTime())) {
+            query.startedBefore(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
+        }
+        if (!Objects.isNull(bo.getEndTime())) {
+            query.startedAfter(DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
         }
         query.orderByProcessInstanceStartTime().desc();
         List<HistoricProcessInstance> historicProcessInstanceList = query.listPage(pageQuery.getFirstNum(), pageQuery.getPageSize());

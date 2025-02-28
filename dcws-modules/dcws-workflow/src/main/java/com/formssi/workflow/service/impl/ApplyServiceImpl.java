@@ -189,11 +189,13 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeDataHisVo.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
+            taskNodeDataHis.setAssetUserId(taskNodeDataBo.getAssetUserId());
             taskNodeDataHisMapper.updateById(taskNodeDataHis);
         }else {
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
             taskNodeDataHis.setApplicant(taskNodeDataBo.getApplicant());
             taskNodeDataHis.setApplicantId(taskNodeDataBo.getApplicantId());
+            taskNodeDataHis.setAssetUserId(taskNodeDataBo.getAssetUserId());
             taskNodeDataHis.setApplyDate(taskNodeDataBo.getApplyDate());
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
             taskNodeDataHis.setApplyReson(taskNodeDataBo.getApplyReson());

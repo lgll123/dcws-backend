@@ -1,20 +1,18 @@
 package com.formssi.workflow.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.formssi.common.core.constant.UserConstants;
 import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.core.utils.DateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.satoken.utils.LoginHelper;
-import com.formssi.system.domain.SysDept;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
 import com.formssi.workflow.domain.*;
@@ -27,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +39,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     private final DcwsNormalTaskUserMapper dcwsUserMapper;
     private final ISysUserService iSysUserService;
     private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
+    private final DcwsTaskTypeMapper dcwsTaskTypeMapper;
 
     /**
      * 查询非标准流程
@@ -66,6 +64,13 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             lqw.eq(DcwsNormalTask::getTaskId, bo.getTaskId());
         }
         lqw.eq(DcwsNormalTask::getCreateBy, LoginHelper.getUserId());
+        if (!Objects.isNull(bo.getStartTime())) {
+            lqw.gt(DcwsNormalTask::getCreateTime,DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
+        }
+        if (!Objects.isNull(bo.getEndTime())) {
+            lqw.lt(DcwsNormalTask::getCreateTime,DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
+        }
+        lqw.orderByDesc(DcwsNormalTask::getCreateTime);
         Page<DcwsNormalTaskVo> result = dcwsNormalTaskMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
     }
@@ -81,6 +86,12 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         if (dcwsNormalTaskBo.getTaskName() != null){
             queryWrapper.like("t.task_Name", dcwsNormalTaskBo.getTaskName());
         }
+        if (!Objects.isNull(dcwsNormalTaskBo.getStartTime())) {
+            queryWrapper.gt("t.create_time",DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
+        }
+        if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
+            queryWrapper.lt("t.create_time",DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
+        }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);
@@ -95,6 +106,12 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         }
         if (dcwsNormalTaskBo.getTaskName() != null){
             queryWrapper.like("t.task_Name", dcwsNormalTaskBo.getTaskName());
+        }
+        if (!Objects.isNull(dcwsNormalTaskBo.getStartTime())) {
+            queryWrapper.gt("t.create_time",DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
+        }
+        if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
+            queryWrapper.lt("t.create_time",DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);
@@ -186,7 +203,6 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Transactional(rollbackFor = Exception.class)
     public DcwsNormalTaskVo updateByBo(DcwsNormalTaskBo bo) {
         DcwsNormalTask update = MapstructUtils.convert(bo, DcwsNormalTask.class);
-
         dcwsNormalTaskMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTask>()
                 .set(DcwsNormalTask::getStatus, bo.getStatus())
                 .eq(DcwsNormalTask::getTaskId, bo.getTaskId()));
@@ -211,7 +227,6 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean cancelProcessApply(String id) {
-
         dcwsHisMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTaskHandleHis>()
                 .set(DcwsNormalTaskHandleHis::getStatus, BusinessStatusEnum.CANCEL.getStatus())
                 .set(DcwsNormalTaskHandleHis::getComment,BusinessStatusEnum.CANCEL.getDesc())
@@ -248,5 +263,13 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         lqw.eq(DcwsNormalTaskHandleHis::getIsDisplay, "Y");
         lqw.orderByDesc(DcwsNormalTaskHandleHis::getUpdateTime);
         return dcwsHisMapper.selectVoList(lqw);
+    }
+
+    @Override
+    public List<DcwsTaskTypeVo> queryWfType() {
+        LambdaQueryWrapper<DcwsTaskType> lqw = Wrappers.lambdaQuery();
+        lqw.eq(false,DcwsTaskType::getTaskType,20);
+        lqw.orderByDesc(DcwsTaskType::getTaskType);
+        return dcwsTaskTypeMapper.selectVoList(lqw);
     }
 }

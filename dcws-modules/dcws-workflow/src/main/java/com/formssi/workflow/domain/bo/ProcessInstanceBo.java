@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 流程实例请求对象
@@ -45,6 +46,18 @@ public class ProcessInstanceBo implements Serializable {
      * 流程分类
      */
     private String wfType;
+
+    /**
+     * 开始时间
+     */
+    private String startTime;
+
+    /**
+     * 结束时间
+     */
+    private String endTime;
+
+
 
 
 }

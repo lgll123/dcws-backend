@@ -166,4 +166,15 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+
+    /**
+     * 增加天数
+     */
+    public static Date plusDays(Date date ,long daysToAdd) {
+        ZonedDateTime zonedDateTime = date.toInstant().atZone(ZoneId.systemDefault());
+        LocalDate localDate = zonedDateTime.toLocalDate();
+        LocalDate newLocalDate = localDate.plusDays(daysToAdd);
+        ZonedDateTime newZonedDateTime = newLocalDate.atStartOfDay(ZoneId.systemDefault());
+        return Date.from(newZonedDateTime.toInstant());
+    }
 }

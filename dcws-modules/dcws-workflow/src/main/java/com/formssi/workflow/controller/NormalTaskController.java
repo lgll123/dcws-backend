@@ -11,12 +11,17 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.DcwsNormalTaskBo;
 import com.formssi.workflow.domain.vo.DcwsNormalTaskVo;
+import com.formssi.workflow.domain.vo.DcwsTaskTypeVo;
 import com.formssi.workflow.service.NormalTaskService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Validated
 @RequiredArgsConstructor
@@ -86,5 +91,14 @@ public class NormalTaskController extends BaseController {
     @PostMapping("/deleteRunAndHisInstance/{id}")
     public R<Void> deleteRunAndHisInstance(@NotNull(message = "业务id不能为空") @PathVariable String id) {
         return toAjax(normalTaskService.deleteRunAndHisInstance(id));
+    }
+
+    /**
+     * 导出模型zip压缩包
+     *
+     */
+    @GetMapping("/queryWfType")
+    public R<List<DcwsTaskTypeVo>> queryWfType() {
+        return R.ok(normalTaskService.queryWfType());
     }
 }

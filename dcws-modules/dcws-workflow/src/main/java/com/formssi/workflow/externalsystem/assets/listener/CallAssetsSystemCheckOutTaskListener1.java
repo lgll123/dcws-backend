@@ -1,4 +1,4 @@
-package com.formssi.workflow.externalsystem.listener;
+package com.formssi.workflow.externalsystem.assets.listener;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

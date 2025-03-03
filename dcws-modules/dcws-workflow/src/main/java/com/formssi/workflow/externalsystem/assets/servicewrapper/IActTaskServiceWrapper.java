@@ -1,4 +1,4 @@
-package com.formssi.workflow.externalsystem.servicewrapper;
+package com.formssi.workflow.externalsystem.assets.servicewrapper;
 
 import com.formssi.workflow.domain.bo.CompleteTaskBo;
 import com.formssi.workflow.domain.bo.StartProcessBo;

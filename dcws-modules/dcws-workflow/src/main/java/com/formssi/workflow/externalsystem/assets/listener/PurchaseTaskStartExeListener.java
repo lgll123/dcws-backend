@@ -1,4 +1,4 @@
-package com.formssi.workflow.externalsystem.listener;
+package com.formssi.workflow.externalsystem.assets.listener;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.formssi.common.core.utils.SpringUtils;
@@ -6,7 +6,7 @@ import com.formssi.workflow.domain.bo.CompleteTaskBo;
 import com.formssi.workflow.domain.bo.StartProcessBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
-import com.formssi.workflow.externalsystem.servicewrapper.IActTaskServiceWrapper;
+import com.formssi.workflow.externalsystem.assets.servicewrapper.IActTaskServiceWrapper;
 import com.formssi.workflow.service.IApplyService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;

@@ -1,4 +1,4 @@
-package com.formssi.workflow.externalsystem.servicewrapper;
+package com.formssi.workflow.externalsystem.assets.servicewrapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

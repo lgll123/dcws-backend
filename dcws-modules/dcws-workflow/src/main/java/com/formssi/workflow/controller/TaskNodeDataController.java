@@ -39,7 +39,7 @@ public class TaskNodeDataController extends BaseController {
     /**
      * 查询申请列表
      */
-    @SaCheckPermission("workflow:leave:list")
+    @SaCheckPermission("workflow:apply:list")
     @GetMapping("/list")
     public TableDataInfo<TaskNodeDataVo> list(TaskNodeDataBo bo, PageQuery pageQuery) {
         return applyService.queryPageList(bo, pageQuery);
@@ -48,7 +48,7 @@ public class TaskNodeDataController extends BaseController {
     /**
      * 导出申请列表
      */
-    @SaCheckPermission("workflow:leave:export")
+    @SaCheckPermission("workflow:apply:export")
     @Log(title = "申请", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(TaskNodeDataBo bo, HttpServletResponse response) {
@@ -61,7 +61,7 @@ public class TaskNodeDataController extends BaseController {
      *
      * @param id 主键
      */
-    @SaCheckPermission("workflow:leave:query")
+    @SaCheckPermission("workflow:apply:query")
     @GetMapping("/{id}")
     public R<TaskNodeDataVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable Long id) {
         return R.ok(applyService.queryById(id));
@@ -72,7 +72,7 @@ public class TaskNodeDataController extends BaseController {
      *
      * @param taskId 任务id
      */
-    @SaCheckPermission("workflow:leave:query")
+    @SaCheckPermission("workflow:apply:query")
     @GetMapping("/getTaskNodeDataHisInfo")
     public R<TaskNodeDataHisVo> getTaskNodeDataInfo(@NotNull(message = "任务id不能为空") @PathVariable String taskId) {
         return R.ok(applyService.queryByTaskId(taskId));
@@ -81,7 +81,7 @@ public class TaskNodeDataController extends BaseController {
     /**
      * 新增申请
      */
-    @SaCheckPermission("workflow:leave:add")
+    @SaCheckPermission("workflow:apply:add")
     @Log(title = "申请", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping()
@@ -100,7 +100,7 @@ public class TaskNodeDataController extends BaseController {
     /**
      * 修改申请
      */
-    @SaCheckPermission("workflow:leave:edit")
+    @SaCheckPermission("workflow:apply:edit")
     @Log(title = "申请", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PutMapping()
@@ -113,7 +113,7 @@ public class TaskNodeDataController extends BaseController {
      *
      * @param ids 主键串
      */
-    @SaCheckPermission("workflow:leave:remove")
+    @SaCheckPermission("workflow:apply:remove")
     @Log(title = "申请", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable Long[] ids) {

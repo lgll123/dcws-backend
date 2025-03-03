@@ -61,7 +61,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.formssi.workflow.utils.DcwsDateUtils;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -320,7 +320,7 @@ public class ActTaskServiceImpl implements IActTaskService {
             queryWrapper.gt("t.CREATE_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.CREATE_TIME_", DcwsDateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.CREATE_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
@@ -420,7 +420,7 @@ public class ActTaskServiceImpl implements IActTaskService {
             queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
@@ -469,7 +469,7 @@ public class ActTaskServiceImpl implements IActTaskService {
             queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<TaskVo> page = actTaskMapper.getTaskCopyByPage(pageQuery.build(), queryWrapper);

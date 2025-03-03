@@ -53,7 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.formssi.workflow.utils.DcwsDateUtils;
+
 import java.awt.*;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -634,7 +634,7 @@ public class ActProcessInstanceServiceImpl implements IActProcessInstanceService
             query.startedBefore(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
         }
         if (!Objects.isNull(bo.getEndTime())) {
-            query.startedAfter(DcwsDateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
+            query.startedAfter(DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
         }
         query.orderByProcessInstanceStartTime().desc();
         List<HistoricProcessInstance> historicProcessInstanceList = query.listPage(pageQuery.getFirstNum(), pageQuery.getPageSize());

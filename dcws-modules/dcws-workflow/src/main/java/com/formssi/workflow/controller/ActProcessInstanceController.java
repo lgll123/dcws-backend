@@ -2,12 +2,12 @@ package com.formssi.workflow.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.core.utils.DateUtils;
 import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.workflow.domain.bo.*;
 import com.formssi.workflow.domain.vo.*;
 import com.formssi.workflow.service.NormalTaskService;
-import com.formssi.workflow.utils.DcwsDateUtils;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -102,7 +102,7 @@ public class ActProcessInstanceController extends BaseController {
                     actHistoryInfoVo.setStartTime(dcwsHisVo.getCreateTime());
                     actHistoryInfoVo.setEndTime(dcwsHisVo.getUpdateTime());
                     if (!Objects.isNull(dcwsHisVo.getCreateTime()) && !Objects.isNull(dcwsHisVo.getUpdateTime())){
-                        actHistoryInfoVo.setRunDuration(DcwsDateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
+                        actHistoryInfoVo.setRunDuration(DateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
                     }
                     list.add(actHistoryInfoVo);
                 }
@@ -123,7 +123,7 @@ public class ActProcessInstanceController extends BaseController {
                     actHistoryInfoVo.setStartTime(dcwsHisVo.getCreateTime());
                     actHistoryInfoVo.setEndTime(dcwsHisVo.getUpdateTime());
                     if (!Objects.isNull(dcwsHisVo.getCreateTime()) && !Objects.isNull(dcwsHisVo.getUpdateTime())){
-                        actHistoryInfoVo.setRunDuration(DcwsDateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
+                        actHistoryInfoVo.setRunDuration(DateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
                     }
                     tempList.add(actHistoryInfoVo);
                 }

@@ -36,9 +36,8 @@ public class IActTaskServiceWrapper {
                 // 记录日志，但无需处理（新事务已标记回滚）
                 // 记录失败记录，待auto处理启动流程 TODO
                 log.info("独立流程启动失败: " + e.getMessage());
-                return null;  // 返回值无关紧要
+                return null;  // 返回值
             }
-
         });
     }
 
@@ -55,7 +54,7 @@ public class IActTaskServiceWrapper {
                 // 记录日志，但无需处理（新事务已标记回滚）
                 // 记录失败记录，待auto处理启动流程 TODO
                 log.info("独立流程完成任务失败: " + e.getMessage());
-                return false;  // 返回值无关紧要
+                return false;  // 返回值
             }
         }));
     }

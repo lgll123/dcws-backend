@@ -1,27 +1,20 @@
-package com.formssi.workflow.externalsystem;
+package com.formssi.workflow.externalsystem.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.*;
 import org.flowable.engine.delegate.BpmnError;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * 更换领用人，先归还，再借出

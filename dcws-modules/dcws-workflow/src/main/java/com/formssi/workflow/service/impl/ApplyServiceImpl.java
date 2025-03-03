@@ -162,7 +162,7 @@ public class ApplyServiceImpl implements IApplyService {
         log.info("当前任务执行了{}", processTaskEvent.toString());
         TaskNodeData taskNodeData = taskNodeDataMapper.selectById(Long.valueOf(processTaskEvent.getBusinessKey()));
         taskNodeData.setStatus(BusinessStatusEnum.WAITING.getStatus());
-        TaskNodeDataBo taskNodeDataBo = null;
+        TaskNodeDataBo taskNodeDataBo = new TaskNodeDataBo();
         if (CollUtil.isNotEmpty(processTaskEvent.getVariables())) {
             Map<String, Object> variables = processTaskEvent.getVariables();
             Object entity = variables.get("entity");

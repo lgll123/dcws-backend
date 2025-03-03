@@ -491,6 +491,15 @@ public class WorkflowUtils {
                 Boolean condition = PROCESS_ENGINE.getManagementService().executeCommand(expressCmd);
                 processNodeBuildList(processNode, outFlowElement, FlowConstant.INCLUSIVE_GATEWAY, taskId, condition, nextNodes);
             }
+        }else if (FlowConstant.PARALLEL_GATEWAY.equals(gateway)) {// 并行网关
+            String conditionExpression = sequenceFlow.getConditionExpression();
+            if (StringUtils.isBlank(conditionExpression)) {
+                processNodeBuildList(processNode, outFlowElement, FlowConstant.PARALLEL_GATEWAY, taskId, true, nextNodes);
+            } else {
+                ExpressCmd expressCmd = new ExpressCmd(sequenceFlow, executionEntity);
+                Boolean condition = PROCESS_ENGINE.getManagementService().executeCommand(expressCmd);
+                processNodeBuildList(processNode, outFlowElement, FlowConstant.PARALLEL_GATEWAY, taskId, condition, nextNodes);
+            }
         } else {
             processNodeBuildList(processNode, outFlowElement, FlowConstant.USER_TASK, taskId, true, nextNodes);
         }

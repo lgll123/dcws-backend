@@ -1,6 +1,7 @@
 package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.workflow.domain.TaskNodeData;
 import io.github.linpeilie.annotations.AutoMapper;
@@ -52,6 +53,7 @@ public class TaskNodeDataVo extends BaseEntity {
     /**
      * 申请日期
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date applyDate;
 
     /**

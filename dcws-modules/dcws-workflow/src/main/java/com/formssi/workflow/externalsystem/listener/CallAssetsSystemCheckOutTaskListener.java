@@ -1,4 +1,4 @@
-package com.formssi.workflow.externalsystem;
+package com.formssi.workflow.externalsystem.listener;
 
 import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
@@ -82,14 +82,12 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
             bo.setTaskNodeDataId(Long.valueOf(entityMap.get("id").toString()));
             bo.setMessage(e.getMessage());
-            bo.setAssetsDetail(entityMap.get("applyDetail").toString());
-            bo.setCheckOutUser(entityMap.get("applicantId").toString());
+            bo.setAssetsDetail(String.valueOf(entityMap.get("applyDetail")).toString());
+            bo.setCheckOutUser(String.valueOf(entityMap.get("applicantId")));
             bo.setStatus("2");//部分异常待处理
             bo.setAssetsType("0");
             // 记录物料checkOut 记录
             addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
-            // 抛出BPMN错误，触发错误边界事件
-//            throw new BpmnError("An error occurred while calling the external system", "调用外部接口失败: " + e.getMessage());
         }
     }
     //记录checkOut 记录
@@ -137,8 +135,8 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 Map<String, Object> responseMap = instance.process(requestBodyMap,url,"post");
                 if("error".equals(responseMap.get("status"))){
                     log.info("资产系统API接口返回错误：" + responseMap.get("messages"));
-                    bo.setMessage(responseMap.get("messages").toString());
-                    bo.setCode(responseMap.get("status").toString());
+                    bo.setMessage(String.valueOf(responseMap.get("messages")));
+                    bo.setCode(String.valueOf(responseMap.get("status")));
                     bo.setStatus("0");//失败
                 }
             } catch (ApiCallException e) {

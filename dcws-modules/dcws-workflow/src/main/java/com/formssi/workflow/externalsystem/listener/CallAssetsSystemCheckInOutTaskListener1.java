@@ -1,4 +1,4 @@
-package com.formssi.workflow.externalsystem;
+package com.formssi.workflow.externalsystem.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;

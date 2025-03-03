@@ -51,4 +51,9 @@ public class LoginVo {
      */
     private String openid;
 
+    /**
+     * 用户 openid
+     */
+    private Long userId;
+
 }

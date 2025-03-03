@@ -15,7 +15,7 @@ public class TransactionConfig {
     @Bean
     public TransactionTemplate transactionTemplate() {
         TransactionTemplate template = new TransactionTemplate(transactionManager);
-        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);//起一个新的事务
         return template;
     }
 }

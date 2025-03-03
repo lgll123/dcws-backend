@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.formssi.workflow.utils.DcwsDateUtils;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -68,7 +68,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             lqw.gt(DcwsNormalTask::getCreateTime,DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
         }
         if (!Objects.isNull(bo.getEndTime())) {
-            lqw.lt(DcwsNormalTask::getCreateTime,DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
+            lqw.lt(DcwsNormalTask::getCreateTime,DcwsDateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
         }
         lqw.orderByDesc(DcwsNormalTask::getCreateTime);
         Page<DcwsNormalTaskVo> result = dcwsNormalTaskMapper.selectVoPage(pageQuery.build(), lqw);
@@ -90,7 +90,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             queryWrapper.gt("t.create_time",DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
         }
         if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
-            queryWrapper.lt("t.create_time",DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
+            queryWrapper.lt("t.create_time",DcwsDateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
@@ -111,7 +111,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             queryWrapper.gt("t.create_time",DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
         }
         if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
-            queryWrapper.lt("t.create_time",DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
+            queryWrapper.lt("t.create_time",DcwsDateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);

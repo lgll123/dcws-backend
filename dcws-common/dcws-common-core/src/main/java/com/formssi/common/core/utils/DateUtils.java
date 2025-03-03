@@ -29,9 +29,9 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
     private static final String[] PARSE_PATTERNS = {
-        "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
-        "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
-        "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
+            "yyyy-MM-dd", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM",
+            "yyyy/MM/dd", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM",
+            "yyyy.MM.dd", "yyyy.MM.dd HH:mm:ss", "yyyy.MM.dd HH:mm", "yyyy.MM"};
 
     /**
      * 获取当前Date型日期
@@ -127,27 +127,22 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
     /**
      * 计算两个时间差
      */
-    public static String getDatePoor(Date startDate, Date endDate) {
-        long time = endDate.getTime()- startDate.getTime();
-        long day = time / (24 * 60 * 60 * 1000);
-        long hour = (time / (60 * 60 * 1000) - day * 24);
-        long minute = ((time / (60 * 1000)) - day * 24 * 60 - hour * 60);
-        long second = (time / 1000 - day * 24 * 60 * 60 - hour * 60 * 60 - minute * 60);
-
-        if (day > 0) {
-            return day + "天" + hour + "小时" + minute + "分钟";
-        }
-        if (hour > 0) {
-            return hour + "小时" + minute + "分钟";
-        }
-        if (minute > 0) {
-            return minute + "分钟";
-        }
-        if (second > 0) {
-            return second + "秒";
-        } else {
-            return 0 + "秒";
-        }
+    public static String getDatePoor(Date endDate, Date nowDate) {
+        long nd = 1000 * 24 * 60 * 60;
+        long nh = 1000 * 60 * 60;
+        long nm = 1000 * 60;
+        // long ns = 1000;
+        // 获得两个时间的毫秒时间差异
+        long diff = endDate.getTime() - nowDate.getTime();
+        // 计算差多少天
+        long day = diff / nd;
+        // 计算差多少小时
+        long hour = diff % nd / nh;
+        // 计算差多少分钟
+        long min = diff % nd % nh / nm;
+        // 计算差多少秒//输出结果
+        // long sec = diff % nd % nh % nm / ns;
+        return day + "天" + hour + "小时" + min + "分钟";
     }
 
     /**
@@ -165,16 +160,5 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         LocalDateTime localDateTime = LocalDateTime.of(temporalAccessor, LocalTime.of(0, 0, 0));
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
-    }
-
-    /**
-     * 增加天数
-     */
-    public static Date plusDays(Date date ,long daysToAdd) {
-        ZonedDateTime zonedDateTime = date.toInstant().atZone(ZoneId.systemDefault());
-        LocalDate localDate = zonedDateTime.toLocalDate();
-        LocalDate newLocalDate = localDate.plusDays(daysToAdd);
-        ZonedDateTime newZonedDateTime = newLocalDate.atStartOfDay(ZoneId.systemDefault());
-        return Date.from(newZonedDateTime.toInstant());
     }
 }

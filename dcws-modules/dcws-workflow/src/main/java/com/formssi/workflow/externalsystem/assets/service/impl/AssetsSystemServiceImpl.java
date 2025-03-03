@@ -2,7 +2,6 @@ package com.formssi.workflow.externalsystem.assets.service.impl;
 
 import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.SpringUtils;
-import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.AssetsSystemBo;
@@ -33,29 +32,6 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
     private static final String beanName = "assets" + IExternalSystemAPIStrategy.BASE_NAME;
     @Autowired
     private final Map<String, AssetProcessor> processors;
-
-    @Override
-    public List<Map<String, Object>> queryRepertory(AssetsSystemBo bo) {
-        Map<String, String> params = new HashMap<>();
-        params.put(SEARCH, StringUtils.defaultIfBlank(bo.getName(), ""));
-        params.put(LIMIT, String.valueOf(bo.getLimit()));
-        params.put(OFFSET, String.valueOf(bo.getOffset()));
-        params.put(ORDER_NUMBER, "null");
-        params.put(SORT, "created_at");
-        params.put(ORDER, "desc");
-        params.put(EXPAND, "false");
-
-        if (!SpringUtils.containsBean(beanName)) {
-            throw new ServiceException("外系统类型不正确!");
-        }
-        IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
-        Map<String, Object> responseMap = instance.process(params, "APIType",REQUEST_TYPE_GET);
-        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get(ROWS);
-        if (rows.isEmpty()) {
-            throw new ServiceException("库存查询失败：无匹配数据");
-        }
-        return rows;
-    }
 
     @Override
     public AssetsSystemBo queryQtyById(AssetsSystemBo bo, String pathUrl) {

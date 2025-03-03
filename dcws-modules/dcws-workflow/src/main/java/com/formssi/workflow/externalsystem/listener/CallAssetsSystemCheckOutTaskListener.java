@@ -61,8 +61,6 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 // 组件-components 借出
                 if (!CollectionUtil.isEmpty(components)) {
                     Map<String, String> requestBodyMap = new HashMap<>();
-                    //User ID of an asset to check a component out to 资产ID TODO
-                    requestBodyMap.put("assigned_to",  assetUserId.toString());
                     checkOutByCategoryType(components,assetUserId,taskNodeDataId,requestBodyMap,"components");
                 }
                 // 消耗品-consumables 借出
@@ -123,6 +121,8 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                         requestBodyMap.put("checkout_qty",  String.valueOf(assets.get(i).get("applyNum")));
                         break;
                     case "components":
+                        //User ID of an asset to check a component out to 资产ID(组件需要借出到资产下面)
+                        requestBodyMap.put("assigned_to",  String.valueOf(assets.get(i).get("assetId")));
                         requestBodyMap.put("assigned_qty",  String.valueOf(assets.get(i).get("applyNum")));
                         break;
                     case "accessories":

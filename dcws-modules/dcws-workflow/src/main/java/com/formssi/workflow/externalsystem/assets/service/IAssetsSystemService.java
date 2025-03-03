@@ -11,10 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface IAssetsSystemService {
-    /**
-     * 查询请物料库存
-     */
-    List<Map<String,Object>> queryRepertory(AssetsSystemBo bo);
+
     /**
      * 根据物料Id查询物料库存
      */
@@ -28,7 +25,7 @@ public interface IAssetsSystemService {
      * 根据目录id查询物料列表
      */
     TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId, PageQuery pageQuery, String categories);
-    public String uploadDocument(MultipartFile file,
+    String uploadDocument(MultipartFile file,
                                String title,
                                String created,
                                String correspondentId,

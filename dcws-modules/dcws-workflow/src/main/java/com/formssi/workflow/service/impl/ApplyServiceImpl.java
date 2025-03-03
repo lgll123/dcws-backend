@@ -87,7 +87,9 @@ public class ApplyServiceImpl implements IApplyService {
 
     private LambdaQueryWrapper<TaskNodeData> buildQueryWrapper(TaskNodeDataBo bo) {
         LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
-        lqw.eq(StringUtils.isNotBlank(bo.getTaskId()), TaskNodeData::getTaskId, bo.getTaskId());
+        lqw.eq(bo.getApplyDate()!=null, TaskNodeData::getApplyDate, bo.getApplyDate());
+        lqw.like(StringUtils.isNotBlank(bo.getApplyDept()), TaskNodeData::getApplyDept, bo.getApplyDept());
+        lqw.like(StringUtils.isNotBlank(bo.getApplicant()), TaskNodeData::getApplicant, bo.getApplicant());
         lqw.orderByDesc(BaseEntity::getCreateTime);
         return lqw;
     }

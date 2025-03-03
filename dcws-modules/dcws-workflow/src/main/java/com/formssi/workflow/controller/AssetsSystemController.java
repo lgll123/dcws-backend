@@ -16,10 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 资产系统接口
@@ -30,16 +27,6 @@ import java.util.Map;
 @RequestMapping("/assetsSystem")
 public class AssetsSystemController  extends BaseController {
     private final IAssetsSystemService assetsSystemService;
-    /**
-     * 查询物料库存
-     */
-    @SaCheckPermission("workflow:leave:list")
-    @PostMapping("/accessories/query")
-    public R<Map<String, Object>> query(@RequestBody @Validated AssetsSystemBo bo) {
-        List<Map<String, Object>> maps = assetsSystemService.queryRepertory(bo);
-        return R.ok(maps.isEmpty()?null:maps.get(0));
-    }
-
     /**
      * 根据物料Id查询物料库存
      * categories：附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware

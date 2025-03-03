@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.constant.HttpStatus;
+import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 
+import javax.sql.rowset.serial.SerialException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -122,7 +124,11 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                         break;
                     case "components":
                         //User ID of an asset to check a component out to 资产ID(组件需要借出到资产下面)
-                        requestBodyMap.put("assigned_to",  String.valueOf(assets.get(i).get("assetId")));
+                        Map<String, Object> asset = (Map<String, Object>) assets.get(i).get("asset");
+                        if(CollectionUtil.isEmpty(asset)|| asset.get("id")==null){
+                            throw new ServiceException("组件借出的资产id为空");
+                        }
+                        requestBodyMap.put("assigned_to",  String.valueOf(asset.get("id")));
                         requestBodyMap.put("assigned_qty",  String.valueOf(assets.get(i).get("applyNum")));
                         break;
                     case "accessories":
@@ -145,6 +151,9 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                     bo.setStatus("3");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
                 }
                 bo.setCode(String.valueOf(e.getCode()));
+                bo.setMessage(e.getMessage());
+            } catch (ServiceException e) {
+                bo.setStatus("0");//失败
                 bo.setMessage(e.getMessage());
             }
             // 记录物料checkOut 记录

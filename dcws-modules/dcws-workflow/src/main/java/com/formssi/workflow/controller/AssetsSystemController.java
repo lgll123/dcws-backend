@@ -35,7 +35,6 @@ public class AssetsSystemController  extends BaseController {
     @GetMapping("/{categories}/queryQtyById")
     public R<AssetsSystemBo> queryQtyById(@NotBlank(message = "目录路径不能为空") @PathVariable String categories,AssetsSystemBo bo) {
         AssetsSystemBo assetsSystemBo = assetsSystemService.queryQtyById(bo,categories);
-
         return R.ok(assetsSystemBo);
     }
 
@@ -56,7 +55,8 @@ public class AssetsSystemController  extends BaseController {
      */
     @SaCheckPermission("workflow:leave:list")
     @GetMapping("/{categories}/{categoryId}")
-    public TableDataInfo<AssetsSystemBo> queryAccessoriesById(@NotBlank(message = "目录路径不能为空") @PathVariable String categories,@NotNull(message = "目录Id不能为空") @PathVariable Integer categoryId, PageQuery pageQuery) {
+    public TableDataInfo<AssetsSystemBo> queryAccessoriesById(@NotBlank(message = "目录路径不能为空") @PathVariable String categories,
+                                                              @NotNull(message = "目录Id不能为空") @PathVariable Integer categoryId, PageQuery pageQuery) {
         return assetsSystemService.queryAccessoriesById(categoryId,pageQuery,categories);
     }
 

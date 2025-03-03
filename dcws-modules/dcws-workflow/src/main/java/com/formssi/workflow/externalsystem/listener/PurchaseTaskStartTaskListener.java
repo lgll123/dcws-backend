@@ -7,7 +7,7 @@ import com.formssi.workflow.domain.bo.StartProcessBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TestLeaveBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
-import com.formssi.workflow.externalsystem.async.AsyncProcessService;
+//import com.formssi.workflow.externalsystem.async.AsyncProcessService;
 import com.formssi.workflow.externalsystem.servicewrapper.IActTaskServiceWrapper;
 import com.formssi.workflow.service.IActTaskService;
 import com.formssi.workflow.service.IApplyService;
@@ -29,7 +29,7 @@ public class PurchaseTaskStartTaskListener implements TaskListener {
     private static  final IActTaskService actTaskService = SpringUtils.getBean(IActTaskService.class);
     private static  final ITestLeaveService testLeaveService = SpringUtils.getBean(ITestLeaveService.class);
     private static  final IActTaskServiceWrapper actTask = SpringUtils.getBean(IActTaskServiceWrapper.class);
-    private static  final AsyncProcessService asyncProcessService = SpringUtils.getBean(AsyncProcessService.class);
+//    private static  final AsyncProcessService asyncProcessService = SpringUtils.getBean(AsyncProcessService.class);
     @Override
     public void notify(DelegateTask delegateTask) {
         Map<String, Object> variables = delegateTask.getVariables();

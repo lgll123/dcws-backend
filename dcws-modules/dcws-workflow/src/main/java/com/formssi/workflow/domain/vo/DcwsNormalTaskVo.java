@@ -24,7 +24,7 @@ public class DcwsNormalTaskVo implements Serializable {
      * 任务ID
      */
     @ExcelProperty(value = "任务ID")
-    private Long taskId;
+    private String taskId;
 
     /**
      * 项目id
@@ -36,7 +36,7 @@ public class DcwsNormalTaskVo implements Serializable {
      * 父级任务id
      */
     @ExcelProperty(value = "父级任务id")
-    private Long parentTaskId;
+    private String parentTaskId;
 
     /**
      * 业务id

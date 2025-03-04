@@ -29,7 +29,7 @@ public class TestLeaveVo implements Serializable {
      * 主键
      */
     @ExcelProperty(value = "主键")
-    private Long id;
+    private String id;
 
     /**
      * 请假类型

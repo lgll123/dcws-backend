@@ -21,7 +21,7 @@ public interface IApplyService {
     /**
      * 查询申请
      */
-    TaskNodeDataVo queryById(Long id);
+    TaskNodeDataVo queryById(String id);
     /**
      * 根据任务ID查询申请
      */
@@ -50,5 +50,5 @@ public interface IApplyService {
     /**
      * 校验并批量删除申请信息
      */
-    Boolean deleteWithValidByIds(Collection<Long> ids);
+    Boolean deleteWithValidByIds(Collection<String> ids);
 }

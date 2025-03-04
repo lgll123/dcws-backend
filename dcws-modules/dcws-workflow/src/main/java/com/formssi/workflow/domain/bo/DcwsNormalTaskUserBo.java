@@ -14,7 +14,7 @@ public class DcwsNormalTaskUserBo extends BaseEntity {
     /**
      * 任务ID
      */
-    private Long taskId;
+    private String taskId;
 
     /**
      * 办理人id

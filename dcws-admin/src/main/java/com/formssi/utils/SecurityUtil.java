@@ -1,5 +1,7 @@
 package com.formssi.utils;
 
+import com.formssi.common.core.utils.StringUtils;
+
 import javax.crypto.Cipher;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
@@ -64,6 +66,10 @@ public class SecurityUtil {
     }
 
     public static void main(String[] args) throws Exception {
+
+        StringUtils.padl(1,6);
+        System.out.printf(StringUtils.padl(1,6));
+
         // 生成密钥对
 //       KeyPair keyPair = generateKeyPair();
 //        PublicKey publicKey = keyPair.getPublic();

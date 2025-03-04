@@ -24,7 +24,7 @@ public class TaskNodeDataHisVo extends BaseEntity {
     /**
      * 任务节点数据表Id
      */
-    private Long taskNodeDataId;
+    private String taskNodeDataId;
 
 
     /**

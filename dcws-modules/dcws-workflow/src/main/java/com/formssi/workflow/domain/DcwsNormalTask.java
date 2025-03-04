@@ -21,7 +21,7 @@ public class DcwsNormalTask extends BaseEntity {
      * 任务ID
      */
     @TableId(value = "task_id")
-    private Long taskId;
+    private String taskId;
 
     /**
      * 项目id
@@ -31,7 +31,7 @@ public class DcwsNormalTask extends BaseEntity {
     /**
      * 父级任务id
      */
-    private Long parentTaskId;
+    private String parentTaskId;
 
     /**
      * 业务id

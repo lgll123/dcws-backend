@@ -19,7 +19,7 @@ public interface ITestLeaveService {
     /**
      * 查询请假
      */
-    TestLeaveVo queryById(Long id);
+    TestLeaveVo queryById(String id);
 
     /**
      * 查询请假列表
@@ -44,5 +44,5 @@ public interface ITestLeaveService {
     /**
      * 校验并批量删除请假信息
      */
-    Boolean deleteWithValidByIds(Collection<Long> ids);
+    Boolean deleteWithValidByIds(Collection<String> ids);
 }

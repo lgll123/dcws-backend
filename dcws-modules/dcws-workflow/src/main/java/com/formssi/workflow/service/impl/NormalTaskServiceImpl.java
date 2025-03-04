@@ -20,6 +20,7 @@ import com.formssi.workflow.domain.bo.DcwsNormalTaskBo;
 import com.formssi.workflow.domain.vo.*;
 import com.formssi.workflow.mapper.*;
 import com.formssi.workflow.service.NormalTaskService;
+import com.formssi.workflow.service.TaskSerialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,12 +41,14 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     private final ISysUserService iSysUserService;
     private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
     private final DcwsTaskTypeMapper dcwsTaskTypeMapper;
+    private final TaskSerialService taskSerialService;
+
 
     /**
      * 查询非标准流程
      */
     @Override
-    public DcwsNormalTaskVo queryById(Long id) {
+    public DcwsNormalTaskVo queryById(String id) {
         DcwsNormalTaskVo dcwsApproveVo = dcwsNormalTaskMapper.selectVoById(id);
         LambdaQueryWrapper<DcwsNormalTaskUser> lqw = Wrappers.lambdaQuery();
         lqw.eq(DcwsNormalTaskUser::getTaskId, dcwsApproveVo.getTaskId());
@@ -145,6 +148,8 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             add.setStatus(BusinessStatusEnum.WAITING.getStatus());
             add.setCreateBy(userId);
         }
+        String taskId = taskSerialService.getTaskSerial("20",DateUtils.dateTime());
+        add.setTaskId(taskId);
         //新增通用审批表
         boolean flag = dcwsNormalTaskMapper.insert(add) > 0;
         if (flag) {
@@ -154,7 +159,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                  dcwsProjectTask.setTaskType("20");//非标准流程
                  dcwsProjectTask.setProjectId(add.getProjectId());
                  dcwsProjectTask.setTaskName(add.getTaskName());
-                 dcwsProjectTask.setTaskId(add.getTaskId());
+                 dcwsProjectTask.setTaskId(taskId);
                  dcwsProjectTask.setTaskStatus(BusinessStatusEnum.INPROGRESS.getStatus());
                  dcwsProjectTask.setCreateBy(LoginHelper.getUserId());
                  dcwsProjectTask.setCreateEmpName(LoginHelper.getUsername());
@@ -162,7 +167,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
              }
             //通用审批处理历史表
             DcwsNormalTaskHandleHis dcwsHis = new DcwsNormalTaskHandleHis();
-            dcwsHis.setTaskId(add.getTaskId());
+            dcwsHis.setTaskId(taskId);
             dcwsHis.setComment(BusinessStatusEnum.findByStatus(BusinessStatusEnum.PASS.getStatus()));
             dcwsHis.setStatus(BusinessStatusEnum.PASS.getStatus());
             dcwsHis.setUserId(userId);
@@ -176,14 +181,14 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                 for (String userIdTemp : users){
                     //新增通用审批处理人表
                     DcwsNormalTaskUser dcwsUser = new DcwsNormalTaskUser();
-                    dcwsUser.setTaskId(add.getTaskId());
+                    dcwsUser.setTaskId(taskId);
                     dcwsUser.setUserId(userIdTemp);
                     sysUserVo = iSysUserService.selectUserById(Long.valueOf(userIdTemp));
                     dcwsUser.setUserName(sysUserVo.getUserName());
                     dcwsUserMapper.insert(dcwsUser);
                     //通用审批处理历史表
                     DcwsNormalTaskHandleHis dcwsHisTemp = new DcwsNormalTaskHandleHis();
-                    dcwsHisTemp.setTaskId(add.getTaskId());
+                    dcwsHisTemp.setTaskId(taskId);
                     dcwsHisTemp.setComment(BusinessStatusEnum.findByStatus(BusinessStatusEnum.WAITING.getStatus()));
                     dcwsHisTemp.setStatus(BusinessStatusEnum.WAITING.getStatus());
                     dcwsHisTemp.setUserId(Long.valueOf(userIdTemp));
@@ -257,7 +262,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     }
 
     @Override
-    public List<DcwsNormalTaskHandleHisVo> getHistoryRecord(Long id) {
+    public List<DcwsNormalTaskHandleHisVo> getHistoryRecord(String id) {
         LambdaQueryWrapper<DcwsNormalTaskHandleHis> lqw = Wrappers.lambdaQuery();
         lqw.eq(DcwsNormalTaskHandleHis::getTaskId, id);
         lqw.eq(DcwsNormalTaskHandleHis::getIsDisplay, "Y");

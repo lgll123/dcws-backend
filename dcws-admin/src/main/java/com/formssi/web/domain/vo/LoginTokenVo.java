@@ -12,13 +12,13 @@ import lombok.Data;
 public class LoginTokenVo {
 
     /**
-     * 令牌权限
+     * 通过RSA加密后的字符串
      */
-    private String token;
+    private String data;
 
     /**
-     * 员工号
+     * 签名
      */
-    private Long empId;
+    private String sign;
 
 }

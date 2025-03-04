@@ -8,16 +8,18 @@ import lombok.Data;
  * @author Michelle.Chung
  */
 @Data
-public class LoginTokenBo {
+public class LoginUserBo {
 
     /**
-     * 通过RSA加密后的字符串
+     * 员工姓名
      */
-    private String data;
+    private String empName;
 
     /**
-     * 签名
+     * 员工工号
      */
-    private String sign;
+    private String empNo;
+
+
 
 }

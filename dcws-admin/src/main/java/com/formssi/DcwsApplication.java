@@ -1,5 +1,6 @@
 package com.formssi;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
@@ -12,7 +13,7 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
  *
  * @author Lion Li
  */
-
+@Slf4j
 @SpringBootApplication
 public class DcwsApplication {
 
@@ -20,7 +21,6 @@ public class DcwsApplication {
     SpringApplication application = new SpringApplication(DcwsApplication.class);
     application.setApplicationStartup(new BufferingApplicationStartup(2048));
     application.run(args);
-    System.out.println("(♥◠‿◠)ﾉﾞ  DcwsApplication启动成功   ლ(´ڡ`ლ)ﾞ");
+    log.info("\"(♥◠‿◠)ﾉﾞ  DcwsApplication启动成功   ლ(´ڡ`ლ)ﾞ\"");
   }
-
 }

@@ -191,5 +191,10 @@ public class TaskVo implements Serializable {
      */
     private String taskBelonging;
 
+    /**
+     * 申请原因
+     */
+    private String applyReason;
+
 
 }

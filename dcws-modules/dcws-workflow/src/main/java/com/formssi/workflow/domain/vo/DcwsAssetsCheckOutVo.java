@@ -28,7 +28,7 @@ public class DcwsAssetsCheckOutVo extends BaseEntity {
     /**
      * 任务节点数据表Id
      */
-    private Long taskNodeDataId;
+    private String taskNodeDataId;
 
     /**
      * 物料类型 附属品:accessories、组件:components、许可证:licenses、消耗品:consumables、资产:hardware'

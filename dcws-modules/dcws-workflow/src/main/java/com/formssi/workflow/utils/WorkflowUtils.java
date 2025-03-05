@@ -421,9 +421,21 @@ public class WorkflowUtils {
             } else if (outFlowElement instanceof ServiceTask) {
 //                continue;
 //                nextNodeBuild(executionEntity, nextNodes, tempNodes, taskId, gateway, sequenceFlow, processNode, tempNode, outFlowElement);
-                //并行网关
+                //排他网关
             } else if (outFlowElement instanceof ExclusiveGateway) {
-                getNextNodeList(flowElements, outFlowElement, executionEntity, nextNodes, tempNodes, taskId, FlowConstant.EXCLUSIVE_GATEWAY);
+                Boolean condition = false;
+                //如果是从包容网关分支到排他网关，包容网关条件成立才走排他网关
+                if(FlowConstant.INCLUSIVE_GATEWAY.equals(gateway)){
+                    String conditionExpression = sequenceFlow.getConditionExpression();
+                    //判断是否有条件
+                    if (StringUtils.isNotBlank(conditionExpression)) {
+                        ExpressCmd expressCmd = new ExpressCmd(sequenceFlow, executionEntity);
+                        condition = PROCESS_ENGINE.getManagementService().executeCommand(expressCmd);
+                    }
+                }
+                if(condition){
+                    getNextNodeList(flowElements, outFlowElement, executionEntity, nextNodes, tempNodes, taskId, FlowConstant.EXCLUSIVE_GATEWAY);
+                }
                 //并行网关
             } else if (outFlowElement instanceof ParallelGateway) {
                 getNextNodeList(flowElements, outFlowElement, executionEntity, nextNodes, tempNodes, taskId, FlowConstant.PARALLEL_GATEWAY);
@@ -492,14 +504,10 @@ public class WorkflowUtils {
                 processNodeBuildList(processNode, outFlowElement, FlowConstant.INCLUSIVE_GATEWAY, taskId, condition, nextNodes);
             }
         }else if (FlowConstant.PARALLEL_GATEWAY.equals(gateway)) {// 并行网关
-            String conditionExpression = sequenceFlow.getConditionExpression();
-            if (StringUtils.isBlank(conditionExpression)) {
-                processNodeBuildList(processNode, outFlowElement, FlowConstant.PARALLEL_GATEWAY, taskId, true, nextNodes);
-            } else {
-                ExpressCmd expressCmd = new ExpressCmd(sequenceFlow, executionEntity);
-                Boolean condition = PROCESS_ENGINE.getManagementService().executeCommand(expressCmd);
-                processNodeBuildList(processNode, outFlowElement, FlowConstant.PARALLEL_GATEWAY, taskId, condition, nextNodes);
-            }
+          //并行网关‌必须默认执行所有分支，其设计强制忽略条件表达式以保证严格并行性‌
+          //即使显式设置了条件（如 ${condition}），也会被引擎强制忽略‌。所有外出分支都会被‌无条件执行‌，生成多个并发任务实例‌
+          processNodeBuildList(processNode, outFlowElement, FlowConstant.PARALLEL_GATEWAY, taskId, true, nextNodes);
+
         } else {
             processNodeBuildList(processNode, outFlowElement, FlowConstant.USER_TASK, taskId, true, nextNodes);
         }

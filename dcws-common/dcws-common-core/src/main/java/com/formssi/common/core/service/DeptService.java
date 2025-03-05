@@ -14,18 +14,4 @@ public interface DeptService {
      * @return 部门名称串逗号分隔
      */
     String selectDeptNameByIds(String deptIds);
-    /**
-     * 通过部门ID查询部门Leader Id
-     *
-     * @param deptId 部门ID
-     * @return 部门Leader Id
-     */
-    Long selectDeptLeaderById(String deptId);
-    /**
-     * 通过部门ID查询分管部门Leader Id
-     *
-     * @param deptId 部门ID
-     * @return 分管部门Leader Id
-     */
-    Long selectDeptRespLeaderById(String deptId);
 }

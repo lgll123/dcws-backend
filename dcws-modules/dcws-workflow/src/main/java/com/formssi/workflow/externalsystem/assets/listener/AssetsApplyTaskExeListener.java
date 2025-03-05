@@ -18,21 +18,16 @@ import org.springframework.stereotype.Component;
 @Component("AssetsApplyTaskExeListener")
 public class AssetsApplyTaskExeListener implements ExecutionListener {
     @Autowired
-    private DeptService deptService;
-    @Autowired
     private ISysDeptService sysDeptService;
     @Override
     public void notify(DelegateExecution delegateTask) {
         try{
-            Long deptId = LoginHelper.getDeptId();
-            SysDeptVo sysDeptVo = sysDeptService.selectDeptById(deptId);
-            Long respLeader = deptService.selectDeptRespLeaderById(Convert.toStr(deptId));
-            Long leader = deptService.selectDeptLeaderById(Convert.toStr(deptId));
-            delegateTask.setVariable("leader", leader);
-            delegateTask.setVariable("respLeader", respLeader);
+            SysDeptVo sysDeptVo = sysDeptService.selectDeptById(LoginHelper.getDeptId());
+            delegateTask.setVariable("leader", sysDeptVo.getLeader());
+            delegateTask.setVariable("respLeader", sysDeptVo.getRespLeader());
             delegateTask.setVariable("userId", LoginHelper.getUserId());
-            if(respLeader==null || leader==null){
-                log.error("An error occurred while AssetsApplyTaskExeListener respLeader: "+respLeader+" leader:"+leader);
+            if(sysDeptVo.getLeader()==null || sysDeptVo.getRespLeader()==null){
+                log.error("An error occurred while AssetsApplyTaskExeListener respLeader: "+sysDeptVo.getRespLeader()+" leader:"+sysDeptVo.getLeader());
             }
         } catch (Exception e) {
             log.error("An error occurred while AssetsApplyTaskExeListener", e);

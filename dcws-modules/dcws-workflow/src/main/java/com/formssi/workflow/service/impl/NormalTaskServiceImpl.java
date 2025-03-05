@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
     private final DcwsTaskTypeMapper dcwsTaskTypeMapper;
     private final TaskSerialService taskSerialService;
+    private final WfCategoryMapper wfCategoryMapper;
 
 
     /**
@@ -272,9 +274,17 @@ public class NormalTaskServiceImpl implements NormalTaskService {
 
     @Override
     public List<DcwsTaskTypeVo> queryWfType() {
-        LambdaQueryWrapper<DcwsTaskType> lqw = Wrappers.lambdaQuery();
-        lqw.notIn(DcwsTaskType::getTaskType,20);
-        lqw.orderByDesc(DcwsTaskType::getTaskType);
-        return dcwsTaskTypeMapper.selectVoList(lqw);
+        LambdaQueryWrapper<WfCategory> lqw = Wrappers.lambdaQuery();
+        lqw.notIn(WfCategory::getCategoryCode,20);
+        lqw.orderByDesc(WfCategory::getId);
+        List<WfCategoryVo> list = wfCategoryMapper.selectVoList(lqw);
+        List<DcwsTaskTypeVo> tempList = new ArrayList<>();
+        for(WfCategoryVo wfCategoryVo : list){
+            DcwsTaskTypeVo dcwsTaskTypeVo = new DcwsTaskTypeVo();
+            dcwsTaskTypeVo.setTaskType(Long.valueOf(wfCategoryVo.getCategoryCode()));
+            dcwsTaskTypeVo.setTaskName(wfCategoryVo.getCategoryName());
+            tempList.add(dcwsTaskTypeVo);
+        }
+        return tempList;
     }
 }

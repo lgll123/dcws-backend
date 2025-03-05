@@ -636,6 +636,9 @@ public class ActProcessInstanceServiceImpl implements IActProcessInstanceService
         if (!Objects.isNull(bo.getEndTime())) {
             query.startedAfter(DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
         }
+        if (!Objects.isNull(bo.getWfType())) {
+            query.processDefinitionCategory(bo.getWfType());
+        }
         query.orderByProcessInstanceStartTime().desc();
         List<HistoricProcessInstance> historicProcessInstanceList = query.listPage(pageQuery.getFirstNum(), pageQuery.getPageSize());
         List<TaskVo> taskVoList = new ArrayList<>();

@@ -213,11 +213,11 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
      */
     @Override
     public Long selectDeptLeaderById(String deptId) {
-        SysDeptVo vo = SpringUtils.getAopProxy(this).selectDeptById(Convert.toLong(deptId));
-        if (ObjectUtil.isNotNull(vo)) {
-            return vo.getLeader();
+        SysDeptVo dept = baseMapper.selectVoById(deptId);
+        if (ObjectUtil.isNull(dept)) {
+            return null;
         }
-        return null;
+        return dept.getLeader();
     }
 
     /**
@@ -228,11 +228,11 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
      */
     @Override
     public Long selectDeptRespLeaderById(String deptId) {
-        SysDeptVo vo = SpringUtils.getAopProxy(this).selectDeptById(Convert.toLong(deptId));
-        if (ObjectUtil.isNotNull(vo)) {
-            return vo.getRespLeader();
+        SysDeptVo dept = baseMapper.selectVoById(deptId);
+        if (ObjectUtil.isNull(dept)) {
+            return null;
         }
-        return null;
+        return dept.getRespLeader();
     }
 
     /**

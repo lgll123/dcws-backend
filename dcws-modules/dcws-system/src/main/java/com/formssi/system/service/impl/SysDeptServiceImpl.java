@@ -205,6 +205,35 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
         }
         return String.join(StringUtils.SEPARATOR, list);
     }
+    /**
+     * 通过部门ID查询部门Leader Id
+     *
+     * @param deptId 部门ID
+     * @return 部门Leader Id
+     */
+    @Override
+    public Long selectDeptLeaderById(String deptId) {
+        SysDeptVo vo = SpringUtils.getAopProxy(this).selectDeptById(Convert.toLong(deptId));
+        if (ObjectUtil.isNotNull(vo)) {
+            return vo.getLeader();
+        }
+        return null;
+    }
+
+    /**
+     * 通过部门ID查询分管部门Leader Id
+     *
+     * @param deptId 部门ID
+     * @return 分管部门Leader Id
+     */
+    @Override
+    public Long selectDeptRespLeaderById(String deptId) {
+        SysDeptVo vo = SpringUtils.getAopProxy(this).selectDeptById(Convert.toLong(deptId));
+        if (ObjectUtil.isNotNull(vo)) {
+            return vo.getRespLeader();
+        }
+        return null;
+    }
 
     /**
      * 根据ID查询所有子部门数（正常状态）

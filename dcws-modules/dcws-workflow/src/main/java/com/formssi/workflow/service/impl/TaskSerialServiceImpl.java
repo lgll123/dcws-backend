@@ -3,12 +3,8 @@ package com.formssi.workflow.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StringUtils;
-import com.formssi.common.satoken.utils.LoginHelper;
-import com.formssi.workflow.domain.DcwsNormalTask;
-import com.formssi.workflow.domain.DcwsNormalTaskHandleHis;
 import com.formssi.workflow.domain.DcwsTaskSerialNumber;
 import com.formssi.workflow.domain.bo.DcwsTaskSerialNumberBo;
 import com.formssi.workflow.domain.vo.DcwsTaskSerialNumberVo;
@@ -19,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Date;
 import java.util.List;
 
 

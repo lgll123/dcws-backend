@@ -21,7 +21,7 @@ public class TaskNodeDataHis extends BaseEntity {
      * 主键
      */
     @TableId(value = "id")
-    private String id;
+    private Long id;
 
     /**
      * 任务节点数据表Id

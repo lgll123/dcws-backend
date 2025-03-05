@@ -6,7 +6,12 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.formssi.common.core.utils.DateUtils;
+import com.formssi.workflow.domain.DcwsNormalTaskHandleHis;
+import com.formssi.workflow.domain.TaskNodeData;
+import com.formssi.workflow.mapper.TaskNodeDataMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -85,6 +90,7 @@ public class ActProcessInstanceServiceImpl implements IActProcessInstanceService
     private final IWfNodeConfigService wfNodeConfigService;
     private final FlowProcessEventHandler flowProcessEventHandler;
     private final UserService userService;
+    private final TaskNodeDataMapper taskNodeDataMapper;
 
     @Value("${flowable.activity-font-name}")
     private String activityFontName;
@@ -661,9 +667,21 @@ public class ActProcessInstanceServiceImpl implements IActProcessInstanceService
         if (CollUtil.isNotEmpty(list)) {
             List<String> processDefinitionIds = StreamUtils.toList(list, ProcessInstanceVo::getProcessDefinitionId);
             List<WfNodeConfigVo> wfNodeConfigVoList = wfNodeConfigService.selectByDefIds(processDefinitionIds);
+            List<String> ids = new ArrayList<>();
             for (ProcessInstanceVo processInstanceVo : list) {
                 if (CollUtil.isNotEmpty(wfNodeConfigVoList)) {
                     wfNodeConfigVoList.stream().filter(e -> e.getDefinitionId().equals(processInstanceVo.getProcessDefinitionId()) && FlowConstant.TRUE.equals(e.getApplyUserTask())).findFirst().ifPresent(processInstanceVo::setWfNodeConfigVo);
+                }
+                ids.add(processInstanceVo.getBusinessKey());
+            }
+            LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
+            lqw.in(TaskNodeData::getId,ids);
+            List<TaskNodeDataVo> taskNodeDataVoList = taskNodeDataMapper.selectVoList(lqw);
+            for (TaskNodeDataVo taskNodeDataVo : taskNodeDataVoList){
+                for(ProcessInstanceVo processInstanceVo : list){
+                    if(taskNodeDataVo.getId().equals(processInstanceVo.getBusinessKey())){
+                        processInstanceVo.setApplyReason(taskNodeDataVo.getApplyReson());
+                    }
                 }
             }
         }

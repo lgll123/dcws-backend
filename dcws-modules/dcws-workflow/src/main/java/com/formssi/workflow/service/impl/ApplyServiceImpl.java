@@ -191,7 +191,6 @@ public class ApplyServiceImpl implements IApplyService {
         query.eq("task_id",processTaskEvent.getTaskId());
         TaskNodeDataHisVo taskNodeDataHisVo = taskNodeDataHisMapper.selectVoOne(query);
         taskNodeDataBo.setTaskNodeDataId(taskNodeData.getId());
-//        TaskNodeDataHis add = MapstructUtils.convert(taskNodeDataBo, TaskNodeDataHis.class);
         if(taskNodeDataHisVo!=null){
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());

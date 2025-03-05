@@ -222,7 +222,7 @@ public class ActTaskServiceImpl implements IActTaskService {
                     BusinessStatusEnum.FINISH.getStatus(), false);
             } else {
                 List<Task> list = QueryUtils.taskQuery(task.getProcessInstanceId()).list();
-                List<ProcessNode> nextNodeinfo = ModelUtils.getNextNodeinfo((TaskEntity) task);//TODO yqh
+//                List<ProcessNode> nextNodeinfo = ModelUtils.getNextNodeinfo((TaskEntity) task);//TODO yqh
                 for (Task t : list) {
                     //办理监听
                     flowProcessEventHandler.processTaskHandler(processInstance.getProcessDefinitionKey(), t.getTaskDefinitionKey(),
@@ -230,10 +230,11 @@ public class ActTaskServiceImpl implements IActTaskService {
 
                     if (ModelUtils.isUserTask(t.getProcessDefinitionId(), t.getTaskDefinitionKey())) {
                         List<HistoricIdentityLink> links = historyService.getHistoricIdentityLinksForTask(t.getId());
-                        if (CollUtil.isEmpty(links) && StringUtils.isBlank(t.getAssignee())&& !CollectionUtil.isEmpty(nextNodeinfo)&&t.getTaskDefinitionKey().equals(nextNodeinfo.get(0).getNodeId())) {
-                            //throw new ServiceException("下一节点【" + t.getName() + "】没有办理人!");
+//                        if (CollUtil.isEmpty(links) && StringUtils.isBlank(t.getAssignee())&& !CollectionUtil.isEmpty(nextNodeinfo)&&t.getTaskDefinitionKey().equals(nextNodeinfo.get(0).getNodeId())) {
+                        if (CollUtil.isEmpty(links) && StringUtils.isBlank(t.getAssignee())) {
+                            throw new ServiceException("下一节点【" + t.getName() + "】没有办理人!");
                             // 根据当前任务节点id获取办理人 TODO yqh
-                            List<Long> assignees = new ArrayList<>();
+                            /*List<Long> assignees = new ArrayList<>();
                             String[] split = completeTaskBo.getAssignees().split(StringUtils.SEPARATOR);
                             for (String id : split) {
                                 assignees.add(Long.valueOf(id));
@@ -250,7 +251,7 @@ public class ActTaskServiceImpl implements IActTaskService {
                                 for (Long assignee : assignees) {
                                     taskService.addCandidateUser(t.getId(), assignee.toString());
                                 }
-                            }
+                            }*/
                             /*for (String candidateGroup: completeTaskBo.getCandidateGroups()) {
                                 taskService.addCandidateGroup(t.getId(),candidateGroup);
                             }*/

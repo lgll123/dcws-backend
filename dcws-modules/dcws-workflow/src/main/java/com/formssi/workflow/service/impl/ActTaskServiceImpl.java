@@ -160,8 +160,6 @@ public class ActTaskServiceImpl implements IActTaskService {
         taskService.setAssignee(taskList.get(0).getId(), LoginHelper.getUserId().toString());
         taskService.setVariable(taskList.get(0).getId(), PROCESS_INSTANCE_ID, pi.getProcessInstanceId());
         taskService.setVariable(taskList.get(0).getId(), BUSINESS_KEY, pi.getBusinessKey());
-        Long deptId = LoginHelper.getDeptId();// add by yqh TODO
-        taskService.setVariable(taskList.get(0).getId(), "isDechDept", "103".equals(String.valueOf(deptId)));//deptId:103 研发部门
         map.put("processInstanceId", pi.getProcessInstanceId());
         map.put("taskId", taskList.get(0).getId());
         return map;

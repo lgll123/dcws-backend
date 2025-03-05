@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.ASSETS_STATUS_11;
+
 @Slf4j
 @Component("CallAssetsSystemCheckOutTaskListener")
 public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
@@ -118,7 +120,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             try {
                 switch (categoryType){
                     case "hardware":
-                        requestBodyMap.put("status_id",  String.valueOf(assets.get(i).get("assetStatusId")));
+                        requestBodyMap.put("status_id",  ASSETS_STATUS_11);//已领用
                         break;
                     case "consumables":
                         requestBodyMap.put("checkout_qty",  String.valueOf(assets.get(i).get("applyNum")));

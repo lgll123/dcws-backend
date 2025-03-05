@@ -119,7 +119,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         params.put(ORDER, pageQuery.getIsAsc());
 
         if (CATEGORIES_HARDWARE.equals(categories)) {
-            params.put(STATUS, STATUS_REQUESTABLE);
+            params.put(STATUS_ID, ASSETS_STATUS_7);
         }
         if (!SpringUtils.containsBean(beanName)) {
             throw new ServiceException("外系统类型不正确!");

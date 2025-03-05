@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
+
 /**
  * 更换领用人，先归还，再借出
  */
@@ -54,7 +56,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                     String assetIdIn = String.valueOf(e.get("id")); //资产id
                     String apiUrlIn = "hardware/" + assetIdIn + "/checkin";
                     Map<String, String> requestBodyMapIn = new HashMap<>();
-                    requestBodyMapIn.put("status_id", "2");
+                    requestBodyMapIn.put(STATUS_ID, ASSETS_STATUS_7);
                     Map<String, Object> responseMap = instance.process(requestBodyMapIn,apiUrlIn,"post");
                     if("error".equals(responseMap.get("status"))) {
                         log.info("后台API接口返回错误：" + responseMap.get("messages"));
@@ -62,7 +64,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                     //2、借出
                     String apiUrlOut = "hardware/" + assetIdIn + "/checkout";
                     Map<String, String> requestBodyMapOut = new HashMap<>();
-                    requestBodyMapOut.put("status_id",  String.valueOf(e.get("assetStatusId")));
+                    requestBodyMapOut.put(STATUS_ID,  ASSETS_STATUS_11);
                     requestBodyMapOut.put("checkout_to_type", "user");
                     requestBodyMapOut.put("assigned_user", String.valueOf(((Map<String, Object>)e.get("recipient")).get("assetUserId"))); //领用人Id"4"
                     Map<String, Object> responseMapOut = instance.process(requestBodyMapOut,apiUrlOut,"post");

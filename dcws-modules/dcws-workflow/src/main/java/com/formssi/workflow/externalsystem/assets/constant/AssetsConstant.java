@@ -90,6 +90,11 @@ public interface AssetsConstant {
      * 状态
      */
     String STATUS = "status";
+
+    /**
+     * 状态
+     */
+    String STATUS_ID = "status_id";
     /**
      * 请求类型get
      */
@@ -106,6 +111,14 @@ public interface AssetsConstant {
      * 资产状态 可申领
      */
     String STATUS_REQUESTABLE = "Requestable";
+    /**
+     * 资产状态 已入库可部署
+     */
+    String ASSETS_STATUS_7 = "7";
+    /**
+     * 资产状态 已领用
+     */
+    String ASSETS_STATUS_11 = "11";
     /**
      * 资产目录类型 附属品-accessories
      */

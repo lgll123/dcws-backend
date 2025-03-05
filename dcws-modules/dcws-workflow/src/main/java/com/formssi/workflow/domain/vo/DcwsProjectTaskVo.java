@@ -27,7 +27,7 @@ public class DcwsProjectTaskVo implements Serializable {
      * 任务ID
      */
     @ExcelProperty(value = "项目任务ID")
-    private Long taskId;
+    private String taskId;
 
     /**
      * 任务类型

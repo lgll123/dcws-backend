@@ -25,12 +25,12 @@ public class TaskNodeDataBo extends BaseEntity {
      * 主键
      */
     @NotNull(message = "主键不能为空", groups = {EditGroup.class})
-    private Long id;
+    private String id;
 
     /**
      * 任务节点数据表Id
      */
-    private Long taskNodeDataId;
+    private String taskNodeDataId;
 
     /**
      * 工作流标准任务ID

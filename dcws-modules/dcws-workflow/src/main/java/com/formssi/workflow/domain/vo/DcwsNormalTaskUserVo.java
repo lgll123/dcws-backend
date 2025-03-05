@@ -21,7 +21,7 @@ public class DcwsNormalTaskUserVo implements Serializable {
     /**
      * 任务ID
      */
-    private Long taskId;
+    private String taskId;
 
     /**
      * 办理人id

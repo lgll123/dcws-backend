@@ -155,6 +155,7 @@ tenant:
     - doc_param
     - sys_file
     - dcws_assets_check_out
+    - dcws_task_serial_number
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

@@ -63,7 +63,7 @@ public class TaskNodeDataController extends BaseController {
      */
     @SaCheckPermission("workflow:apply:query")
     @GetMapping("/{id}")
-    public R<TaskNodeDataVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable Long id) {
+    public R<TaskNodeDataVo> getInfo(@NotNull(message = "主键不能为空") @PathVariable String id) {
         return R.ok(applyService.queryById(id));
     }
 
@@ -116,7 +116,7 @@ public class TaskNodeDataController extends BaseController {
     @SaCheckPermission("workflow:apply:remove")
     @Log(title = "申请", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
-    public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable Long[] ids) {
+    public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable String[] ids) {
         return toAjax(applyService.deleteWithValidByIds(List.of(ids)));
     }
 }

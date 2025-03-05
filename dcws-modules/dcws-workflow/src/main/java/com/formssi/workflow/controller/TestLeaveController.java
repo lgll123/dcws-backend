@@ -65,7 +65,7 @@ public class TestLeaveController extends BaseController {
     @SaCheckPermission("workflow:leave:query")
     @GetMapping("/{id}")
     public R<TestLeaveVo> getInfo(@NotNull(message = "主键不能为空")
-                                  @PathVariable Long id) {
+                                  @PathVariable String id) {
         return R.ok(testLeaveService.queryById(id));
     }
 
@@ -100,7 +100,7 @@ public class TestLeaveController extends BaseController {
     @Log(title = "请假", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空")
-                          @PathVariable Long[] ids) {
+                          @PathVariable String[] ids) {
         return toAjax(testLeaveService.deleteWithValidByIds(List.of(ids)));
     }
 }

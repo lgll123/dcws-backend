@@ -12,6 +12,7 @@ import com.formssi.common.core.domain.event.ProcessEvent;
 import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.service.WorkflowService;
+import com.formssi.common.core.utils.DateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
@@ -26,6 +27,7 @@ import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
 import com.formssi.workflow.service.IApplyService;
+import com.formssi.workflow.service.TaskSerialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
@@ -47,12 +49,13 @@ public class ApplyServiceImpl implements IApplyService {
     private final TaskNodeDataMapper taskNodeDataMapper;
     private final TaskNodeDataHisMapper taskNodeDataHisMapper;
     private final WorkflowService workflowService;
+    private final TaskSerialService taskSerialService;
 
     /**
      * 查询申请
      */
     @Override
-    public TaskNodeDataVo queryById(Long id) {
+    public TaskNodeDataVo queryById(String id) {
         return taskNodeDataMapper.selectVoById(id);
     }
 
@@ -103,6 +106,8 @@ public class ApplyServiceImpl implements IApplyService {
         if (StringUtils.isBlank(add.getStatus())) {
             add.setStatus(BusinessStatusEnum.DRAFT.getStatus());
         }
+        String id = taskSerialService.getTaskSerial(bo.getApplyType(), DateUtils.dateTime());
+        add.setId(id);
         boolean flag = taskNodeDataMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -125,7 +130,7 @@ public class ApplyServiceImpl implements IApplyService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean deleteWithValidByIds(Collection<Long> ids) {
+    public Boolean deleteWithValidByIds(Collection<String> ids) {
         List<String> idList = StreamUtils.toList(ids, String::valueOf);
         workflowService.deleteRunAndHisInstance(idList);
         return taskNodeDataMapper.deleteByIds(ids) > 0;
@@ -189,7 +194,7 @@ public class ApplyServiceImpl implements IApplyService {
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
-            taskNodeDataHis.setTaskNodeDataId(taskNodeDataHisVo.getId());
+            taskNodeDataHis.setTaskNodeDataId(taskNodeDataBo.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
             taskNodeDataHis.setAssetUserId(taskNodeDataBo.getAssetUserId());
             taskNodeDataHisMapper.updateById(taskNodeDataHis);

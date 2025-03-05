@@ -46,7 +46,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) hashMap.get("consumables");
 //                Long applicantId = taskNodeDataBo.getApplicantId();
                 Long assetUserId = taskNodeDataBo.getAssetUserId();
-                Long taskNodeDataId = taskNodeDataBo.getId();
+                String taskNodeDataId = taskNodeDataBo.getId();
                 // 资产-hardware 借出
                 if (!CollectionUtil.isEmpty(hardware)) {
                     Map<String, String> requestBodyMap = new HashMap<>();
@@ -80,7 +80,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             log.error("An error occurred while calling the external system", e);
             Map<String,Object> entityMap = (Map<String,Object>)variables.get("entity");
             DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
-            bo.setTaskNodeDataId(Long.valueOf(entityMap.get("id").toString()));
+            bo.setTaskNodeDataId(entityMap.get("id").toString());
             bo.setMessage(e.getMessage());
             bo.setAssetsDetail(String.valueOf(entityMap.get("applyDetail")).toString());
             bo.setCheckOutUser(String.valueOf(entityMap.get("applicantId")));
@@ -102,7 +102,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
         }
     }
     //附属品-accessories、组件-components、消耗品-consumables、资产-hardware 借出
-    private static void checkOutByCategoryType(ArrayList<Map<String, Object>> assets,Long applicantId,Long taskNodeDataId,Map<String, String> requestBodyMap,String categoryType){
+    private static void checkOutByCategoryType(ArrayList<Map<String, Object>> assets,Long applicantId,String taskNodeDataId,Map<String, String> requestBodyMap,String categoryType){
         for (int i = 0; i < assets.size(); i++) {
             DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
             bo.setAssetsType(categoryType);
@@ -162,7 +162,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
     }
 
     //许可证-licenses 借出
-    private static void checkOutLicenses(ArrayList<Map<String, Object>> licenses,Long applicantId,Long taskNodeDataId){
+    private static void checkOutLicenses(ArrayList<Map<String, Object>> licenses,Long applicantId,String taskNodeDataId){
         for (int i = 0; i < licenses.size(); i++) {
             DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
             bo.setAssetsType("licenses");

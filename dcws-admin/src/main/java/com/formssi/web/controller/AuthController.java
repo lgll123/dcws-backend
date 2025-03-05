@@ -8,6 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.formssi.common.core.constant.UserConstants;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.domain.model.LoginBody;
+import com.formssi.common.core.domain.model.PasswordLoginBody;
 import com.formssi.common.core.domain.model.RegisterBody;
 import com.formssi.common.core.domain.model.SocialLoginBody;
 import com.formssi.common.core.utils.*;
@@ -27,12 +28,14 @@ import com.formssi.system.service.ISysClientService;
 import com.formssi.system.service.ISysConfigService;
 import com.formssi.system.service.ISysSocialService;
 import com.formssi.system.service.ISysTenantService;
-import com.formssi.web.domain.vo.LoginTenantVo;
-import com.formssi.web.domain.vo.LoginVo;
-import com.formssi.web.domain.vo.TenantListVo;
+import com.formssi.utils.SecurityUtil;
+import com.formssi.web.domain.bo.LoginTokenBo;
+import com.formssi.web.domain.bo.LoginUserBo;
+import com.formssi.web.domain.vo.*;
 import com.formssi.web.service.IAuthStrategy;
 import com.formssi.web.service.SysLoginService;
 import com.formssi.web.service.SysRegisterService;
+import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +43,14 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +77,12 @@ public class AuthController {
     private final ISysSocialService socialUserService;
     private final ISysClientService clientService;
     private final ScheduledExecutorService scheduledExecutorService;
+
+    @Value("${securityKey.dcwsPrivateKey}")
+    private String dcwsPrivateKey;
+
+    @Value("${securityKey.llPublicKey}")
+    private String llPublicKey;
 
     /**
      * 登录方法
@@ -132,25 +144,47 @@ public class AuthController {
     }
 
     /**
-     * 第三方登录回调业务处理 绑定授权
+     * 乐联获取token
      *
-     * @param loginBody 请求体
+     * @param loginTokenBo 请求体
      * @return 结果
      */
-    @PostMapping("/social/callback")
-    public R<Void> socialCallback(@RequestBody SocialLoginBody loginBody) {
-        // 获取第三方登录信息
-        AuthResponse<AuthUser> response = SocialUtils.loginAuth(
-                loginBody.getSource(), loginBody.getSocialCode(),
-                loginBody.getSocialState(), socialProperties);
-        AuthUser authUserData = response.getData();
-        // 判断授权响应是否成功
-        if (!response.ok()) {
-            return R.fail(response.getMsg());
+    @PostMapping("/getDcwsToken")
+    public LoginTokenResVo getDcwsToken(@RequestBody LoginTokenBo loginTokenBo) throws Exception {
+        String data = loginTokenBo.getData();
+        String sign = loginTokenBo.getSign();
+        //数据验签
+        PublicKey publicKey = SecurityUtil.getPublicKeyFromString(llPublicKey);
+        if (SecurityUtil.verify(data,sign,publicKey)){
+            PrivateKey privateKey = SecurityUtil.getPrivateKeyFromString(dcwsPrivateKey);
+            //数据解密
+            String dataBase = SecurityUtil.decrypt(data,privateKey);
+            LoginUserBo loginToken = JsonUtils.parseObject(dataBase, LoginUserBo.class);
+            SysClientVo client = clientService.queryByClientId("428a8310cd442757ae699df5d894f051");
+            PasswordLoginBody loginBody = new PasswordLoginBody();
+            loginBody.setUsername(loginToken.getEmpNo());
+            loginBody.setTenantId("000000");
+            String body = JsonUtils.toJsonString(loginBody);
+            LoginVo loginVo = IAuthStrategy.login(body, client, "password");
+            LoginUserVo loginUserVo = new LoginUserVo();
+            loginUserVo.setToken(loginVo.getAccessToken());
+            loginUserVo.setEmpId(loginVo.getUserId());
+
+            LoginTokenVo loginTokenVo = new LoginTokenVo();
+            String dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.ok(loginUserVo)),publicKey);
+            loginTokenVo.setData(dataRes);
+            loginTokenVo.setSign(SecurityUtil.sign(dataRes,privateKey));
+
+            LoginTokenResVo loginTokenRes = new LoginTokenResVo();
+            loginTokenRes.setSucc("0");
+            loginTokenRes.setData(loginTokenVo);
+            return loginTokenRes;
+        }else {
+            return null;
         }
-        loginService.socialRegister(authUserData);
-        return R.ok();
     }
+
+
 
 
     /**
@@ -228,6 +262,27 @@ public class AuthController {
                 StringUtils.equals(vo.getDomain(), host));
         result.setVoList(CollUtil.isNotEmpty(list) ? list : voList);
         return R.ok(result);
+    }
+
+    /**
+     * 第三方登录回调业务处理 绑定授权
+     *
+     * @param loginBody 请求体
+     * @return 结果
+     */
+    @PostMapping("/social/callback")
+    public R<Void> socialCallback(@RequestBody SocialLoginBody loginBody) {
+        // 获取第三方登录信息
+        AuthResponse<AuthUser> response = SocialUtils.loginAuth(
+                loginBody.getSource(), loginBody.getSocialCode(),
+                loginBody.getSocialState(), socialProperties);
+        AuthUser authUserData = response.getData();
+        // 判断授权响应是否成功
+        if (!response.ok()) {
+            return R.fail(response.getMsg());
+        }
+        loginService.socialRegister(authUserData);
+        return R.ok();
     }
 
 }

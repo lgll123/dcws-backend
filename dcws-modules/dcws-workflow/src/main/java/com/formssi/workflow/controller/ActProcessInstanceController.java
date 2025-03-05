@@ -86,11 +86,11 @@ public class ActProcessInstanceController extends BaseController {
     @PostMapping("/getHistoryRecord")
     public R<List<ActHistoryInfoVo>> getHistoryRecord(@RequestBody ProcessInstanceBo processInstanceBo) {
         if ("20".equals(processInstanceBo.getWfType())){
-            DcwsNormalTaskVo dcwsApproveVo = normalTaskService.queryById(Long.valueOf(processInstanceBo.getKey()));
+            DcwsNormalTaskVo dcwsApproveVo = normalTaskService.queryById(processInstanceBo.getKey());
             if (StringUtils.isNotEmpty(dcwsApproveVo.getBusinessKey())){
                 //标准流程中新增的非标准流程，审批记录需合并
                 List<ActHistoryInfoVo> list = actProcessInstanceService.getHistoryRecord(dcwsApproveVo.getBusinessKey());
-                List<DcwsNormalTaskHandleHisVo> commonList = normalTaskService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
+                List<DcwsNormalTaskHandleHisVo> commonList = normalTaskService.getHistoryRecord(processInstanceBo.getKey());
                 for (DcwsNormalTaskHandleHisVo dcwsHisVo : commonList){
                     ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
                     actHistoryInfoVo.setName(dcwsApproveVo.getTaskName());
@@ -110,7 +110,7 @@ public class ActProcessInstanceController extends BaseController {
                 return R.ok(list);
             }else {
                 //标准流程外新增的非标准流程，单独显示审批记录
-                List<DcwsNormalTaskHandleHisVo> list = normalTaskService.getHistoryRecord(Long.valueOf(processInstanceBo.getKey()));
+                List<DcwsNormalTaskHandleHisVo> list = normalTaskService.getHistoryRecord(processInstanceBo.getKey());
                 List<ActHistoryInfoVo> tempList = new ArrayList<>();
                 for (DcwsNormalTaskHandleHisVo dcwsHisVo : list){
                     ActHistoryInfoVo actHistoryInfoVo = new ActHistoryInfoVo();
@@ -194,7 +194,7 @@ public class ActProcessInstanceController extends BaseController {
         }else {
             DcwsNormalTaskBo dcwsNormalTaskBo = new DcwsNormalTaskBo();
             if(StringUtils.isNotEmpty(bo.getBusinessKey())){
-                dcwsNormalTaskBo.setTaskId(Long.valueOf(bo.getBusinessKey()));
+                dcwsNormalTaskBo.setTaskId(bo.getBusinessKey());
             }
             if(!Objects.isNull(bo.getStartTime())){
                 dcwsNormalTaskBo.setStartTime(bo.getStartTime());

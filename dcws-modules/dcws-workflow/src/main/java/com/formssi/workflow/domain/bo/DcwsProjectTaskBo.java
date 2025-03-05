@@ -21,7 +21,7 @@ public class DcwsProjectTaskBo extends BaseEntity {
     /**
      * 任务ID
      */
-    private Long taskId;
+    private String taskId;
 
     /**
      * 任务类型

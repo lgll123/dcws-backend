@@ -23,7 +23,7 @@ public class DcwsNormalTaskHandleHisVo implements Serializable {
      * 任务ID
      */
     @ExcelProperty(value = "任务ID")
-    private Long taskId;
+    private String taskId;
 
     /**
      * 处理状态

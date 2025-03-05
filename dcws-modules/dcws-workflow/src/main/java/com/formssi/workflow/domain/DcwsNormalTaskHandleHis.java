@@ -20,7 +20,7 @@ public class DcwsNormalTaskHandleHis extends BaseEntity {
     /**
      * 任务ID
      */
-    private Long taskId;
+    private String taskId;
 
     /**
      * 处理状态

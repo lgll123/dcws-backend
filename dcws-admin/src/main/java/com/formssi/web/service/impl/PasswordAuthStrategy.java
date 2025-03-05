@@ -50,7 +50,9 @@ public class PasswordAuthStrategy implements IAuthStrategy {
     @Override
     public LoginVo login(String body, SysClientVo client) {
         PasswordLoginBody loginBody = JsonUtils.parseObject(body, PasswordLoginBody.class);
-        ValidatorUtils.validate(loginBody);
+        if (!"app".equals(client.getClientKey())){
+            ValidatorUtils.validate(loginBody);
+        }
         String tenantId = loginBody.getTenantId();
         String username = loginBody.getUsername();
         String password = loginBody.getPassword();
@@ -59,12 +61,12 @@ public class PasswordAuthStrategy implements IAuthStrategy {
 
         boolean captchaEnabled = captchaProperties.getEnable();
         // 验证码开关
-        if (captchaEnabled) {
+        if (captchaEnabled && !"app".equals(client.getClientKey())) {
             validateCaptcha(tenantId, username, code, uuid);
         }
         LoginUser loginUser = TenantHelper.dynamic(tenantId, () -> {
             SysUserVo user = loadUserByUsername(username);
-            loginService.checkLogin(LoginType.PASSWORD, tenantId, username, () -> !BCrypt.checkpw(password, user.getPassword()));
+            loginService.checkLogin(LoginType.PASSWORD, tenantId, username, () -> !"app".equals(client.getClientKey()) ? !BCrypt.checkpw(password, user.getPassword()) : false);
             // 此处可根据登录用户的数据不同 自行创建 loginUser
             return loginService.buildLoginUser(user);
         });
@@ -84,6 +86,7 @@ public class PasswordAuthStrategy implements IAuthStrategy {
         loginVo.setAccessToken(StpUtil.getTokenValue());
         loginVo.setExpireIn(StpUtil.getTokenTimeout());
         loginVo.setClientId(client.getClientId());
+        loginVo.setUserId(loginUser.getUserId());
         return loginVo;
     }
 

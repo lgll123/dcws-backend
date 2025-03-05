@@ -3,11 +3,11 @@ package com.formssi.workflow.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.formssi.common.core.utils.DateUtils;
 import com.formssi.common.satoken.utils.LoginHelper;
+import com.formssi.workflow.service.TaskSerialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.formssi.common.core.domain.event.ProcessEvent;
-import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.service.WorkflowService;
 import com.formssi.common.core.utils.MapstructUtils;
@@ -21,7 +21,6 @@ import com.formssi.workflow.domain.bo.TestLeaveBo;
 import com.formssi.workflow.domain.vo.TestLeaveVo;
 import com.formssi.workflow.mapper.TestLeaveMapper;
 import com.formssi.workflow.service.ITestLeaveService;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,12 +40,13 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
 
     private final TestLeaveMapper baseMapper;
     private final WorkflowService workflowService;
+    private final TaskSerialService taskSerialService;
 
     /**
      * 查询请假
      */
     @Override
-    public TestLeaveVo queryById(Long id) {
+    public TestLeaveVo queryById(String id) {
         return baseMapper.selectVoById(id);
     }
 
@@ -88,6 +88,8 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
         if (StringUtils.isBlank(add.getStatus())) {
             add.setStatus(BusinessStatusEnum.DRAFT.getStatus());
         }
+        String id = taskSerialService.getTaskSerial("18", DateUtils.dateTime());
+        add.setId(id);
         boolean flag = baseMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());
@@ -110,7 +112,7 @@ public class TestLeaveServiceImpl implements ITestLeaveService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Boolean deleteWithValidByIds(Collection<Long> ids) {
+    public Boolean deleteWithValidByIds(Collection<String> ids) {
         List<String> idList = StreamUtils.toList(ids, String::valueOf);
         workflowService.deleteRunAndHisInstance(idList);
         return baseMapper.deleteByIds(ids) > 0;

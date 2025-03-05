@@ -45,7 +45,7 @@ public class NormalTaskController extends BaseController {
      * @param id 主键
      */
     @GetMapping("/{id}")
-    public R<DcwsNormalTaskVo> getInfo(@NotNull(message = "主键不能为空")  @PathVariable Long id) {
+    public R<DcwsNormalTaskVo> getInfo(@NotNull(message = "主键不能为空")  @PathVariable String id) {
         return R.ok(normalTaskService.queryById(id));
     }
 

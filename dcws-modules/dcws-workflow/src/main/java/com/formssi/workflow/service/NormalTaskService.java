@@ -14,7 +14,7 @@ public interface NormalTaskService {
     /**
      * 查询非标准流程
      */
-    DcwsNormalTaskVo queryById(Long id);
+    DcwsNormalTaskVo queryById(String id);
 
     /**
      * 查询非标准流程列表
@@ -77,7 +77,7 @@ public interface NormalTaskService {
      * @param id 流程id
      * @return 结果
      */
-    List<DcwsNormalTaskHandleHisVo> getHistoryRecord(Long id);
+    List<DcwsNormalTaskHandleHisVo> getHistoryRecord(String id);
 
     /**
      * 查询流程类型

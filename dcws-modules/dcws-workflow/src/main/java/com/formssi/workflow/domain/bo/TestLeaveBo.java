@@ -28,7 +28,7 @@ public class TestLeaveBo extends BaseEntity {
      * 主键
      */
     @NotNull(message = "主键不能为空", groups = {EditGroup.class})
-    private Long id;
+    private String id;
 
     /**
      * 请假类型

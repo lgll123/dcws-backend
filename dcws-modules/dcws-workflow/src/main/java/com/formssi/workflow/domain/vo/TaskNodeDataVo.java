@@ -22,7 +22,7 @@ public class TaskNodeDataVo extends BaseEntity {
     /**
      * 主键
      */
-    private Long id;
+    private String id;
 
     /**
      * 工作流标准任务ID

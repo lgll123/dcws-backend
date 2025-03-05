@@ -9,25 +9,29 @@ import java.io.Serial;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("dcws_normal_task_user")
-public class DcwsNormalTaskUser extends BaseEntity {
+@TableName("dcws_task_serial_number")
+public class DcwsTaskSerialNumber extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 任务ID
+     * 系统名称
      */
-    private String taskId;
+    private String systemName;
 
     /**
-     * 办理人id
+     * '流程类型'
      */
-    private String userId;
+    private String taskType;
 
     /**
-     * 办理人名称
+     * '流程日期'
      */
-    private String userName;
+    private String taskDate;
 
+    /**
+     * 流程序号
+     */
+    private Long taskNum;
 }

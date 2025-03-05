@@ -27,7 +27,7 @@ public class TestLeave extends BaseEntity {
      * 主键
      */
     @TableId(value = "id")
-    private Long id;
+    private String id;
 
     /**
      * 请假类型

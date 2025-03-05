@@ -41,7 +41,6 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     private final DcwsNormalTaskUserMapper dcwsUserMapper;
     private final ISysUserService iSysUserService;
     private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
-    private final DcwsTaskTypeMapper dcwsTaskTypeMapper;
     private final TaskSerialService taskSerialService;
     private final WfCategoryMapper wfCategoryMapper;
 

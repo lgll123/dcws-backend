@@ -22,6 +22,7 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
+import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
@@ -73,7 +74,7 @@ public class ApplyServiceImpl implements IApplyService {
      * 查询申请列表
      */
     @Override
-    public TableDataInfo<TaskNodeDataVo> queryPageList(TaskNodeDataBo bo, PageQuery pageQuery) {
+    public TableDataInfo<TaskNodeDataVo> queryPageList(TaskNodeDataQueryBo bo, PageQuery pageQuery) {
         LambdaQueryWrapper<TaskNodeData> lqw = buildQueryWrapper(bo);
         Page<TaskNodeDataVo> result = taskNodeDataMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
@@ -83,16 +84,17 @@ public class ApplyServiceImpl implements IApplyService {
      * 查询申请列表
      */
     @Override
-    public List<TaskNodeDataVo> queryList(TaskNodeDataBo bo) {
+    public List<TaskNodeDataVo> queryList(TaskNodeDataQueryBo bo) {
         LambdaQueryWrapper<TaskNodeData> lqw = buildQueryWrapper(bo);
         return taskNodeDataMapper.selectVoList(lqw);
     }
 
-    private LambdaQueryWrapper<TaskNodeData> buildQueryWrapper(TaskNodeDataBo bo) {
+    private LambdaQueryWrapper<TaskNodeData> buildQueryWrapper(TaskNodeDataQueryBo bo) {
         LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
         lqw.eq(bo.getApplyDate()!=null, TaskNodeData::getApplyDate, bo.getApplyDate());
         lqw.like(StringUtils.isNotBlank(bo.getApplyDept()), TaskNodeData::getApplyDept, bo.getApplyDept());
         lqw.like(StringUtils.isNotBlank(bo.getApplicant()), TaskNodeData::getApplicant, bo.getApplicant());
+        lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
         lqw.orderByDesc(BaseEntity::getCreateTime);
         return lqw;
     }
@@ -143,10 +145,10 @@ public class ApplyServiceImpl implements IApplyService {
      *
      * @param processEvent 参数
      */
-    @EventListener(condition = "#processEvent.key.startsWith('assets')")
+    @EventListener(condition = "#processEvent.key.contains('assets')")
     public void processHandler(ProcessEvent processEvent) {
         log.info("当前任务执行了{}", processEvent.toString());
-        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(Long.valueOf(processEvent.getBusinessKey()));
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processEvent.getBusinessKey());
         taskNodeData.setStatus(processEvent.getStatus());
         if (processEvent.isSubmit()) {
             taskNodeData.setStatus(processEvent.getStatus());
@@ -164,10 +166,10 @@ public class ApplyServiceImpl implements IApplyService {
      *
      * @param processTaskEvent 参数
      */
-    @EventListener(condition = "#processTaskEvent.key.startsWith('assets')")
+    @EventListener(condition = "#processTaskEvent.key.contains('assets')")
     public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
         log.info("当前任务执行了{}", processTaskEvent.toString());
-        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(Long.valueOf(processTaskEvent.getBusinessKey()));
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processTaskEvent.getBusinessKey());
         taskNodeData.setStatus(BusinessStatusEnum.WAITING.getStatus());
         TaskNodeDataBo taskNodeDataBo = new TaskNodeDataBo();
         if (CollUtil.isNotEmpty(processTaskEvent.getVariables())) {

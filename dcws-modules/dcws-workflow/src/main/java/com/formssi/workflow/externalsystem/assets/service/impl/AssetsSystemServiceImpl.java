@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
 
@@ -74,7 +75,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
     }
 
     @Override
-    public TableDataInfo<CategoryBo> queryPageCategories(String categoryType, PageQuery pageQuery, String pathUrl) {
+    public TableDataInfo<CategoryBo> queryPageCategories(String categoryType,String applyType, PageQuery pageQuery, String pathUrl) {
         Map<String, String> params = new HashMap<>();
         params.put(CATEGORY_TYPE, categoryType);
         params.put(SEARCH, "");
@@ -98,7 +99,13 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
             categoryBo.setName(TypeSafeUtils.safeGetString(row, NAME));
             categoryBos.add(categoryBo);
         });
-        return new TableDataInfo<>(categoryBos, total.longValue());
+        if ("21".equals(applyType)) {//非IT物料申请
+            List<CategoryBo> categoryBos1 = categoryBos.stream().filter(t -> t.getName().startsWith("非IT_")).collect(Collectors.toList());
+            return new TableDataInfo<>(categoryBos1, total.longValue());
+        }else {
+            List<CategoryBo> categoryBos1 = categoryBos.stream().filter(t -> !t.getName().startsWith("非IT_")).collect(Collectors.toList());
+            return new TableDataInfo<>(categoryBos1, total.longValue());
+        }
     }
 
 
@@ -135,6 +142,17 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
             assetsBos.add(bo);
         });
         return new TableDataInfo<>(assetsBos, total.longValue());
+    }
+
+
+    /**
+     * 查询组件可checkout的资产列表
+     */
+    public Map<String, Object> selectAssetslist(Integer page,String pathUrl) {
+        Map<String, String> params = new HashMap<>();
+        params.put("page", String.valueOf(page));
+        IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
+        return  instance.process(params, pathUrl,REQUEST_TYPE_GET);
     }
 
     private OkHttpClient client = new OkHttpClient();

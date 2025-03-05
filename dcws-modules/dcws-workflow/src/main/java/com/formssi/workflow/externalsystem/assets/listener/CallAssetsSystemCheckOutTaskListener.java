@@ -15,14 +15,15 @@ import com.formssi.workflow.service.IAssetsCheckOutRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.stereotype.Component;
 
-import javax.sql.rowset.serial.SerialException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@Component("CallAssetsSystemCheckOutTaskListener")
 public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
     private static  final IAssetsCheckOutRecordService iAssetsCheckOutRecordService = SpringUtils.getBean(IAssetsCheckOutRecordService.class);
     private static final IExternalSystemAPIStrategy instance = SpringUtils.getBean("assets" + IExternalSystemAPIStrategy.BASE_NAME);

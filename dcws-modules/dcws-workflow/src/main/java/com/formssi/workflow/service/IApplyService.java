@@ -4,6 +4,7 @@ package com.formssi.workflow.service;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
+import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 
@@ -30,12 +31,12 @@ public interface IApplyService {
     /**
      * 查询申请列表
      */
-    TableDataInfo<TaskNodeDataVo> queryPageList(TaskNodeDataBo bo, PageQuery pageQuery);
+    TableDataInfo<TaskNodeDataVo> queryPageList(TaskNodeDataQueryBo bo, PageQuery pageQuery);
 
     /**
      * 查询申请列表
      */
-    List<TaskNodeDataVo> queryList(TaskNodeDataBo bo);
+    List<TaskNodeDataVo> queryList(TaskNodeDataQueryBo bo);
 
     /**
      * 新增申请

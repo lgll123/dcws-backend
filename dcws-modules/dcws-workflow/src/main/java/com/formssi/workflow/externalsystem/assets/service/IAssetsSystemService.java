@@ -19,12 +19,19 @@ public interface IAssetsSystemService {
     /**
      * 根据目录类型查询目录列表
      */
-    TableDataInfo<CategoryBo> queryPageCategories(String categoryType, PageQuery pageQuery, String urlPath);
+    TableDataInfo<CategoryBo> queryPageCategories(String categoryType,String applyType, PageQuery pageQuery, String urlPath);
 
     /**
      * 根据目录id查询物料列表
      */
     TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId, PageQuery pageQuery, String categories);
+
+    /**
+     * 查询组件可checkout的资产列表
+     */
+    Map<String, Object> selectAssetslist(Integer page,String pathUrl);
+
+
     String uploadDocument(MultipartFile file,
                                String title,
                                String created,

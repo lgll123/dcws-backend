@@ -13,6 +13,7 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
+import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.service.IApplyService;
@@ -41,7 +42,7 @@ public class TaskNodeDataController extends BaseController {
      */
     @SaCheckPermission("workflow:apply:list")
     @GetMapping("/list")
-    public TableDataInfo<TaskNodeDataVo> list(TaskNodeDataBo bo, PageQuery pageQuery) {
+    public TableDataInfo<TaskNodeDataVo> list(TaskNodeDataQueryBo bo, PageQuery pageQuery) {
         return applyService.queryPageList(bo, pageQuery);
     }
 
@@ -51,7 +52,7 @@ public class TaskNodeDataController extends BaseController {
     @SaCheckPermission("workflow:apply:export")
     @Log(title = "申请", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(TaskNodeDataBo bo, HttpServletResponse response) {
+    public void export(TaskNodeDataQueryBo bo, HttpServletResponse response) {
         List<TaskNodeDataVo> list = applyService.queryList(bo);
         ExcelUtil.exportExcel(list, "申请", TaskNodeDataVo.class, response);
     }

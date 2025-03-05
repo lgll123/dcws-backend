@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.BpmnError;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Map;
  * 更换领用人，先归还，再借出
  */
 @Slf4j
+@Component("CallAssetsSystemCheckInOutTaskListener")
 public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
     private final IExternalSystemAPIStrategy instance = SpringUtils.getBean("assets" + IExternalSystemAPIStrategy.BASE_NAME);
     @Override

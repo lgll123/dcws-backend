@@ -1,6 +1,9 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
 import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.CompleteTaskBo;
 import com.formssi.workflow.domain.bo.StartProcessBo;
@@ -11,6 +14,7 @@ import com.formssi.workflow.service.IApplyService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
@@ -20,36 +24,42 @@ import java.util.*;
  * 采购任务启动
  */
 @Slf4j
+@Component("PurchaseTaskStartExeListener")
 public class PurchaseTaskStartExeListener implements ExecutionListener {
     private static  final IApplyService applyService = SpringUtils.getBean(IApplyService.class);
     private static  final IActTaskServiceWrapper actTaskServiceWrapper = SpringUtils.getBean(IActTaskServiceWrapper.class);
     @Override
     public void notify(DelegateExecution delegateTask) {
         Map<String, Object> variables = delegateTask.getVariables();
-//        TaskNodeDataBo taskNodeDataBo = null;
-//        HashMap<String,Object> hashMap =null;
-//        try {
-           /* Object entity = variables.get("entity");
+        TaskNodeDataBo taskNodeDataBo = null;
+        HashMap<String,Object> hashMap =null;
+        Map<String, Object> purchaseDetail =null;
+        String materialInfoJson = null;
+        try {
+            Object entity = variables.get("entity");
             if(variables.get("entity")!=null) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
                     taskNodeDataBo = objectMapper.readValue(JSON.toJSONString(entity), TaskNodeDataBo.class);
                     hashMap = objectMapper.readValue(taskNodeDataBo.getApplyDetail(), HashMap.class);
+                    purchaseDetail = (Map<String, Object>) hashMap.get("purchaseDetail");
+                    materialInfoJson = JSON.toJSONString(purchaseDetail.get("materialInfo"));
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
-            }*/
+            }
+            TaskNodeDataBo purchaseBo = new TaskNodeDataBo();
+            purchaseBo.setApplicant("dcws采购");
+            purchaseBo.setApplicantId(4L);
+            purchaseBo.setApplyDate(new Date());
+            purchaseBo.setApplyDept("四方精创采购");
+            purchaseBo.setApplyType("19");
+            purchaseBo.setAssetUserId(4L);
+            purchaseBo.setApplyReson("采购物料");
+            purchaseBo.setApplyDetail(materialInfoJson);//采购清单
+            purchaseBo.setApplyRemarks(String.valueOf(purchaseDetail.get("purchaseAmount")));//采购金额
 
-
-            TaskNodeDataBo taskNodeDataBo = new TaskNodeDataBo();
-            taskNodeDataBo.setApplicant("dcws采购");
-            taskNodeDataBo.setApplicantId(4L);
-            taskNodeDataBo.setApplyDate(new Date());
-            taskNodeDataBo.setApplyDept("四方精创采购");
-            taskNodeDataBo.setApplyType("19");
-            taskNodeDataBo.setAssetUserId(4L);
-            taskNodeDataBo.setApplyReson("采购物料");
-            TaskNodeDataVo taskNodeDataVo = applyService.insertByBo(taskNodeDataBo);
+            TaskNodeDataVo taskNodeDataVo = applyService.insertByBo(purchaseBo);
             StartProcessBo startProcessBo = new StartProcessBo();
             startProcessBo.setBusinessKey(String.valueOf(taskNodeDataVo.getId()));
             startProcessBo.setRouter("/task/approveTemplate/assetsApproves");
@@ -77,11 +87,11 @@ public class PurchaseTaskStartExeListener implements ExecutionListener {
                     }
                 }
             });
-
-
-//        } catch (Exception e) {
-//            log.error("An error occurred while calling the external system", e);
-//        }
+        } catch (Exception e) {
+            // 记录失败记录，待auto处理启动流程 TODO
+            log.info("待auto处理启动流程----------------");
+            log.error("An error occurred while calling the external system", e);
+        }
     }
 
 

@@ -1,6 +1,7 @@
 package com.formssi.workflow.utils;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.workflow.domain.vo.WfUserTaskButtonVo;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -38,7 +39,7 @@ public class QueryUtils {
     public static ModelQuery modelQuery() {
         ModelQuery query = PROCESS_ENGINE.getRepositoryService().createModelQuery();
         if (TenantHelper.isEnable()) {
-            query.modelTenantId(TenantHelper.getTenantId());
+            query.modelTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }
@@ -46,7 +47,7 @@ public class QueryUtils {
     public static ProcessDefinitionQuery definitionQuery() {
         ProcessDefinitionQuery query = PROCESS_ENGINE.getRepositoryService().createProcessDefinitionQuery();
         if (TenantHelper.isEnable()) {
-            query.processDefinitionTenantId(TenantHelper.getTenantId());
+            query.processDefinitionTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }
@@ -54,7 +55,7 @@ public class QueryUtils {
     public static DeploymentQuery deploymentQuery() {
         DeploymentQuery query = PROCESS_ENGINE.getRepositoryService().createDeploymentQuery();
         if (TenantHelper.isEnable()) {
-            query.deploymentTenantId(TenantHelper.getTenantId());
+            query.deploymentTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }
@@ -70,7 +71,7 @@ public class QueryUtils {
     public static HistoricTaskInstanceQuery hisTaskInstanceQuery() {
         HistoricTaskInstanceQuery query = PROCESS_ENGINE.getHistoryService().createHistoricTaskInstanceQuery();
         if (TenantHelper.isEnable()) {
-            query.taskTenantId(TenantHelper.getTenantId());
+            query.taskTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }
@@ -86,7 +87,7 @@ public class QueryUtils {
     public static ProcessInstanceQuery instanceQuery() {
         ProcessInstanceQuery query = PROCESS_ENGINE.getRuntimeService().createProcessInstanceQuery();
         if (TenantHelper.isEnable()) {
-            query.processInstanceTenantId(TenantHelper.getTenantId());
+            query.processInstanceTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }
@@ -106,7 +107,7 @@ public class QueryUtils {
     public static HistoricProcessInstanceQuery hisInstanceQuery() {
         HistoricProcessInstanceQuery query = PROCESS_ENGINE.getHistoryService().createHistoricProcessInstanceQuery();
         if (TenantHelper.isEnable()) {
-            query.processInstanceTenantId(TenantHelper.getTenantId());
+            query.processInstanceTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }
@@ -126,7 +127,7 @@ public class QueryUtils {
     public static HistoricActivityInstanceQuery hisActivityInstanceQuery() {
         HistoricActivityInstanceQuery query = PROCESS_ENGINE.getHistoryService().createHistoricActivityInstanceQuery();
         if (TenantHelper.isEnable()) {
-            query.activityTenantId(TenantHelper.getTenantId());
+            query.activityTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }
@@ -138,7 +139,7 @@ public class QueryUtils {
     public static TaskQuery taskQuery() {
         TaskQuery query = PROCESS_ENGINE.getTaskService().createTaskQuery();
         if (TenantHelper.isEnable()) {
-            query.taskTenantId(TenantHelper.getTenantId());
+            query.taskTenantId(StringUtils.isNotEmpty(TenantHelper.getTenantId()) ? TenantHelper.getTenantId() : "000000");
         }
         return query;
     }

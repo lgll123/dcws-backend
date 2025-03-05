@@ -102,4 +102,9 @@ public class ProcessInstanceVo implements Serializable {
      * 流程分类
      */
     private String wfType;
+
+    /**
+     * 申请原因
+     */
+    private String applyReason;
 }

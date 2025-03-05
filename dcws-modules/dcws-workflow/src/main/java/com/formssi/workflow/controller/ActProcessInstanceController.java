@@ -216,6 +216,7 @@ public class ActProcessInstanceController extends BaseController {
                     processInstanceVo.setWfType("20");
                     processInstanceVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     processInstanceVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
+                    processInstanceVo.setApplyReason(dcwsNormalTaskVo.getRemark());
                     listTemp.add(processInstanceVo);
                 }
             }

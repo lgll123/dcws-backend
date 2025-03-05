@@ -112,6 +112,7 @@ public class ActTaskController extends BaseController {
                     taskVo.setWfType("20");
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
+                    taskVo.setApplyReason(dcwsNormalTaskVo.getRemark());
                     listTemp.add(taskVo);
                 }
             }
@@ -164,6 +165,7 @@ public class ActTaskController extends BaseController {
                     taskVo.setAssigneeName(sysUserVo.getUserName());
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
+                    taskVo.setApplyReason(dcwsNormalTaskVo.getRemark());
                     taskVo.setWfType("20");
                     listTemp.add(taskVo);
                 }

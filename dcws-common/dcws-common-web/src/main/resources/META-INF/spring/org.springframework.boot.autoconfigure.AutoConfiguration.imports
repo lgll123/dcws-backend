@@ -1,5 +1,0 @@
-com.formssi.common.web.config.CaptchaConfig
-com.formssi.common.web.config.FilterConfig
-com.formssi.common.web.config.I18nConfig
-com.formssi.common.web.config.ResourcesConfig
-com.formssi.common.web.config.UndertowConfig

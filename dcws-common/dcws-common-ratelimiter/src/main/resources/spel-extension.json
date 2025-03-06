@@ -1,7 +1,0 @@
-{
-  "com.formssi.common.ratelimiter.annotation.RateLimiter@key": {
-    "method": {
-      "parameters": true
-    }
-  }
-}

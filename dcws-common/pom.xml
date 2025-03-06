@@ -11,31 +11,9 @@
     <name>dcws-common</name>
     <url>http://maven.apache.org</url>
     <modules>
-        <module>dcws-bom</module>
         <module>dcws-common-core</module>
-        <module>dcws-common-doc</module>
-        <module>dcws-common-encrypt</module>
-        <module>dcws-common-excel</module>
-        <module>dcws-common-idempotent</module>
-        <module>dcws-common-job</module>
-        <module>dcws-common-json</module>
-        <module>dcws-common-log</module>
-        <module>dcws-common-mail</module>
         <module>dcws-common-mybatis</module>
-        <module>dcws-common-oss</module>
-        <module>dcws-common-ratelimiter</module>
-        <module>dcws-common-redis</module>
         <module>dcws-common-satoken</module>
-        <module>dcws-common-security</module>
-        <module>dcws-common-sensitive</module>
-        <module>dcws-common-sms</module>
-        <module>dcws-common-social</module>
-        <module>dcws-common-sse</module>
-        <module>dcws-common-tenant</module>
-        <module>dcws-common-translation</module>
-        <module>dcws-common-web</module>
-        <module>dcws-common-websocket</module>
-        <module>dcws-common-minio</module>
     </modules>
     <description>common 通用模块</description>
 </project>

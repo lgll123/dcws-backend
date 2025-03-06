@@ -29,6 +29,27 @@
         </dependency>
 
         <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-mybatis</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.formssi.bond</groupId>
+            <artifactId>dcws-common-satoken</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-configurator</artifactId>
         </dependency>
@@ -78,27 +99,51 @@
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-web</artifactId>
+            <artifactId>low-code-common-web</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
             <artifactId>dcws-common-mybatis</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-log</artifactId>
+            <artifactId>low-code-common-log</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-satoken</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-idempotent</artifactId>
+            <artifactId>low-code-common-idempotent</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -108,33 +153,75 @@
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-tenant</artifactId>
+            <artifactId>low-code-common-tenant</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-satoken</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-mybatis</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-excel</artifactId>
+            <artifactId>low-code-common-excel</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-translation</artifactId>
+            <artifactId>low-code-common-translation</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-websocket</artifactId>
+            <artifactId>low-code-common-websocket</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-satoken</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-mail</artifactId>
+            <artifactId>low-code-common-mail</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>

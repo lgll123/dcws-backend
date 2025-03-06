@@ -13,9 +13,7 @@ import com.formssi.workflow.domain.bo.DcwsNormalTaskBo;
 import com.formssi.workflow.domain.vo.DcwsNormalTaskVo;
 import com.formssi.workflow.domain.vo.DcwsTaskTypeVo;
 import com.formssi.workflow.service.NormalTaskService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -94,7 +92,7 @@ public class NormalTaskController extends BaseController {
     }
 
     /**
-     * 导出模型zip压缩包
+     * 查询流程类型
      *
      */
     @GetMapping("/queryWfType")

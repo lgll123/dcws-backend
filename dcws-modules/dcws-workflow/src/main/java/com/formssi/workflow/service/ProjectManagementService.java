@@ -4,7 +4,7 @@ import com.formssi.workflow.domain.bo.DcwsProjectBo;
 import com.formssi.workflow.domain.bo.DcwsProjectTaskBo;
 import com.formssi.workflow.domain.vo.DcwsProjectTaskVo;
 import com.formssi.workflow.domain.vo.DcwsProjectVo;
-import com.formssi.workflow.domain.vo.TaskVo;
+import com.formssi.workflow.domain.vo.DcwsTaskVo;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ public interface ProjectManagementService {
     /**
      * 修改任务
      */
-    TaskVo querytaskbelonging(DcwsProjectTaskBo bo);
+    DcwsTaskVo querytaskbelonging(DcwsProjectTaskBo bo);
 
 
 

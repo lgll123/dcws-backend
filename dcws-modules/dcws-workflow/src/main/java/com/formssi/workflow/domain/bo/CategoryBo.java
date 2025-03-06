@@ -6,7 +6,7 @@ import lombok.Data;
  * 目录类型查询对象
  */
 @Data
-public class CategoryBo{
+public class CategoryBo {
 
 
     /**

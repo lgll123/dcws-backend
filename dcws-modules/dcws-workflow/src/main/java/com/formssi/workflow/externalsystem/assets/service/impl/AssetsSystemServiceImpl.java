@@ -75,7 +75,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
     }
 
     @Override
-    public TableDataInfo<CategoryBo> queryPageCategories(String categoryType,String applyType, PageQuery pageQuery, String pathUrl) {
+    public TableDataInfo<CategoryBo> queryPageCategories(String categoryType, String applyType, PageQuery pageQuery, String pathUrl) {
         Map<String, String> params = new HashMap<>();
         params.put(CATEGORY_TYPE, categoryType);
         params.put(SEARCH, "");

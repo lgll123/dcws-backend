@@ -5,8 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.utils.SpringUtils;
-import com.formssi.workflow.domain.bo.CompleteTaskBo;
-import com.formssi.workflow.domain.bo.StartProcessBo;
+import com.formssi.workflow.domain.bo.DcwsCompleteTaskBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.externalsystem.assets.servicewrapper.IActTaskServiceWrapper;
@@ -17,7 +16,7 @@ import org.flowable.engine.delegate.ExecutionListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-
+import com.formssi.workflow.domain.bo.StartProcessBo;
 import java.util.*;
 
 /**
@@ -70,7 +69,7 @@ public class PurchaseTaskStartExeListener implements ExecutionListener {
                     // 在此处启动独立流程的任务
                     Map<String, Object> stringObjectMap = actTaskServiceWrapper.startProcessInNewTransaction(startProcessBo);// 调用包裹方法
                     if (!CollectionUtil.isEmpty(stringObjectMap)) {
-                        CompleteTaskBo completeTaskBo = new CompleteTaskBo();
+                        DcwsCompleteTaskBo completeTaskBo = new DcwsCompleteTaskBo();
                         completeTaskBo.setTaskId(String.valueOf(stringObjectMap.get("taskId")));
                         List objects = new ArrayList<String>();
                         objects.add("1");

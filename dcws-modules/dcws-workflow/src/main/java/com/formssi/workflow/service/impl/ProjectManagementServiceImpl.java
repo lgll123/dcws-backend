@@ -38,7 +38,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     private final DcwsProjectMapper dcwsProjectMapper;
     private final DcwsProjectTaskRefMapper dcwsProjectTaskRefMapper;
     private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
-    private final ActTaskMapper actTaskMapper;
+    private final DcwsActTaskMapper actTaskMapper;
     private final DcwsNormalTaskMapper dcwsNormalTaskMapper;
 
     /**
@@ -145,9 +145,9 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     }
 
     @Override
-    public TaskVo querytaskbelonging(DcwsProjectTaskBo bo) {
+    public DcwsTaskVo querytaskbelonging(DcwsProjectTaskBo bo) {
         if (!"20".equals(bo.getTaskType())){
-            QueryWrapper<TaskVo> queryWrapper = new QueryWrapper<>();
+            QueryWrapper<DcwsTaskVo> queryWrapper = new QueryWrapper<>();
             List<RoleDTO> roles = LoginHelper.getLoginUser().getRoles();
             List<String> roleIds = StreamUtils.toList(roles, e -> String.valueOf(e.getRoleId()));
             String userId = String.valueOf(LoginHelper.getUserId());
@@ -159,10 +159,10 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
             PageQuery pageQuery = new PageQuery();
             pageQuery.setPageNum(1);
             pageQuery.setPageSize(1);
-            Page<TaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
-            List<TaskVo> taskList = page.getRecords();
+            Page<DcwsTaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
+            List<DcwsTaskVo> taskList = page.getRecords();
             if (CollUtil.isNotEmpty(taskList)) {
-                TaskVo taskVo = taskList.get(0);
+                DcwsTaskVo taskVo = taskList.get(0);
                 taskVo.setTaskBelonging("true");
                 return taskVo;
             }
@@ -177,12 +177,12 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
             Page<DcwsNormalTaskVo> pageTemp = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), wrapper);
             List<DcwsNormalTaskVo> taskTempList = pageTemp.getRecords();
             if (CollUtil.isNotEmpty(taskTempList)) {
-                TaskVo taskVo = new TaskVo();
+                DcwsTaskVo taskVo = new DcwsTaskVo();
                 taskVo.setTaskBelonging("true");
                 return taskVo;
             }
         }
-        TaskVo taskVo = new TaskVo();
+        DcwsTaskVo taskVo = new DcwsTaskVo();
         taskVo.setTaskBelonging("false");
         return taskVo;
     }

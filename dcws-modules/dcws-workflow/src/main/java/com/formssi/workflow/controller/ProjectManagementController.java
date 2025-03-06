@@ -95,8 +95,8 @@ public class ProjectManagementController extends BaseController {
     @Log(title = "项目", businessType = BusinessType.UPDATE)
     @RepeatSubmit()
     @PostMapping("/querytaskbelonging")
-    public R<TaskVo> querytaskbelonging(@Validated(EditGroup.class) @RequestBody DcwsProjectTaskBo bo) {
-        TaskVo TaskVo = projectService.querytaskbelonging(bo);
+    public R<DcwsTaskVo> querytaskbelonging(@Validated(EditGroup.class) @RequestBody DcwsProjectTaskBo bo) {
+        DcwsTaskVo TaskVo = projectService.querytaskbelonging(bo);
         return R.ok(TaskVo);
     }
 }

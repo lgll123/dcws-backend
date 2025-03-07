@@ -239,12 +239,12 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                 .set(DcwsNormalTaskHandleHis::getUpdateTime,new Date())
                 .eq(DcwsNormalTaskHandleHis::getUserId, LoginHelper.getUserId())
                 .isNull(DcwsNormalTaskHandleHis::getUpdateTime)
-                .eq(DcwsNormalTaskHandleHis::getTaskId, Long.valueOf(id)));
+                .eq(DcwsNormalTaskHandleHis::getTaskId, id));
 
         dcwsHisMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTaskHandleHis>()
                     .set(DcwsNormalTaskHandleHis::getIsDisplay, "N")
                     .isNull(DcwsNormalTaskHandleHis::getUpdateTime)
-                    .eq(DcwsNormalTaskHandleHis::getTaskId, Long.valueOf(id)));
+                    .eq(DcwsNormalTaskHandleHis::getTaskId, id));
 
         return dcwsNormalTaskMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTask>()
                 .set(DcwsNormalTask::getStatus, BusinessStatusEnum.CANCEL.getStatus())

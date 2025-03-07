@@ -86,6 +86,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
         dcwsProject.setProjectLeader(LoginHelper.getUsername());
         dcwsProject.setCreateBy(LoginHelper.getUserId());
         dcwsProject.setCreateTime(new Date());
+        dcwsProject.setBeginTime(new Date());
         //新增项目表
         boolean flag = dcwsProjectMapper.insert(dcwsProject) > 0;
         if (flag) {

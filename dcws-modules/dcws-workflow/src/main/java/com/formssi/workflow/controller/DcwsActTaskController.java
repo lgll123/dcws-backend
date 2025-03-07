@@ -19,7 +19,7 @@ import com.formssi.workflow.domain.bo.*;
 import com.formssi.workflow.service.DcwsIActTaskService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
+import com.formssi.workflow.utils.DcwsQueryUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -161,5 +161,15 @@ public class DcwsActTaskController extends BaseController {
     @PostMapping("/getNextNodeInfo")
     public R<Map<String, Object>> getNextNodeInfo(@RequestBody NextNodeBo nextNodeBo) {
         return R.ok(actTaskService.getNextNodeInfo(nextNodeBo));
+    }
+
+    /**
+     * 获取当前任务
+     *
+     * @param taskId 任务id
+     */
+    @GetMapping("/getTaskById/{taskId}")
+    public R<DcwsTaskVo> getTaskById(@PathVariable String taskId) {
+        return R.ok(DcwsQueryUtils.getTask(taskId));
     }
 }

@@ -31,5 +31,10 @@ public class TaskNodeDataQueryBo{
      */
     private String applyDate;
 
+    /**
+     * 状态
+     */
+    private String status;
+
 
 }

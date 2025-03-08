@@ -19,6 +19,7 @@ import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
+import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
@@ -95,6 +96,8 @@ public class ApplyServiceImpl implements IApplyService {
         lqw.like(StringUtils.isNotBlank(bo.getApplyDept()), TaskNodeData::getApplyDept, bo.getApplyDept());
         lqw.like(StringUtils.isNotBlank(bo.getApplicant()), TaskNodeData::getApplicant, bo.getApplicant());
         lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
+        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), TaskNodeData::getStatus, bo.getStatus());
+        lqw.eq(TaskNodeData::getCreateBy, LoginHelper.getUserId());
         lqw.orderByDesc(BaseEntity::getCreateTime);
         return lqw;
     }

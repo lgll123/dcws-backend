@@ -68,5 +68,16 @@ public class DcwsAssetsCheckOut extends BaseEntity {
      * auto处理次数
      */
     private int  autoHandleNum;
-
+    /**
+     * check类型，1-借出 2 借入
+     */
+    private String  checkType;
+    /**
+     * 资产系统附属品与用户关联Id
+     */
+    private String  accessoryUserId;
+    /**
+     * 1-流程checkout（借出）  2-流程checkinout(先归还再借出)
+     */
+    private String  checkOutIn;
 }

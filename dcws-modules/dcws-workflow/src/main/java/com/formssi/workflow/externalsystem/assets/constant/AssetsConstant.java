@@ -116,6 +116,10 @@ public interface AssetsConstant {
      */
     String ASSETS_STATUS_7 = "7";
     /**
+     * 资产状态 所有
+     */
+    String ASSETS_STATUS_1 = "1";
+    /**
      * 资产状态 已领用
      */
     String ASSETS_STATUS_11 = "11";

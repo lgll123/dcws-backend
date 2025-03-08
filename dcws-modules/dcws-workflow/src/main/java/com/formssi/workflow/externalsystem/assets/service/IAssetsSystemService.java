@@ -23,7 +23,7 @@ public interface IAssetsSystemService {
     /**
      * 根据目录id查询物料列表
      */
-    TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId, PageQuery pageQuery, String categories);
+    TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId,String assetStatus, PageQuery pageQuery, String categories);
 
     /**
      * 查询组件可checkout的资产列表

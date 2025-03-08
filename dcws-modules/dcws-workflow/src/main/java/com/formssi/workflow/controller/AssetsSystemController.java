@@ -50,11 +50,12 @@ public class AssetsSystemController  extends BaseController {
     /**
      * 根据目录id查询物料列表
      * categories：附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
+     * assetStatus: 空：查询可分配列表 1：查询所有
      */
     @GetMapping("/{categories}/{categoryId}")
     public TableDataInfo<AssetsSystemBo> queryAccessoriesById(@NotBlank(message = "目录路径不能为空") @PathVariable String categories,
-                                                              @NotNull(message = "目录Id不能为空") @PathVariable Integer categoryId, PageQuery pageQuery) {
-        return assetsSystemService.queryAccessoriesById(categoryId,pageQuery,categories);
+                                                              @NotNull(message = "目录Id不能为空") @PathVariable Integer categoryId,String assetStatus, PageQuery pageQuery) {
+        return assetsSystemService.queryAccessoriesById(categoryId,assetStatus,pageQuery,categories);
     }
 
     /**

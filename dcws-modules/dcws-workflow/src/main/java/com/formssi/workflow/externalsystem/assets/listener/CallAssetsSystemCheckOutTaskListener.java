@@ -1,7 +1,9 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.alibaba.fastjson.JSON;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.constant.HttpStatus;
 import com.formssi.common.core.exception.ServiceException;
@@ -9,7 +11,6 @@ import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
-//import com.formssi.workflow.externalsystem.converpdf.ExcelToPDFConverter;
 import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.service.IAssetsCheckOutRecordService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,93 +28,85 @@ import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant
 @Slf4j
 @Component("CallAssetsSystemCheckOutTaskListener")
 public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
-    private static  final IAssetsCheckOutRecordService iAssetsCheckOutRecordService = SpringUtils.getBean(IAssetsCheckOutRecordService.class);
+    private static final IAssetsCheckOutRecordService assetsCheckOutRecordService = SpringUtils.getBean(IAssetsCheckOutRecordService.class);
     private static final IExternalSystemAPIStrategy instance = SpringUtils.getBean("assets" + IExternalSystemAPIStrategy.BASE_NAME);
+
     @Override
     public void notify(DelegateTask delegateTask) {
         Map<String, Object> variables = delegateTask.getVariables();
-        TaskNodeDataBo taskNodeDataBo = null;
-        HashMap<String,Object> hashMap =null;
-        ObjectMapper objectMapper = new ObjectMapper();
         try {
-            if(variables.get("entity")!=null) {
-                taskNodeDataBo = objectMapper.readValue(JSON.toJSONString(variables.get("entity")), TaskNodeDataBo.class);
-                //TODO yqh
-//                ExcelToPDFConverter.convert("C:\\Users\\forms\\Desktop\\物料申请\\IT类物料申请表 (202410).xlsx", "C:\\Users\\forms\\Desktop\\物料申请\\output-test.pdf",taskNodeDataBo);
-                hashMap = objectMapper.readValue(taskNodeDataBo.getApplyDetail(), HashMap.class);
-                //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
-                ArrayList<Map<String, Object>> hardware = (ArrayList<Map<String, Object>>) hashMap.get("hardware");
-                ArrayList<Map<String, Object>> licenses = (ArrayList<Map<String, Object>>) hashMap.get("licenses");
-                ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) hashMap.get("accessories");
-                ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) hashMap.get("components");
-                ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) hashMap.get("consumables");
-//                Long applicantId = taskNodeDataBo.getApplicantId();
-                Long assetUserId = taskNodeDataBo.getAssetUserId();
-                String taskNodeDataId = taskNodeDataBo.getId();
-                // 资产-hardware 借出
-                if (!CollectionUtil.isEmpty(hardware)) {
-                    Map<String, String> requestBodyMap = new HashMap<>();
-                    requestBodyMap.put("checkout_to_type",  "user");
-                    requestBodyMap.put("assigned_user",  assetUserId.toString());
-                    checkOutByCategoryType(hardware,assetUserId,taskNodeDataId,requestBodyMap,"hardware");
-                }
-                // 附属品-accessories 借出
-                if (!CollectionUtil.isEmpty(accessories)) {
-                    Map<String, String> requestBodyMap = new HashMap<>();
-                    requestBodyMap.put("assigned_user",  assetUserId.toString());
-                    checkOutByCategoryType(accessories,assetUserId,taskNodeDataId,requestBodyMap,"accessories");
-                }
-                // 组件-components 借出
-                if (!CollectionUtil.isEmpty(components)) {
-                    Map<String, String> requestBodyMap = new HashMap<>();
-                    checkOutByCategoryType(components,assetUserId,taskNodeDataId,requestBodyMap,"components");
-                }
-                // 消耗品-consumables 借出
-                if (!CollectionUtil.isEmpty(consumables)) {
-                    Map<String, String> requestBodyMap = new HashMap<>();
-                    requestBodyMap.put("assigned_to",  assetUserId.toString());
-                    checkOutByCategoryType(consumables,assetUserId,taskNodeDataId,requestBodyMap,"consumables");
-                }
-                //许可证-licenses 借出 可以借出到人或资产
-                if (!CollectionUtil.isEmpty(licenses)) {
-                    checkOutLicenses(licenses,assetUserId,taskNodeDataId);
-                }
+            Object entity = variables.get("entity");
+            if (ObjectUtil.isEmpty(entity)) return;
+            ObjectMapper mapper = new ObjectMapper();
+            TaskNodeDataBo taskNodeDataBo = mapper.readValue(JSONUtil.toJsonStr(entity), TaskNodeDataBo.class);
+            if (ObjectUtil.isEmpty(taskNodeDataBo)) return;
+            Map<String ,Object> map = mapper.readValue(taskNodeDataBo.getApplyDetail(), Map.class);
+            //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
+            ArrayList<Map<String, Object>> hardware = (ArrayList<Map<String, Object>>) map.get("hardware");
+            ArrayList<Map<String, Object>> licenses = (ArrayList<Map<String, Object>>) map.get("licenses");
+            ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) map.get("accessories");
+            ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) map.get("components");
+            ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) map.get("consumables");
+            Long assetUserId = taskNodeDataBo.getAssetUserId();
+            String taskNodeDataId = taskNodeDataBo.getId();
+            // 资产-hardware 借出
+            if (!CollectionUtil.isEmpty(hardware)) {
+                Map<String, String> requestBodyMap = new HashMap<>();
+                requestBodyMap.put("checkout_to_type", "user");
+                requestBodyMap.put("assigned_user", Convert.toStr(assetUserId));
+                checkOutByCategoryType(hardware, assetUserId, taskNodeDataId, requestBodyMap, "hardware");
             }
-        } catch (Exception e) {
-            log.error("An error occurred while calling the external system", e);
-            Map<String,Object> entityMap = (Map<String,Object>)variables.get("entity");
-            DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
-            bo.setTaskNodeDataId(entityMap.get("id").toString());
-            bo.setMessage(e.getMessage());
-            bo.setAssetsDetail(String.valueOf(entityMap.get("applyDetail")).toString());
-            bo.setCheckOutUser(String.valueOf(entityMap.get("applicantId")));
-            bo.setStatus("2");//部分异常待处理
-            bo.setAssetsType("0");
-            // 记录物料checkOut 记录
-            addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
-        }
-    }
-    //记录checkOut 记录
-    private static void addAssetsCheckOutRecord(DcwsAssetsCheckOutBo bo,IAssetsCheckOutRecordService assetsCheckOutRecordService){
-        try {
-            assetsCheckOutRecordService.insertByBo(bo);
-            if(bo.getId()==null){
-                log.info("物料申请借出记录新增失败：id == null");
+            // 附属品-accessories 借出
+            if (!CollectionUtil.isEmpty(accessories)) {
+                Map<String, String> requestBodyMap = new HashMap<>();
+                requestBodyMap.put("assigned_user", Convert.toStr(assetUserId));
+                checkOutByCategoryType(accessories, assetUserId, taskNodeDataId, requestBodyMap, "accessories");
             }
-        } catch (Exception e) {
-            log.info("物料申请借出记录新增失败：" + e.getMessage(),e);
-        }
+            // 组件-components 借出
+            if (!CollectionUtil.isEmpty(components)) {
+                Map<String, String> requestBodyMap = new HashMap<>();
+                checkOutByCategoryType(components, assetUserId, taskNodeDataId, requestBodyMap, "components");
+            }
+            // 消耗品-consumables 借出
+            if (!CollectionUtil.isEmpty(consumables)) {
+                Map<String, String> requestBodyMap = new HashMap<>();
+                requestBodyMap.put("assigned_to", Convert.toStr(assetUserId));
+                checkOutByCategoryType(consumables, assetUserId, taskNodeDataId, requestBodyMap, "consumables");
+            }
+            //许可证-licenses 借出 可以借出到人或资产
+            if (!CollectionUtil.isEmpty(licenses)) {
+                checkOutLicenses(licenses, assetUserId, taskNodeDataId);
+            }
+    } catch(Exception e)
+    {
+        log.error("An error occurred while calling the external system", e);
+        Map<String, Object> entityMap = (Map<String, Object>) variables.get("entity");
+        DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
+        bo.setTaskNodeDataId(entityMap.get("id").toString());
+        bo.setMessage(e.getMessage());
+        bo.setAssetsDetail(String.valueOf(Convert.toStr(entityMap.get("applyDetail"))));
+        bo.setCheckOutUser(String.valueOf(entityMap.get("applicantId")));
+        bo.setStatus("2");//部分异常待处理
+        bo.setCheckType("1");
+        bo.setAssetsType("0");
+        bo.setCheckOutIn("1");
+        // 记录物料checkOut 记录
+        saveCheckOutRecord(bo);
     }
+}
+
     //附属品-accessories、组件-components、消耗品-consumables、资产-hardware 借出
-    private static void checkOutByCategoryType(ArrayList<Map<String, Object>> assets,Long applicantId,String taskNodeDataId,Map<String, String> requestBodyMap,String categoryType){
+    private void checkOutByCategoryType(ArrayList<Map<String, Object>> assets,Long applicantId,String taskNodeDataId,Map<String, String> requestBodyMap,String categoryType){
         for (int i = 0; i < assets.size(); i++) {
             DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
             bo.setAssetsType(categoryType);
-            bo.setAssetsDetail(JSON.toJSONString(assets.get(i)));
+            bo.setAssetsDetail(JSONUtil.toJsonStr(assets.get(i)));
             bo.setTaskNodeDataId(taskNodeDataId);
             bo.setCheckOutUser(applicantId.toString());
             bo.setAutoHandleNum(0);
             bo.setStatus("1");//成功
+            bo.setCheckOutIn("1");
+            bo.setCheckType("1");
 
             Integer id = (Integer) assets.get(i).get("id");
             String url = categoryType+"/"+id+"/checkout";
@@ -142,11 +135,12 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 }
 
                 Map<String, Object> responseMap = instance.process(requestBodyMap,url,"post");
+                bo.setMessage(String.valueOf(responseMap.get("messages")));
+                bo.setCode(String.valueOf(responseMap.get("status")));
                 if("error".equals(responseMap.get("status"))){
                     log.info("资产系统API接口返回错误：" + responseMap.get("messages"));
-                    bo.setMessage(String.valueOf(responseMap.get("messages")));
-                    bo.setCode(String.valueOf(responseMap.get("status")));
                     bo.setStatus("0");//失败
+                    bo.setCheckType("1");
                 }
             } catch (ApiCallException e) {
                 bo.setStatus("0");//失败
@@ -160,20 +154,23 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 bo.setMessage(e.getMessage());
             }
             // 记录物料checkOut 记录
-            addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
+            saveCheckOutRecord(bo);
         }
     }
 
     //许可证-licenses 借出
-    private static void checkOutLicenses(ArrayList<Map<String, Object>> licenses,Long applicantId,String taskNodeDataId){
+    private void checkOutLicenses(ArrayList<Map<String, Object>> licenses,Long applicantId,String taskNodeDataId){
         for (int i = 0; i < licenses.size(); i++) {
             DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
             bo.setAssetsType("licenses");
-            bo.setAssetsDetail(JSON.toJSONString(licenses.get(i)));
+            bo.setAssetsDetail(JSONUtil.toJsonStr(licenses.get(i)));
             bo.setTaskNodeDataId(taskNodeDataId);
             bo.setCheckOutUser(applicantId.toString());
             bo.setAutoHandleNum(0);
             bo.setStatus("1");//成功
+            bo.setCheckType("1");
+            bo.setCheckOutIn("1");
+            bo.setMessage("许可证借出成功");
             Integer id = (Integer) licenses.get(i).get("id");
             try {
                 Map<String, Object> responseMap = instance.process(null,"licenses/"+id+"/seats","get");
@@ -182,8 +179,9 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                     bo.setMessage(responseMap.get("messages").toString());
                     bo.setCode(responseMap.get("status").toString());
                     bo.setStatus("0");//失败
+                    bo.setCheckType("3");
                     // 记录物料checkOut 记录
-                    addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
+                    saveCheckOutRecord(bo);
                     continue;
                 }
                 List<Map<String,Object>> maps = (List<Map<String,Object>>)responseMap.get("rows");
@@ -193,20 +191,26 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 if(seatId==0){
                     bo.setMessage("licenses可用库存不足 seatId = "+seatId);
                     bo.setStatus("0");//失败
+                    bo.setCheckType("4");
                     // 记录物料checkOut 记录
-                    addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
+                    saveCheckOutRecord(bo);
                     continue;
                 }
                 Map<String, String> requestBodyMap = new HashMap<>();
-                requestBodyMap.put("seat_id", seatId.toString());
-                requestBodyMap.put("assigned_to", applicantId.toString());
-
+                requestBodyMap.put("seat_id", Convert.toStr(seatId));
+                requestBodyMap.put("assigned_to", Convert.toStr(applicantId));
+                Map<String, Object> asset = (Map<String, Object>) licenses.get(i).get("asset");
+                if(CollectionUtil.isEmpty(asset)|| asset.get("id")==null){
+                    throw new ServiceException("licenses借出的资产id为空");
+                }
+                requestBodyMap.put("asset_id", Convert.toStr(asset.get("id")));
                 Map<String, Object> responseMap1 = instance.process(requestBodyMap,"licenses/"+id+"/seats/"+seatId,"put");
                 if("error".equals(responseMap1.get("status"))){
                     log.info("资产系统API接口返回错误：" + responseMap1.get("messages"));
                     bo.setMessage(responseMap1.get("messages").toString());
                     bo.setCode(responseMap1.get("status").toString());
                     bo.setStatus("0");//失败
+                    bo.setCheckType("1");
                 }
             } catch (ApiCallException e) {
                 bo.setStatus("0");//失败
@@ -217,7 +221,20 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 bo.setMessage(e.getMessage());
             }
             // 记录物料checkOut 记录
-            addAssetsCheckOutRecord(bo,iAssetsCheckOutRecordService);
+            saveCheckOutRecord(bo);
+        }
+    }
+
+    // 统一保存记录
+    private void saveCheckOutRecord(DcwsAssetsCheckOutBo bo) {
+        try {
+            assetsCheckOutRecordService.insertByBo(bo);
+            if(bo.getId()==null){
+                log.info("物料申请借出记录新增失败：id == null");
+            }
+            bo.setId(null);
+        } catch (Exception e) {
+            log.error("物料申请借出记录新增失败", e);
         }
     }
 

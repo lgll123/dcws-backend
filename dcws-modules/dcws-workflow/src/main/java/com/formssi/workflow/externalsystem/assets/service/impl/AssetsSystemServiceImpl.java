@@ -110,7 +110,7 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
 
 
     @Override
-    public TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId, PageQuery pageQuery,String categories) {
+    public TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId,String assetStatus, PageQuery pageQuery,String categories) {
         Map<String, String> params = new HashMap<>();
         params.put(CATEGORY_ID, String.valueOf(categoryId));
         params.put(SEARCH, "");
@@ -119,7 +119,13 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         params.put(ORDER, pageQuery.getIsAsc());
 
         if (CATEGORIES_HARDWARE.equals(categories)) {
-            params.put(STATUS_ID, ASSETS_STATUS_7);
+            if(ASSETS_STATUS_1.equals(assetStatus)){
+                //查询所有状态
+            }else{
+                //查询可部署
+                params.put(STATUS_ID, ASSETS_STATUS_7);
+            }
+
         }
         if (!SpringUtils.containsBean(beanName)) {
             throw new ServiceException("外系统类型不正确!");

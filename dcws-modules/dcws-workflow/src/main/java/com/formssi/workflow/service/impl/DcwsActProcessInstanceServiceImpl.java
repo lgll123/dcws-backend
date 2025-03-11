@@ -157,10 +157,10 @@ public class DcwsActProcessInstanceServiceImpl implements DcwsIActProcessInstanc
             query.processDefinitionCategory(bo.getCategoryCode());
         }
         if (!Objects.isNull(bo.getStartTime())) {
-            query.startedBefore(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
+            query.startedAfter(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
         }
         if (!Objects.isNull(bo.getEndTime())) {
-            query.startedAfter(DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
+            query.startedBefore(DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
         }
         if (!Objects.isNull(bo.getWfType())) {
             query.processDefinitionCategory(bo.getWfType());

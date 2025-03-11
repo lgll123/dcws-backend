@@ -19,11 +19,10 @@ import com.formssi.workflow.domain.bo.*;
 import com.formssi.workflow.service.DcwsIActTaskService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import com.formssi.workflow.utils.DcwsQueryUtils;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 任务管理 控制层
@@ -150,26 +149,4 @@ public class DcwsActTaskController extends BaseController {
     public TableDataInfo<DcwsTaskVo> getPageByTaskCopy(DcwsTaskBo taskBo, PageQuery pageQuery) {
         return actTaskService.getPageByTaskCopy(taskBo, pageQuery);
     }
-
-    /**
-     * 获取目标节点（下一个节点）
-     *
-     * @param: nextNodeBo
-     * @return: com.ruoyi.common.core.domain.R<java.util.Map < java.lang.String, java.lang.Object>>
-     * @author: add by yqh
-     */
-//    @PostMapping("/getNextNodeInfo")
-//    public R<Map<String, Object>> getNextNodeInfo(@RequestBody NextNodeBo nextNodeBo) {
-//        return R.ok(actTaskService.getNextNodeInfo(nextNodeBo));
-//    }
-
-    /**
-     * 获取当前任务
-     *
-     * @param taskId 任务id
-     */
-//    @GetMapping("/getTaskById/{taskId}")
-//    public R<DcwsTaskVo> getTaskById(@PathVariable String taskId) {
-//        return R.ok(DcwsQueryUtils.getTask(taskId));
-//    }
 }

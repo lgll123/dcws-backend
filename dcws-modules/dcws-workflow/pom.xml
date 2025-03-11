@@ -37,13 +37,6 @@
 
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-mybatis</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.formssi.bond</groupId>
             <artifactId>dcws-common-satoken</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
@@ -111,13 +104,17 @@
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-mybatis</artifactId>
+            <artifactId>low-code-common-mybatis</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
                     <groupId>com.formssi.bond</groupId>
                     <artifactId>low-code-common-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.formssi.bond</groupId>
+                    <artifactId>low-code-common-satoken</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -164,10 +161,6 @@
                 <exclusion>
                     <groupId>com.formssi.bond</groupId>
                     <artifactId>low-code-common-satoken</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-mybatis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -235,12 +228,6 @@
             <artifactId>low-code-workflow</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-mybatis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
     </dependencies>

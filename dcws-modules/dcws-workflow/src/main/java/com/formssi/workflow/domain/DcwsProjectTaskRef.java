@@ -1,7 +1,6 @@
 package com.formssi.workflow.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.formssi.common.mybatis.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -10,7 +9,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("dcws_project_task_ref")
-public class DcwsProjectTaskRef extends BaseEntity {
+public class DcwsProjectTaskRef extends DcwsBaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

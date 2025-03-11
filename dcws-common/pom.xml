@@ -12,7 +12,6 @@
     <url>http://maven.apache.org</url>
     <modules>
         <module>dcws-common-core</module>
-        <module>dcws-common-mybatis</module>
         <module>dcws-common-satoken</module>
     </modules>
     <description>common 通用模块</description>

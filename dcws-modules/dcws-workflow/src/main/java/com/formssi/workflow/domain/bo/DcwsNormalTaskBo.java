@@ -1,19 +1,16 @@
 package com.formssi.workflow.domain.bo;
 
-import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.workflow.domain.DcwsBaseEntity;
 import com.formssi.workflow.domain.DcwsNormalTask;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.util.Date;
-
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DcwsNormalTask.class, reverseConvertGenerate = false)
-public class DcwsNormalTaskBo extends BaseEntity {
+public class DcwsNormalTaskBo extends DcwsBaseEntity {
 
     /**
      * 任务ID

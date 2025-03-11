@@ -1,4 +1,4 @@
-package com.formssi.common.core.utils;
+package com.formssi.workflow.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -16,7 +16,7 @@ import java.util.Date;
  * @author ruoyi
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
+public class DcwsDateUtils extends org.apache.commons.lang3.time.DateUtils {
 
     public static final String YYYY = "yyyy";
 

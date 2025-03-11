@@ -2,7 +2,7 @@ package com.formssi.workflow.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import com.formssi.common.core.enums.BusinessStatusEnum;
-import com.formssi.common.core.utils.DateUtils;
+import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.workflow.domain.bo.*;
@@ -52,11 +52,14 @@ public class DcwsActProcessInstanceController extends BaseController {
                     actHistoryInfoVo.setUserName(dcwsHisVo.getUserName());
                     actHistoryInfoVo.setStatus(dcwsHisVo.getStatus());
                     actHistoryInfoVo.setStatusName(BusinessStatusEnum.findByStatus(dcwsHisVo.getStatus()));
+                    if("pass".equals(dcwsHisVo.getStatus())){
+                        actHistoryInfoVo.setStatusName("通过");
+                    }
                     actHistoryInfoVo.setComment(dcwsHisVo.getComment());
                     actHistoryInfoVo.setStartTime(dcwsHisVo.getCreateTime());
                     actHistoryInfoVo.setEndTime(dcwsHisVo.getUpdateTime());
                     if (!Objects.isNull(dcwsHisVo.getCreateTime()) && !Objects.isNull(dcwsHisVo.getUpdateTime())){
-                        actHistoryInfoVo.setRunDuration(DateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
+                        actHistoryInfoVo.setRunDuration(DcwsDateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
                     }
                     list.add(actHistoryInfoVo);
                 }
@@ -73,11 +76,14 @@ public class DcwsActProcessInstanceController extends BaseController {
                     actHistoryInfoVo.setAssignee(String.valueOf(dcwsHisVo.getUserId()));
                     actHistoryInfoVo.setStatus(dcwsHisVo.getStatus());
                     actHistoryInfoVo.setStatusName(BusinessStatusEnum.findByStatus(dcwsHisVo.getStatus()));
+                    if("pass".equals(dcwsHisVo.getStatus())){
+                        actHistoryInfoVo.setStatusName("通过");
+                    }
                     actHistoryInfoVo.setComment(dcwsHisVo.getComment());
                     actHistoryInfoVo.setStartTime(dcwsHisVo.getCreateTime());
                     actHistoryInfoVo.setEndTime(dcwsHisVo.getUpdateTime());
                     if (!Objects.isNull(dcwsHisVo.getCreateTime()) && !Objects.isNull(dcwsHisVo.getUpdateTime())){
-                        actHistoryInfoVo.setRunDuration(DateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
+                        actHistoryInfoVo.setRunDuration(DcwsDateUtils.getDatePoor(dcwsHisVo.getCreateTime(),dcwsHisVo.getUpdateTime()));
                     }
                     tempList.add(actHistoryInfoVo);
                 }

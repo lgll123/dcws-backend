@@ -6,7 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.formssi.common.core.utils.DateUtils;
+import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.workflow.flowable.handler.FlowProcessEventHandler;
 import com.formssi.workflow.mapper.DcwsActTaskMapper;
 import com.formssi.workflow.service.IWfNodeConfigService;
@@ -223,10 +223,10 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
             queryWrapper.eq("t.BUSINESS_KEY_", taskBo.getBusinessKey());
         }
         if (!Objects.isNull(taskBo.getStartTime())) {
-            queryWrapper.gt("t.CREATE_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+            queryWrapper.gt("t.CREATE_TIME_", DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.CREATE_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.CREATE_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
@@ -268,10 +268,10 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         queryWrapper.eq(StringUtils.isNotBlank(taskBo.getProcessDefinitionKey()), "t.processDefinitionKey", taskBo.getProcessDefinitionKey());
         queryWrapper.eq("t.assignee_", userId);
         if (!Objects.isNull(taskBo.getStartTime())) {
-            queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+            queryWrapper.gt("t.START_TIME_", DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
@@ -317,10 +317,10 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         }
         queryWrapper.eq("t.assignee_", userId);
         if (!Objects.isNull(taskBo.getStartTime())) {
-            queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+            queryWrapper.gt("t.START_TIME_", DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<DcwsTaskVo> page = actTaskMapper.getTaskCopyByPage(pageQuery.build(), queryWrapper);

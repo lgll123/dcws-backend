@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.core.enums.BusinessStatusEnum;
-import com.formssi.common.core.utils.DateUtils;
+import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.mybatis.core.page.PageQuery;
@@ -68,10 +68,10 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         }
         lqw.eq(DcwsNormalTask::getCreateBy, LoginHelper.getUserId());
         if (!Objects.isNull(bo.getStartTime())) {
-            lqw.gt(DcwsNormalTask::getCreateTime,DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
+            lqw.gt(DcwsNormalTask::getCreateTime,DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,bo.getStartTime()));
         }
         if (!Objects.isNull(bo.getEndTime())) {
-            lqw.lt(DcwsNormalTask::getCreateTime,DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
+            lqw.lt(DcwsNormalTask::getCreateTime,DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,bo.getEndTime()),1));
         }
         lqw.orderByDesc(DcwsNormalTask::getCreateTime);
         Page<DcwsNormalTaskVo> result = dcwsNormalTaskMapper.selectVoPage(pageQuery.build(), lqw);
@@ -90,10 +90,10 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             queryWrapper.like("t.task_Name", dcwsNormalTaskBo.getTaskName());
         }
         if (!Objects.isNull(dcwsNormalTaskBo.getStartTime())) {
-            queryWrapper.gt("t.create_time",DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
+            queryWrapper.gt("t.create_time",DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
         }
         if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
-            queryWrapper.lt("t.create_time",DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
+            queryWrapper.lt("t.create_time",DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
@@ -111,10 +111,10 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             queryWrapper.like("t.task_Name", dcwsNormalTaskBo.getTaskName());
         }
         if (!Objects.isNull(dcwsNormalTaskBo.getStartTime())) {
-            queryWrapper.gt("t.create_time",DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
+            queryWrapper.gt("t.create_time",DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getStartTime()));
         }
         if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
-            queryWrapper.lt("t.create_time",DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
+            queryWrapper.lt("t.create_time",DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);
@@ -148,7 +148,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             add.setStatus(BusinessStatusEnum.WAITING.getStatus());
             add.setCreateBy(userId);
         }
-        String taskId = taskSerialService.getTaskSerial("20",DateUtils.dateTime());
+        String taskId = taskSerialService.getTaskSerial("20",DcwsDateUtils.dateTime());
         add.setTaskId(taskId);
         //新增通用审批表
         boolean flag = dcwsNormalTaskMapper.insert(add) > 0;
@@ -160,7 +160,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                  dcwsProjectTask.setProjectId(add.getProjectId());
                  dcwsProjectTask.setTaskName(add.getTaskName());
                  dcwsProjectTask.setTaskId(taskId);
-                 dcwsProjectTask.setTaskStatus(BusinessStatusEnum.INPROGRESS.getStatus());
+                 dcwsProjectTask.setTaskStatus("inprogress");
                  dcwsProjectTask.setCreateBy(LoginHelper.getUserId());
                  dcwsProjectTask.setCreateEmpName(LoginHelper.getUsername());
                  dcwsProjectTaskMapper.insert(dcwsProjectTask);
@@ -168,8 +168,8 @@ public class NormalTaskServiceImpl implements NormalTaskService {
             //通用审批处理历史表
             DcwsNormalTaskHandleHis dcwsHis = new DcwsNormalTaskHandleHis();
             dcwsHis.setTaskId(taskId);
-            dcwsHis.setComment(BusinessStatusEnum.findByStatus(BusinessStatusEnum.PASS.getStatus()));
-            dcwsHis.setStatus(BusinessStatusEnum.PASS.getStatus());
+            dcwsHis.setComment("通过");
+            dcwsHis.setStatus("pass");
             dcwsHis.setUserId(userId);
             SysUserVo sysUserVo = iSysUserService.selectUserById(userId);
             dcwsHis.setUserName(sysUserVo.getUserName());
@@ -220,7 +220,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                 .isNull(DcwsNormalTaskHandleHis::getUpdateTime)
                 .eq(DcwsNormalTaskHandleHis::getTaskId, bo.getTaskId()));
 
-        if (BusinessStatusEnum.FINISH.getStatus().equals(bo.getStatus()) || BusinessStatusEnum.PASS.getStatus().equals(bo.getStatus())){
+        if (BusinessStatusEnum.FINISH.getStatus().equals(bo.getStatus()) || "pass".equals(bo.getStatus())){
             dcwsHisMapper.update(null, new LambdaUpdateWrapper<DcwsNormalTaskHandleHis>()
                     .set(DcwsNormalTaskHandleHis::getIsDisplay, "N")
                     .isNull(DcwsNormalTaskHandleHis::getUpdateTime)

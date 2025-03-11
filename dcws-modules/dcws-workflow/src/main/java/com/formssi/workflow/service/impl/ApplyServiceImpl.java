@@ -12,7 +12,7 @@ import com.formssi.common.core.domain.event.ProcessEvent;
 import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.service.WorkflowService;
-import com.formssi.common.core.utils.DateUtils;
+import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
@@ -111,7 +111,7 @@ public class ApplyServiceImpl implements IApplyService {
         if (StringUtils.isBlank(add.getStatus())) {
             add.setStatus(BusinessStatusEnum.DRAFT.getStatus());
         }
-        String id = taskSerialService.getTaskSerial(bo.getApplyType(), DateUtils.dateTime());
+        String id = taskSerialService.getTaskSerial(bo.getApplyType(), DcwsDateUtils.dateTime());
         add.setId(id);
         boolean flag = taskNodeDataMapper.insert(add) > 0;
         if (flag) {

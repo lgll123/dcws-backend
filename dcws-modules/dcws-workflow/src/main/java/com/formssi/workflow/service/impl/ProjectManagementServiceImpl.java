@@ -126,7 +126,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
             lqw.eq(DcwsProjectTask::getProjectId, bo.getProjectId());
             List<DcwsProjectTaskVo> list = dcwsProjectTaskMapper.selectVoList(lqw);
             for (DcwsProjectTaskVo dcwsProjectTaskVo : list){
-                if (BusinessStatusEnum.DRAFT.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())||BusinessStatusEnum.INPROGRESS.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())){
+                if (BusinessStatusEnum.DRAFT.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())||"inprogress".equals(dcwsProjectTaskVo.getTaskStatus())){
                     throw new ServiceException("该项目下还有任务未完成");
                 }
             }

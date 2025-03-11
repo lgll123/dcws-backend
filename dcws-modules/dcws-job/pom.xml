@@ -21,24 +21,12 @@
             <groupId>com.formssi.bond</groupId>
             <artifactId>low-code-common-json</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.formssi.bond</groupId>
             <artifactId>low-code-common-job</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>

@@ -7,7 +7,7 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.formssi.common.core.service.UserService;
-import com.formssi.common.core.utils.DateUtils;
+import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.workflow.common.enums.TaskStatusEnum;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
@@ -157,10 +157,10 @@ public class DcwsActProcessInstanceServiceImpl implements DcwsIActProcessInstanc
             query.processDefinitionCategory(bo.getCategoryCode());
         }
         if (!Objects.isNull(bo.getStartTime())) {
-            query.startedAfter(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getStartTime()));
+            query.startedAfter(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,bo.getStartTime()));
         }
         if (!Objects.isNull(bo.getEndTime())) {
-            query.startedBefore(DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,bo.getEndTime()),1));
+            query.startedBefore(DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,bo.getEndTime()),1));
         }
         if (!Objects.isNull(bo.getWfType())) {
             query.processDefinitionCategory(bo.getWfType());

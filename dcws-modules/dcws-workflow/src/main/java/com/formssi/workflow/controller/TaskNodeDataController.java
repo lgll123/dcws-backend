@@ -47,6 +47,15 @@ public class TaskNodeDataController extends BaseController {
     }
 
     /**
+     * 查询用印台账表单
+     */
+    @SaCheckPermission("workflow:apply:sealList")
+    @GetMapping("/sealList")
+    public TableDataInfo<TaskNodeDataVo> sealList(TaskNodeDataQueryBo bo, PageQuery pageQuery) {
+        return applyService.queryPageSealList(bo, pageQuery);
+    }
+
+    /**
      * 导出申请列表
      */
     @SaCheckPermission("workflow:apply:export")

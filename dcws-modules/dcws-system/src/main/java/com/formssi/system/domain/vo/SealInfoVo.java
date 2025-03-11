@@ -1,5 +1,6 @@
 package com.formssi.system.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.formssi.system.domain.SealInfo;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -7,6 +8,7 @@ import lombok.Data;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -29,6 +31,7 @@ public class SealInfoVo implements Serializable {
     /**
      * 印章名称
      */
+    @JsonIgnore
     private String sealName;
 
     /**
@@ -75,5 +78,25 @@ public class SealInfoVo implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
+    /**
+     * 公司名称
+     */
+    private String companyName;
+
+    /**
+     * 份数
+     */
+    private String applyNum;
+
+    /**
+     * 文件
+     */
+    private List<SysFileUploadVo> sealFile;
+
+    /**
+     * 印章list
+     */
+    private List<SealInfo> sealInfoList;
 
 }

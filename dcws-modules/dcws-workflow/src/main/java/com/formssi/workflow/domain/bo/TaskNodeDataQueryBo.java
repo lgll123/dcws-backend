@@ -23,6 +23,7 @@ public class TaskNodeDataQueryBo{
      * 申请类型
      * 19:IT物料申请
      * 21:非IT物料申请
+     * 22:用印申请
      */
     private String applyType;
 

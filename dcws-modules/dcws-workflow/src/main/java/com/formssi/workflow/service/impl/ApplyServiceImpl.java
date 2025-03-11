@@ -1,12 +1,14 @@
 package com.formssi.workflow.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.collection.CollectionUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.domain.event.ProcessEvent;
 import com.formssi.common.core.domain.event.ProcessTaskEvent;
@@ -19,6 +21,7 @@ import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.satoken.utils.LoginHelper;
+import com.formssi.system.domain.vo.SealInfoVo;
 import com.formssi.workflow.domain.DcwsBaseEntity;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
@@ -32,10 +35,12 @@ import com.formssi.workflow.service.IApplyService;
 import com.formssi.workflow.service.TaskSerialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +87,59 @@ public class ApplyServiceImpl implements IApplyService {
     }
 
     /**
+     * 查询用印台账表单
+     */
+    @Override
+    public TableDataInfo<TaskNodeDataVo> queryPageSealList(TaskNodeDataQueryBo bo, PageQuery pageQuery) {
+        List<TaskNodeDataVo> sealInfoList = new ArrayList<>();
+        ObjectMapper mapper = new ObjectMapper();
+        //查询已完成的
+        bo.setStatus(BusinessStatusEnum.FINISH.getStatus());
+        bo.setApplyType("22");
+        LambdaQueryWrapper<TaskNodeData> lqw = buildQueryWrapper2(bo);
+        List<TaskNodeDataVo> sealList = taskNodeDataMapper.selectVoList(lqw);
+        if(!CollectionUtil.isEmpty(sealList)){
+            sealList.forEach(e ->{
+                String data = e.getApplyDetail();
+                if(!StringUtils.isBlank(data)){
+                    try {
+                        List<SealInfoVo> list = mapper.readValue(data, new TypeReference<>() {});
+                        if(!CollectionUtil.isEmpty(list)){
+                            list.forEach(i ->{
+                                TaskNodeDataVo taskNodeDataVo = new TaskNodeDataVo();
+                                BeanUtils.copyProperties(e,taskNodeDataVo);
+                                taskNodeDataVo.setSealInfoVo(i);
+                                sealInfoList.add(taskNodeDataVo);
+                            });
+                        }
+                    } catch (JsonProcessingException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            });
+            // 分页
+            List<TaskNodeDataVo> pageData = paginateData(sealInfoList, pageQuery.getPageNum(), pageQuery.getPageSize());
+            // 封装成 TableDataInfo
+            TableDataInfo<TaskNodeDataVo> tableDataInfo = new TableDataInfo<>();
+            tableDataInfo.setTotal(sealInfoList.size());
+            tableDataInfo.setRows(pageData);
+            tableDataInfo.setCode(200);
+            tableDataInfo.setMsg("查询成功");
+
+            return tableDataInfo;
+        }else {
+            return TableDataInfo.build();
+        }
+    }
+
+    public <T> List<T> paginateData(List<T> data, int pageNum, int pageSize) {
+        int total = data.size();
+        int fromIndex = (pageNum - 1) * pageSize;
+        int toIndex = Math.min(fromIndex  + pageSize, total);
+        return data.subList(fromIndex,  toIndex);
+    }
+
+    /**
      * 查询申请列表
      */
     @Override
@@ -98,6 +156,17 @@ public class ApplyServiceImpl implements IApplyService {
         lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), TaskNodeData::getStatus, bo.getStatus());
         lqw.eq(TaskNodeData::getCreateBy, LoginHelper.getUserId());
+        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
+        return lqw;
+    }
+
+    private LambdaQueryWrapper<TaskNodeData> buildQueryWrapper2(TaskNodeDataQueryBo bo) {
+        LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
+        lqw.eq(bo.getApplyDate()!=null, TaskNodeData::getApplyDate, bo.getApplyDate());
+        lqw.like(StringUtils.isNotBlank(bo.getApplyDept()), TaskNodeData::getApplyDept, bo.getApplyDept());
+        lqw.like(StringUtils.isNotBlank(bo.getApplicant()), TaskNodeData::getApplicant, bo.getApplicant());
+        lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
+        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), TaskNodeData::getStatus, bo.getStatus());
         lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
         return lqw;
     }
@@ -148,7 +217,7 @@ public class ApplyServiceImpl implements IApplyService {
      *
      * @param processEvent 参数
      */
-    @EventListener(condition = "#processEvent.key.contains('assets')")
+    @EventListener(condition = "#processEvent.key.contains('assets') || #processEvent.key.contains('seal')" )
     public void processHandler(ProcessEvent processEvent) {
         log.info("当前任务执行了{}", processEvent.toString());
         TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processEvent.getBusinessKey());
@@ -169,7 +238,7 @@ public class ApplyServiceImpl implements IApplyService {
      *
      * @param processTaskEvent 参数
      */
-    @EventListener(condition = "#processTaskEvent.key.contains('assets')")
+    @EventListener(condition = "#processTaskEvent.key.contains('assets') || #processTaskEvent.key.contains('seal')")
     public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
         log.info("当前任务执行了{}", processTaskEvent.toString());
         TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processTaskEvent.getBusinessKey());

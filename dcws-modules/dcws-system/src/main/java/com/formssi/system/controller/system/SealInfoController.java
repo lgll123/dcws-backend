@@ -35,7 +35,7 @@ public class SealInfoController extends BaseController {
     private final ISealInfoService sealInfoService;
 
     /**
-     * 获取部门列表
+     * 获取印章列表
      */
     @SaCheckPermission("system:seal:list")
     @GetMapping("/list")

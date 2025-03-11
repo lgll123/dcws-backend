@@ -39,7 +39,7 @@
             u.status,
             u.del_flag
         from sys_user u
-        where user_type = 'hr_user'
+        where u.is_hruser = 'Y'
     </select>
 
     <select id="selectUserDeptList" resultType="com.formssi.system.domain.vo.HrUserVo">
@@ -60,7 +60,7 @@
                 END as dept_id
             from sys_user u
             left join sys_dept d on u.dept_id = d.dept_id
-            where user_type = 'hr_user'
+            where u.is_hruser = 'Y'
             and LENGTH(d.ancestors) - LENGTH(REPLACE(d.ancestors, ',', '')) >= 2
         )a
         left join sys_dept b on a.dept_id = b.dept_id
@@ -114,7 +114,8 @@
             sex,
             create_time,
             password,
-            user_type
+            user_type,
+            is_hruser
         )
         VALUES
         <foreach collection="list" item="item" separator=",">
@@ -129,7 +130,8 @@
             #{item.sex},
             #{item.createTime},
             #{item.password},
-            #{item.userType}
+            #{item.userType},
+            #{item.isHruser}
             )
         </foreach>
     </insert>

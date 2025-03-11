@@ -29,9 +29,15 @@ public class HrUserVo implements Serializable {
     private String assetUserId;
 
     /**
-     * 用户类型（sys_user系统用户、hr_user人事系统用户）
+     * 用户类型（sys_user系统用户）
      */
     private String userType;
+
+
+    /**
+     * 是否人事系统用户
+     */
+    private String isHruser;
 
     /**
      * 用户ID

@@ -30,7 +30,7 @@
 
         <dependency>
             <groupId>com.formssi.bond</groupId>
-            <artifactId>dcws-common-satoken</artifactId>
+            <artifactId>low-code-common-satoken</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
@@ -40,12 +40,6 @@
             <artifactId>low-code-common-mybatis</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-satoken</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -107,24 +101,12 @@
             <artifactId>low-code-common-mybatis</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-satoken</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
             <artifactId>low-code-common-log</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-satoken</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
@@ -143,12 +125,6 @@
             <artifactId>low-code-common-tenant</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-satoken</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>
@@ -167,12 +143,6 @@
             <artifactId>low-code-common-websocket</artifactId>
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.formssi.bond</groupId>
-                    <artifactId>low-code-common-satoken</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.formssi.bond</groupId>

@@ -98,7 +98,8 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         String hashpw = BCrypt.hashpw("123456");
         userList.forEach(u ->{
             u.setPassword(hashpw);
-            u.setUserType("hr_user");
+            u.setUserType("sys_user");
+            u.setIsHruser("Y");
         });
         // 新增用户信息
         int rows = baseMapper.insertUserFromHr(userList);

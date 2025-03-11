@@ -354,7 +354,7 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
      * @param: nextNodeBo
      * @return: java.util.Map<java.lang.String, java.lang.Object>
      */
-    @Override
+    /*@Override
     public Map<String, Object> getNextNodeInfo(NextNodeBo nextNodeBo) {
         Map<String, Object> map = new HashMap<>(16);
         TaskEntity task = (TaskEntity) taskService.createTaskQuery().taskId(nextNodeBo.getTaskId()).singleResult();
@@ -395,7 +395,7 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         }
         map.put("processInstanceId", task.getProcessInstanceId());
         return map;
-    }
+    }*/
 
     /**
      * @description: 设置节点审批人员  add by yqh
@@ -403,8 +403,8 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
      * @param: definitionId 流程定义id
      * @return: java.util.List<com.ruoyi.workflow.domain.vo.ProcessNode>
      */
-    private List<ProcessNode> getProcessNodeAssigneeList(List<ProcessNode> nodeList, String definitionId) {
-       /* List<ActNodeAssignee> actNodeAssignees = iActNodeAssigneeService.getInfoByProcessDefinitionId(definitionId);
+   /* private List<ProcessNode> getProcessNodeAssigneeList(List<ProcessNode> nodeList, String definitionId) {
+       *//* List<ActNodeAssignee> actNodeAssignees = iActNodeAssigneeService.getInfoByProcessDefinitionId(definitionId);
         if (CollUtil.isEmpty(actNodeAssignees)) {
             throw new ServiceException("当前流程定义未配置审批人，请联系管理员！");
         }
@@ -443,12 +443,12 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
             } else {
                 throw new ServiceException(processNode.getNodeName() + "未配置审批人，请联系管理员！");
             }
-        }*/
-        /*if (CollectionUtil.isNotEmpty(nodeList)) {
+        }*//*
+        *//*if (CollectionUtil.isNotEmpty(nodeList)) {
             // 去除不需要弹窗选人的节点
             nodeList.removeIf(node -> !node.getIsShow());
-        }*/
+        }*//*
         return nodeList;
-    }
+    }*/
 
 }

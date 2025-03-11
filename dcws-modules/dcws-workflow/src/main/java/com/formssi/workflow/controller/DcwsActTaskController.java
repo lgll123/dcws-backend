@@ -158,18 +158,18 @@ public class DcwsActTaskController extends BaseController {
      * @return: com.ruoyi.common.core.domain.R<java.util.Map < java.lang.String, java.lang.Object>>
      * @author: add by yqh
      */
-    @PostMapping("/getNextNodeInfo")
-    public R<Map<String, Object>> getNextNodeInfo(@RequestBody NextNodeBo nextNodeBo) {
-        return R.ok(actTaskService.getNextNodeInfo(nextNodeBo));
-    }
+//    @PostMapping("/getNextNodeInfo")
+//    public R<Map<String, Object>> getNextNodeInfo(@RequestBody NextNodeBo nextNodeBo) {
+//        return R.ok(actTaskService.getNextNodeInfo(nextNodeBo));
+//    }
 
     /**
      * 获取当前任务
      *
      * @param taskId 任务id
      */
-    @GetMapping("/getTaskById/{taskId}")
-    public R<DcwsTaskVo> getTaskById(@PathVariable String taskId) {
-        return R.ok(DcwsQueryUtils.getTask(taskId));
-    }
+//    @GetMapping("/getTaskById/{taskId}")
+//    public R<DcwsTaskVo> getTaskById(@PathVariable String taskId) {
+//        return R.ok(DcwsQueryUtils.getTask(taskId));
+//    }
 }

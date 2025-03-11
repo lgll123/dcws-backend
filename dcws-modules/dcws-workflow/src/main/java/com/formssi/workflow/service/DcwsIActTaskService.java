@@ -56,5 +56,5 @@ public interface DcwsIActTaskService {
      * @param nextNodeBo
      * @return 结果
      */
-    Map<String, Object> getNextNodeInfo(NextNodeBo nextNodeBo);
+//    Map<String, Object> getNextNodeInfo(NextNodeBo nextNodeBo);
 }

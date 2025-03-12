@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Data
 @AutoMapper(target = SealInfo.class)
-public class SealInfoVo implements Serializable {
+public class SealJsonVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -31,6 +31,7 @@ public class SealInfoVo implements Serializable {
     /**
      * 印章名称
      */
+    @JsonIgnore
     private String sealName;
 
     /**

@@ -14,6 +14,7 @@ import com.formssi.common.core.domain.event.ProcessEvent;
 import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.service.WorkflowService;
+import com.formssi.system.domain.vo.SealJsonVo;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
@@ -103,12 +104,12 @@ public class ApplyServiceImpl implements IApplyService {
                 String data = e.getApplyDetail();
                 if(!StringUtils.isBlank(data)){
                     try {
-                        List<SealInfoVo> list = mapper.readValue(data, new TypeReference<>() {});
+                        List<SealJsonVo> list = mapper.readValue(data, new TypeReference<>() {});
                         if(!CollectionUtil.isEmpty(list)){
                             list.forEach(i ->{
                                 TaskNodeDataVo taskNodeDataVo = new TaskNodeDataVo();
                                 BeanUtils.copyProperties(e,taskNodeDataVo);
-                                taskNodeDataVo.setSealInfoVo(i);
+                                taskNodeDataVo.setSealJsonVo(i);
                                 sealInfoList.add(taskNodeDataVo);
                             });
                         }

@@ -1,6 +1,6 @@
 package com.formssi.workflow.domain.bo;
 
-import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.workflow.domain.DcwsBaseEntity;
 import com.formssi.workflow.domain.DcwsProjectCustomerRef;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DcwsProjectCustomerRef.class, reverseConvertGenerate = false)
-public class DcwsProjectCustomerRefBo extends BaseEntity {
+public class DcwsProjectCustomerRefBo extends DcwsBaseEntity {
 
     /**
      * 项目id

@@ -6,7 +6,8 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.formssi.common.core.utils.DateUtils;
+import com.formssi.workflow.utils.DcwsDateUtils;
+import com.formssi.workflow.flowable.handler.FlowProcessEventHandler;
 import com.formssi.workflow.mapper.DcwsActTaskMapper;
 import com.formssi.workflow.service.IWfNodeConfigService;
 import com.formssi.workflow.service.IWfTaskBackNodeService;
@@ -29,12 +30,8 @@ import com.formssi.workflow.common.enums.TaskStatusEnum;
 import com.formssi.workflow.domain.bo.*;
 import com.formssi.workflow.domain.vo.*;
 import com.formssi.workflow.flowable.cmd.*;
-import com.formssi.workflow.flowable.handler.DcwsFlowProcessEventHandler;
 import com.formssi.workflow.service.DcwsIActTaskService;
-import org.flowable.bpmn.model.BpmnModel;
-import org.flowable.bpmn.model.FlowElement;
 import org.flowable.engine.*;
-import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.identitylink.api.history.HistoricIdentityLink;
 import org.flowable.task.api.Task;
@@ -45,7 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * 任务 服务层实现
@@ -65,12 +61,10 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
     private HistoryService historyService;
     @Autowired(required = false)
     private ManagementService managementService;
-    @Autowired(required = false)
-    private RepositoryService repositoryService;
     private final DcwsActTaskMapper actTaskMapper;
     private final IWfTaskBackNodeService wfTaskBackNodeService;
     private final IWfNodeConfigService wfNodeConfigService;
-    private final DcwsFlowProcessEventHandler flowProcessEventHandler;
+    private final FlowProcessEventHandler flowProcessEventHandler;
     private final UserService userService;
     private final OssService ossService;
 
@@ -229,10 +223,10 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
             queryWrapper.eq("t.BUSINESS_KEY_", taskBo.getBusinessKey());
         }
         if (!Objects.isNull(taskBo.getStartTime())) {
-            queryWrapper.gt("t.CREATE_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+            queryWrapper.gt("t.CREATE_TIME_", DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.CREATE_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.CREATE_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
@@ -274,10 +268,10 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         queryWrapper.eq(StringUtils.isNotBlank(taskBo.getProcessDefinitionKey()), "t.processDefinitionKey", taskBo.getProcessDefinitionKey());
         queryWrapper.eq("t.assignee_", userId);
         if (!Objects.isNull(taskBo.getStartTime())) {
-            queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+            queryWrapper.gt("t.START_TIME_", DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
@@ -323,10 +317,10 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         }
         queryWrapper.eq("t.assignee_", userId);
         if (!Objects.isNull(taskBo.getStartTime())) {
-            queryWrapper.gt("t.START_TIME_", DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getStartTime()));
+            queryWrapper.gt("t.START_TIME_", DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getStartTime()));
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
-            queryWrapper.lt("t.START_TIME_", DateUtils.plusDays(DateUtils.dateTime(DateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+            queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<DcwsTaskVo> page = actTaskMapper.getTaskCopyByPage(pageQuery.build(), queryWrapper);
@@ -345,110 +339,4 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         }
         return TableDataInfo.build(page);
     }
-
-
-
-
-    /**
-     * @description: 获取目标节点（下一个节点） add by yqh
-     * @param: nextNodeBo
-     * @return: java.util.Map<java.lang.String, java.lang.Object>
-     */
-    /*@Override
-    public Map<String, Object> getNextNodeInfo(NextNodeBo nextNodeBo) {
-        Map<String, Object> map = new HashMap<>(16);
-        TaskEntity task = (TaskEntity) taskService.createTaskQuery().taskId(nextNodeBo.getTaskId()).singleResult();
-        if (task.isSuspended()) {
-            throw new ServiceException(FlowConstant.MESSAGE_SUSPENDED);
-        }
-
-        if (CollectionUtil.isNotEmpty(nextNodeBo.getVariables())) {
-            taskService.setVariables(task.getId(), nextNodeBo.getVariables());
-        }
-        //流程定义
-        String processDefinitionId = task.getProcessDefinitionId();
-        //查询bpmn信息
-        BpmnModel bpmnModel = repositoryService.getBpmnModel(processDefinitionId);
-        //通过任务节点id，来获取当前节点信息
-        FlowElement flowElement = bpmnModel.getFlowElement(task.getTaskDefinitionKey());
-        //全部节点
-        Collection<FlowElement> flowElements = bpmnModel.getProcesses().get(0).getFlowElements();
-        //封装下一个用户任务节点信息
-        List<ProcessNode> nextNodeList = new ArrayList<>();
-        //保存没有表达式的节点
-        List<ProcessNode> tempNodeList = new ArrayList<>();
-        ExecutionEntityImpl executionEntity = (ExecutionEntityImpl) runtimeService.createExecutionQuery()
-                .executionId(task.getExecutionId()).singleResult();
-        DcwsWorkflowUtils.getNextNodeList(flowElements, flowElement, executionEntity, nextNodeList, tempNodeList, task.getId(), null);
-        if (CollectionUtil.isNotEmpty(nextNodeList)) {
-            nextNodeList.removeIf(node -> !node.getExpression());
-        }
-        if (CollectionUtil.isNotEmpty(nextNodeList) && CollectionUtil.isNotEmpty(nextNodeList.stream().filter(e -> e.getExpression() != null && e.getExpression()).collect(Collectors.toList()))) {
-            List<ProcessNode> nodeList = nextNodeList.stream().filter(e -> e.getExpression() != null && e.getExpression()).collect(Collectors.toList());
-            List<ProcessNode> processNodeList = getProcessNodeAssigneeList(nodeList, task.getProcessDefinitionId());
-            map.put("list", processNodeList);
-        } else if (CollectionUtil.isNotEmpty(tempNodeList)) {
-            List<ProcessNode> processNodeList = getProcessNodeAssigneeList(tempNodeList, task.getProcessDefinitionId());
-            map.put("list", processNodeList);
-        } else {
-            map.put("list", nextNodeList);
-        }
-        map.put("processInstanceId", task.getProcessInstanceId());
-        return map;
-    }*/
-
-    /**
-     * @description: 设置节点审批人员  add by yqh
-     * @param: nodeList节点列表
-     * @param: definitionId 流程定义id
-     * @return: java.util.List<com.ruoyi.workflow.domain.vo.ProcessNode>
-     */
-   /* private List<ProcessNode> getProcessNodeAssigneeList(List<ProcessNode> nodeList, String definitionId) {
-       *//* List<ActNodeAssignee> actNodeAssignees = iActNodeAssigneeService.getInfoByProcessDefinitionId(definitionId);
-        if (CollUtil.isEmpty(actNodeAssignees)) {
-            throw new ServiceException("当前流程定义未配置审批人，请联系管理员！");
-        }
-        for (ProcessNode processNode : nodeList) {
-            if (CollectionUtil.isEmpty(actNodeAssignees)) {
-                throw new ServiceException("该流程定义未配置，请联系管理员！");
-            }
-            ActNodeAssignee nodeAssignee = actNodeAssignees.stream().filter(e -> e.getNodeId().equals(processNode.getNodeId())).findFirst().orElse(null);
-
-            //按角色 部门 人员id 等设置查询人员信息
-            if (ObjectUtil.isNotNull(nodeAssignee) && StringUtils.isNotBlank(nodeAssignee.getAssigneeId())
-                && nodeAssignee.getBusinessRuleId() == null && StringUtils.isNotBlank(nodeAssignee.getAssignee())) {
-                processNode.setChooseWay(nodeAssignee.getChooseWay());
-                processNode.setAssignee(nodeAssignee.getAssignee());
-                processNode.setAssigneeId(nodeAssignee.getAssigneeId());
-                processNode.setIsShow(nodeAssignee.getIsShow());
-                if (nodeAssignee.getMultiple()) {
-                    processNode.setNodeId(nodeAssignee.getMultipleColumn());
-                }
-                processNode.setMultiple(nodeAssignee.getMultiple());
-                processNode.setMultipleColumn(nodeAssignee.getMultipleColumn());
-                //按照业务规则设置查询人员信息
-            } else if (ObjectUtil.isNotNull(nodeAssignee) && nodeAssignee.getBusinessRuleId() != null) {
-                ActBusinessRuleVo actBusinessRuleVo = iActBusinessRuleService.queryById(nodeAssignee.getBusinessRuleId());
-                List<String> ruleAssignList = WorkflowUtils.ruleAssignList(actBusinessRuleVo, processNode.getTaskId(), processNode.getNodeName());
-                processNode.setChooseWay(nodeAssignee.getChooseWay());
-                processNode.setAssignee(StrUtil.EMPTY);
-                processNode.setAssigneeId(String.join(StringUtils.SEPARATOR, ruleAssignList));
-                processNode.setIsShow(nodeAssignee.getIsShow());
-                processNode.setBusinessRuleId(nodeAssignee.getBusinessRuleId());
-                if (Boolean.TRUE.equals(nodeAssignee.getMultiple())) {
-                    processNode.setNodeId(nodeAssignee.getMultipleColumn());
-                }
-                processNode.setMultiple(nodeAssignee.getMultiple());
-                processNode.setMultipleColumn(nodeAssignee.getMultipleColumn());
-            } else {
-                throw new ServiceException(processNode.getNodeName() + "未配置审批人，请联系管理员！");
-            }
-        }*//*
-        *//*if (CollectionUtil.isNotEmpty(nodeList)) {
-            // 去除不需要弹窗选人的节点
-            nodeList.removeIf(node -> !node.getIsShow());
-        }*//*
-        return nodeList;
-    }*/
-
 }

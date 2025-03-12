@@ -11,7 +11,6 @@ import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
-import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.common.tenant.helper.TenantHelper;
@@ -60,7 +59,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
         if(!Objects.isNull(bo.getProjectStatus())){
             lqw.eq(DcwsProject::getProjectStatus, bo.getProjectStatus());
         }
-        lqw.orderByDesc(BaseEntity::getCreateTime);
+        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
         return dcwsProjectMapper.selectVoList(lqw);
     }
 
@@ -71,7 +70,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     public List<DcwsProjectTaskVo> queryProjectTaskList(DcwsProjectTaskBo bo) {
         LambdaQueryWrapper<DcwsProjectTask> lqw = Wrappers.lambdaQuery();
         lqw.eq(DcwsProjectTask::getProjectId, bo.getProjectId());
-        lqw.orderByDesc(BaseEntity::getCreateTime);
+        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
         return dcwsProjectTaskMapper.selectVoList(lqw);
     }
 
@@ -127,7 +126,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
             lqw.eq(DcwsProjectTask::getProjectId, bo.getProjectId());
             List<DcwsProjectTaskVo> list = dcwsProjectTaskMapper.selectVoList(lqw);
             for (DcwsProjectTaskVo dcwsProjectTaskVo : list){
-                if (BusinessStatusEnum.DRAFT.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())||BusinessStatusEnum.INPROGRESS.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())){
+                if (BusinessStatusEnum.DRAFT.getStatus().equals(dcwsProjectTaskVo.getTaskStatus())||"inprogress".equals(dcwsProjectTaskVo.getTaskStatus())){
                     throw new ServiceException("该项目下还有任务未完成");
                 }
             }

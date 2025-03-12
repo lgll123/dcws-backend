@@ -3,7 +3,7 @@ package com.formssi.workflow.domain.bo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.formssi.common.core.validate.AddGroup;
 import com.formssi.common.core.validate.EditGroup;
-import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.workflow.domain.DcwsBaseEntity;
 import com.formssi.workflow.domain.TaskNodeData;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.NotBlank;
@@ -19,7 +19,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = TaskNodeData.class, reverseConvertGenerate = false)
-public class TaskNodeDataBo extends BaseEntity {
+public class TaskNodeDataBo extends DcwsBaseEntity {
 
     /**
      * 主键

@@ -1,4 +1,4 @@
-package com.formssi.common.mybatis.core.domain;
+package com.formssi.workflow.domain;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -19,7 +19,7 @@ import java.util.Map;
  * @author Lion Li
  */
 @Data
-public class BaseEntity implements Serializable {
+public class DcwsBaseEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

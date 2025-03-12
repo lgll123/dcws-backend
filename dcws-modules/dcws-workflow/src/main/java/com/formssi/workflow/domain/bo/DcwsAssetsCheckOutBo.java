@@ -1,9 +1,7 @@
 package com.formssi.workflow.domain.bo;
 
-import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.workflow.domain.DcwsAssetsCheckOut;
-import com.formssi.workflow.domain.TaskNodeData;
+import com.formssi.workflow.domain.DcwsBaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,7 +11,7 @@ import java.io.Serial;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DcwsAssetsCheckOut.class, reverseConvertGenerate = false)
-public class DcwsAssetsCheckOutBo extends BaseEntity {
+public class DcwsAssetsCheckOutBo extends DcwsBaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

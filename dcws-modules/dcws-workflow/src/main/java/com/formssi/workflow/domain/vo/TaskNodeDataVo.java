@@ -2,7 +2,9 @@ package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.system.domain.vo.SealInfoVo;
+import com.formssi.system.domain.vo.SealJsonVo;
+import com.formssi.workflow.domain.DcwsBaseEntity;
 import com.formssi.workflow.domain.TaskNodeData;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -14,7 +16,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = TaskNodeData.class)
-public class TaskNodeDataVo extends BaseEntity {
+public class TaskNodeDataVo extends DcwsBaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -100,4 +102,8 @@ public class TaskNodeDataVo extends BaseEntity {
      * 需求描述
      */
     private String requiredDesc;
+    /**
+     * 印章信息
+     */
+    private SealJsonVo sealJsonVo;
 }

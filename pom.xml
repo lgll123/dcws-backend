@@ -12,7 +12,6 @@
 
   <url>http://maven.apache.org</url>
   <modules>
-    <module>dcws-common</module>
     <module>dcws-extend</module>
     <module>dcws-modules</module>
     <module>dcws-admin</module>

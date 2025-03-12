@@ -34,6 +34,11 @@ public interface IApplyService {
     TableDataInfo<TaskNodeDataVo> queryPageList(TaskNodeDataQueryBo bo, PageQuery pageQuery);
 
     /**
+     * 查询用印台账表单
+     */
+    TableDataInfo<TaskNodeDataVo> queryPageSealList(TaskNodeDataQueryBo bo, PageQuery pageQuery);
+
+    /**
      * 查询申请列表
      */
     List<TaskNodeDataVo> queryList(TaskNodeDataQueryBo bo);

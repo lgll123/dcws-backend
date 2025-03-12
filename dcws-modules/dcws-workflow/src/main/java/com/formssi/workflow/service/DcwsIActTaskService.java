@@ -49,12 +49,4 @@ public interface DcwsIActTaskService {
      */
     TableDataInfo<DcwsTaskVo> getPageByTaskCopy(DcwsTaskBo taskBo, PageQuery pageQuery);
 
-
-    /**
-     * 获取下一个节点 add by yqh
-     *
-     * @param nextNodeBo
-     * @return 结果
-     */
-//    Map<String, Object> getNextNodeInfo(NextNodeBo nextNodeBo);
 }

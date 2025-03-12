@@ -77,16 +77,15 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             DcwsAssetsCheckOutBo recordBo = createBaseRecord(taskNode, "hardware");
             Map<String, Object> hardware = hardwareList.get(i);
             Map<String, Object> recipient = (Map<String, Object>) hardware.get("recipient");
-            //未设置领用人
+            //未设置领用人,将资产由已占用变为已领用，领用人默认申请人
+            String assetUserId = null;
             if (ObjectUtil.isEmpty(recipient) || StrUtil.isBlank(Convert.toStr(recipient.get("assetUserId")))) {
-                recordBo.setMessage("未设置领用人");
-                recordBo.setCheckType("1");
-                recordBo.setAssetsDetail(JSONUtil.toJsonStr(hardwareList.get(i)));
-                saveCheckOutRecord(recordBo);
-                continue;
+                assetUserId = Convert.toStr(taskNode.getApplicantId());
+            }else {
+                assetUserId = Convert.toStr(recipient.get("assetUserId"));//领用人
             }
             String assetId = Convert.toStr(hardware.get("id"));//资产id
-            String assetUserId = Convert.toStr(recipient.get("assetUserId"));//领用人
+
             // 资产归还操作
             if (!processHardwareCheckIn(assetId, assetUserId, hardware, recordBo)) continue;
 

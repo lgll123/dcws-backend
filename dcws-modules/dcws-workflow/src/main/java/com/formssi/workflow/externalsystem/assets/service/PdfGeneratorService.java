@@ -23,14 +23,18 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import reactor.core.publisher.Mono;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 
 @Service
@@ -51,9 +55,16 @@ public class PdfGeneratorService {
         String htmlContent = templateEngine.process(templateName, context);
 
         // 配置中文字体
-        FontProgram fontProgram = FontProgramFactory.createFont(
-                new ClassPathResource("/fonts/SIMHEI.TTF").getFile().getAbsolutePath()
-        );
+        /*FontProgram fontProgram = FontProgramFactory.createFont(
+                new ClassPathResource("fonts/SIMHEI.TTF").getFile().getAbsolutePath()
+        );*/
+        FontProgram fontProgram = null;
+        try (InputStream fontStream = new ClassPathResource("/fonts/SIMHEI.TTF").getInputStream()) {
+            byte[] fontData = IOUtils.toByteArray(fontStream);  // 将字体转换为字节数组
+            fontProgram = FontProgramFactory.createFont(fontData);  // 使用字节数组方式加载
+        } catch (Exception e) {
+            throw new RuntimeException("字体加载失败", e);
+        }
 //        PdfFont font = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H");
 //        FontProgram fontProgram = FontProgramFactory.createFont("STSong-Light" );
         DefaultFontProvider fontProvider = new DefaultFontProvider();
@@ -62,7 +73,7 @@ public class PdfGeneratorService {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         // 初始化 PDF 文档并设置 A4 尺寸
         PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputStream));
-        pdfDoc.setDefaultPageSize(PageSize.A4);
+//        pdfDoc.setDefaultPageSize(PageSize.A4);
         HtmlConverter.convertToPdf(
                 htmlContent,
                 pdfDoc,
@@ -144,7 +155,6 @@ public class PdfGeneratorService {
         if (file == null ) {
             throw new IllegalArgumentException("File cannot be empty");
         }
-
         // 创建多部分请求体
         MultipartBody.Builder requestBodyBuilder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -152,28 +162,52 @@ public class PdfGeneratorService {
                 .addFormDataPart(
                         "document",
                         originalFilename,
-                        RequestBody.create(
-                                file)
-                );
-
+                        RequestBody.create(file));
         // 添加可选字段（与原实现相同）
         addOptionalFields(requestBodyBuilder, title, created, correspondentId,
                 documentTypeId, storagePathId, tags,
                 archiveSerialNumber, customFields);
-
         // 构建请求
         Request request = new Request.Builder()
                 .url("http://10.100.216.113:8000/api/documents/post_document/")
                 .post(requestBodyBuilder.build())
                 .build();
-
         // 执行请求 上传文件到外部系统
         setAuthToken("Token bb04390c75d903d1baf536ddac2ce2868b5d31ef");
         String taskId = null;
         try (Response response = client.newCall(request).execute()) {
             taskId =  handleResponse(response);
         }
+        /*int attempts = 0;
+        while (attempts < 3) {
+            attempts++;
+            try {
+                pollTaskStatus(taskId);
+
+            } catch (Exception e) {
+                // 记录错误并继续重试
+            }
+
+        }*/
+
+
         return taskId;
+    }
+
+    private void pollTaskStatus(String taskId) {
+        log.info("taskId--------"+taskId);
+        // 构建请求
+        Request request = new Request.Builder()
+                .url("http://10.100.216.113:8000/api/tasks/?task_id="+taskId)
+                .header("Authorization", "Token bb04390c75d903d1baf536ddac2ce2868b5d31ef")
+                .get()
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            String s = handleResponse(response);
+        } catch (Exception e){
+            log.error("文件上传结果查询异常：",e);
+        }
+
     }
 
     // 专用方法处理可选字段

@@ -96,6 +96,7 @@ public class TaskNodeDataVo extends DcwsBaseEntity {
      * 需求日期 1:在某月某日下班前须到位
      * 完成日期
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date completeDate;
     /**
      * 需求日期 2: 其他（请描述）

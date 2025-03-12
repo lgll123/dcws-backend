@@ -1,15 +1,20 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.minio.util.MinioUtil;
 import com.formssi.system.domain.vo.SysFileUploadVo;
 import com.formssi.system.service.ISysDeptService;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
+import com.formssi.workflow.domain.vo.ActHistoryInfoVo;
 import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.externalsystem.assets.service.PdfGeneratorService;
+import com.formssi.workflow.service.IActProcessInstanceService;
 import com.formssi.workflow.service.IApplyService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;
@@ -35,7 +40,8 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
     @Autowired
     private IApplyService applyService;
 
-
+    @Autowired
+    private IActProcessInstanceService actProcessInstanceService;
     @Autowired
     private PdfGeneratorService pdfGeneratorService;
     @Autowired
@@ -56,7 +62,14 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             data.put("applicant",taskNodeDataVo.getApplicant());//申请人
             data.put("applyDate",taskNodeDataVo.getApplyDate());//申请日期
             data.put("status",taskNodeDataVo.getStatus());//当前环节
-            data.put("requiredDateType",taskNodeDataVo.getRequiredDateType());//需求日期
+            String requiredDateType = taskNodeDataVo.getRequiredDateType();
+            String requiredDate = switch (StringUtils.blankToDefault(requiredDateType,"3")) {
+                case "0" -> "截止日期  " + DateUtil.format(taskNodeDataVo.getCompleteDate(), "yyyy-MM-dd");
+                case "1" -> taskNodeDataVo.getRequiredDesc();
+                case "2" -> "尽快";
+                default -> null;
+            };
+            data.put("requiredDateType",requiredDate);//需求日期
             data.put("checkTo",taskNodeDataVo.getCheckTo());//预计使用人
             data.put("applyReson",taskNodeDataVo.getApplyReson());//申请原因
             data.put("applyRemarks",taskNodeDataVo.getApplyRemarks());//备注
@@ -71,7 +84,14 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) applyDetails.get("components");
             ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) applyDetails.get("consumables");
             Map<String, Object> purchaseDetail = (Map<String, Object>) applyDetails.get("purchaseDetail");
-            data.put("purchase",applyDetails.get("purchase"));//2:部分采购
+            String purchase = Convert.toStr(applyDetails.get("purchase"));
+            String purchaseTrans = switch (purchase) {
+                case "0" -> "有库存";
+                case "1" -> "需采购";
+                case "2" -> "部分需采购";
+                default -> null;
+            };
+            data.put("purchase",purchaseTrans);//2:部分采购
             data.put("hardware", hardware);
             data.put("licenses", licenses);
             data.put("accessories", accessories);
@@ -81,7 +101,9 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             String customApplyDetail1 = taskNodeDataVo.getCustomApplyDetail();
             List<Map<String,Object>> customApplyDetails = objectMapper.readValue(JSONUtil.toJsonStr(customApplyDetail1), List.class);
             data.put("customApplyDetails", customApplyDetails);
-
+            // 审批记录
+            List<ActHistoryInfoVo> historyRecords = actProcessInstanceService.getHistoryRecord(taskNodeDataVo.getId());
+            data.put("historyRecords", historyRecords);
 
             // 生成PDF
             byte[] pdfBytes = pdfGeneratorService.generatePdf("material", data);

@@ -44,12 +44,12 @@ public class DcwsActTaskController extends BaseController {
      *
      * @param completeTaskBo 办理任务参数
      */
-    @Log(title = "任务管理", businessType = BusinessType.INSERT)
+/*    @Log(title = "任务管理", businessType = BusinessType.INSERT)
     @RepeatSubmit()
     @PostMapping("/completeTask")
     public R<Void> completeTask(@Validated(AddGroup.class) @RequestBody DcwsCompleteTaskBo completeTaskBo) {
         return toAjax(actTaskService.completeTask(completeTaskBo));
-    }
+    }*/
 
     /**
      * 查询当前用户的待办任务

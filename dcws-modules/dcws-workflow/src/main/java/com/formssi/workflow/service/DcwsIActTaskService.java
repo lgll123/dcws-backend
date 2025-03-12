@@ -20,7 +20,7 @@ public interface DcwsIActTaskService {
      * @param completeTaskBo 办理任务参数
      * @return 结果
      */
-    boolean completeTask(DcwsCompleteTaskBo completeTaskBo);
+//    boolean completeTask(DcwsCompleteTaskBo completeTaskBo);
 
     /**
      * 查询当前用户的待办任务

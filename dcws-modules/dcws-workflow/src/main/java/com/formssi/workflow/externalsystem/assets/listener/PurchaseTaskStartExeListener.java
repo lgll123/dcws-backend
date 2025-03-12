@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.utils.SpringUtils;
+import com.formssi.workflow.domain.bo.CompleteTaskBo;
 import com.formssi.workflow.domain.bo.DcwsCompleteTaskBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
@@ -69,7 +70,7 @@ public class PurchaseTaskStartExeListener implements ExecutionListener {
                     // 在此处启动独立流程的任务
                     Map<String, Object> stringObjectMap = actTaskServiceWrapper.startProcessInNewTransaction(startProcessBo);// 调用包裹方法
                     if (!CollectionUtil.isEmpty(stringObjectMap)) {
-                        DcwsCompleteTaskBo completeTaskBo = new DcwsCompleteTaskBo();
+                        CompleteTaskBo completeTaskBo = new CompleteTaskBo();
                         completeTaskBo.setTaskId(String.valueOf(stringObjectMap.get("taskId")));
                         List objects = new ArrayList<String>();
                         objects.add("1");

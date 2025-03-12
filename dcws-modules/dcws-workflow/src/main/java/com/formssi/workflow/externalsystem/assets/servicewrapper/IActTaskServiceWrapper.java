@@ -1,5 +1,6 @@
 package com.formssi.workflow.externalsystem.assets.servicewrapper;
 
+import com.formssi.workflow.domain.bo.CompleteTaskBo;
 import com.formssi.workflow.domain.bo.DcwsCompleteTaskBo;
 import com.formssi.workflow.domain.bo.StartProcessBo;
 import com.formssi.workflow.service.DcwsIActTaskService;
@@ -14,7 +15,6 @@ import java.util.Map;
 @Service
 public class IActTaskServiceWrapper {
     private final IActTaskService actTaskService;  // 原有服务（含@Transactional的方法）
-    private final DcwsIActTaskService dcwsIActTaskService;
     private final TransactionTemplate transactionTemplate;  // 编程式事务模板
 
     public IActTaskServiceWrapper(
@@ -23,7 +23,6 @@ public class IActTaskServiceWrapper {
             TransactionTemplate transactionTemplate
     ) {
         this.actTaskService = actTaskService;
-        this.dcwsIActTaskService = dcwsIActTaskService;
         this.transactionTemplate = transactionTemplate;
     }
 
@@ -49,10 +48,10 @@ public class IActTaskServiceWrapper {
      * 在新事务中调用原方法，异常仅回滚新事务
      * 完成任务
      */
-    public boolean completeTaskInNewTransaction(DcwsCompleteTaskBo completeTaskBo) {
+    public boolean completeTaskInNewTransaction(CompleteTaskBo completeTaskBo) {
         return Boolean.TRUE.equals(transactionTemplate.execute(status -> {
             try {
-                return dcwsIActTaskService.completeTask(completeTaskBo);  // 调用原方法（已注解@Transactional）
+                return actTaskService.completeTask(completeTaskBo);  // 调用原方法（已注解@Transactional）
             } catch (Exception e) {
                 status.setRollbackOnly();  // 标记事务回滚
                 // 记录日志，但无需处理（新事务已标记回滚）

@@ -75,7 +75,7 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
      *
      * @param completeTaskBo 办理任务参数
      */
-    @Override
+    /*@Override
     @Transactional(rollbackFor = Exception.class)
     public boolean completeTask(DcwsCompleteTaskBo completeTaskBo) {
         try {
@@ -157,9 +157,9 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
                                     taskService.addCandidateUser(t.getId(), assignee.toString());
                                 }
                             }
-                            /*for (String candidateGroup: completeTaskBo.getCandidateGroups()) {
+                            *//*for (String candidateGroup: completeTaskBo.getCandidateGroups()) {
                                 taskService.addCandidateGroup(t.getId(),candidateGroup);
-                            }*/
+                            }*//*
                         }
                     }
                 }
@@ -178,7 +178,7 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
             log.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage());
         }
-    }
+    }*/
 
 
     /**

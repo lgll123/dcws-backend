@@ -5,7 +5,6 @@ import com.formssi.job.service.SyncUserOrgTaskService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 
@@ -69,22 +68,4 @@ public class SyncUserOrgTask {
         }
     }
 
-
-
-
-
-
-
-    /**
-     * 测试更换领用人
-     */
-//    @Scheduled(cron = "${schedule.syncOrgCron}")
-//    public void syncOrgInfo() {
-//        log.info("开始更换领用人...");
-//        try {
-//            syncUserOrgTaskService.testaaa();
-//        } catch (Exception e) {
-//            log.error("更换领用人失败", e);
-//        }
-//    }
 }

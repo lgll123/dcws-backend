@@ -62,7 +62,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             bo.setMessage(e.getMessage());
             bo.setAssetsDetail(Convert.toStr(entityMap.get("applyDetail")));
             bo.setCheckOutUser(Convert.toStr(entityMap.get("applicantId")));
-            bo.setStatus("2");//部分异常待处理
+            bo.setStatus("3");//部分或全部异常待处理
             bo.setCheckType("1");
             bo.setAssetsType("0");
             bo.setCheckOutIn("2");
@@ -78,7 +78,8 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             Map<String, Object> hardware = hardwareList.get(i);
             Map<String, Object> recipient = (Map<String, Object>) hardware.get("recipient");
             //未设置领用人
-            if (!validateRecipient(recipient, recordBo)) {
+            if (ObjectUtil.isEmpty(recipient) || StrUtil.isBlank(Convert.toStr(recipient.get("assetUserId")))) {
+                recordBo.setMessage("未设置领用人");
                 recordBo.setCheckType("1");
                 recordBo.setAssetsDetail(JSONUtil.toJsonStr(hardwareList.get(i)));
                 saveCheckOutRecord(recordBo);
@@ -99,35 +100,20 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         //1、归还
         String apiUrlIn = "hardware/" + assetIdIn + "/checkin";
         Map<String, String> requestBodyMapIn = new HashMap<>();
-        requestBodyMapIn.put(STATUS_ID, ASSETS_STATUS_7);
+        requestBodyMapIn.put(STATUS_ID, ASSETS_STATUS_12);
         Map<String, Object> responseMap = null;
         try {
             responseMap = instance.process(requestBodyMapIn, apiUrlIn, "post");
         } catch (ApiCallException e) {
-            bo.setStatus("0");//失败
-            if (e.getCode() > 0 && e.getCode() != HttpStatus.SUCCESS) {
-                bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
-            }
-            bo.setMessage(e.getMessage());
-            bo.setCode(Convert.toStr(e.getCode()));
-            bo.setCheckType("2");
-            bo.setAssetsDetail(JSONUtil.toJsonStr(hardware));
             bo.setCheckOutUser(assetUserId);
-            bo.setAssetsType("hardware");
-            // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+            handlerApiCallException("2","hardware",bo,hardware,e);
             return false;
         }
         if ("error".equals(responseMap.get("status"))) {
-            bo.setMessage(Convert.toStr(responseMap.get("messages")));
-            bo.setCode(Convert.toStr(responseMap.get("status")));
-            bo.setStatus("0");
-            bo.setCheckType("2");
-            bo.setAssetsDetail(JSONUtil.toJsonStr(hardware));
-            bo.setCheckOutUser(assetUserId);
-            bo.setAssetsType("hardware");
             // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+            bo.setStatus("2");
+            handlerAssetSysReturnError(null,assetUserId,
+                    "2","hardware",bo,hardware,responseMap);
             return false;
         }
         //资产归还成功
@@ -156,30 +142,15 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         try {
             responseMapOut = instance.process(requestBodyMapOut, apiUrlOut, "post");
         } catch (ApiCallException e) {
-            bo.setStatus("0");//失败
-            if (e.getCode() > 0 && e.getCode() != HttpStatus.SUCCESS) {
-                bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
-            }
-            bo.setMessage(e.getMessage());
-            bo.setCode(Convert.toStr(e.getCode()));
-            bo.setCheckType("1");
             bo.setCheckOutUser(assetUserId);
-            bo.setAssetsDetail(JSONUtil.toJsonStr(hardware));
-            bo.setAssetsType("hardware");
-            // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+            handlerApiCallException("1","hardware",bo,hardware,e);
             return;
         }
         if ("error".equals(responseMapOut.get("status"))) {
-            bo.setMessage(Convert.toStr(responseMapOut.get("messages")));
-            bo.setCode(Convert.toStr(responseMapOut.get("status")));
-            bo.setStatus("0");
-            bo.setCheckType("1");
-            bo.setAssetsDetail(JSONUtil.toJsonStr(hardware));
-            bo.setCheckOutUser(assetUserId);
-            bo.setAssetsType("hardware");
             // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+            bo.setStatus("0");
+            handlerAssetSysReturnError(null,assetUserId,
+                    "1","hardware",bo,hardware,responseMapOut);
             return;
         }
         //资产借出成功
@@ -255,27 +226,15 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         try {
             responseMap = instance.process(requestMap, apiUrl, "get");
         } catch (ApiCallException e) {
-            bo.setStatus("0");//失败
-            if (e.getCode() > 0 && e.getCode() != HttpStatus.SUCCESS) {
-                bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
-            }
-            bo.setMessage(e.getMessage());
-            bo.setCode(Convert.toStr(e.getCode()));
-            bo.setCheckType("3");
-            bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
-            bo.setAssetsType("accessories");
-            // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+            handlerApiCallException("3","accessories",bo,accessory,e);
             return null;
         }
         if ("error".equals(responseMap.get("status"))) {
             log.info("后台API接口返回错误：" + responseMap.get("messages"));
-            bo.setMessage(Convert.toStr(responseMap.get("messages")));
-            bo.setCode(Convert.toStr(responseMap.get("status")));
+            // 记录物料checkOut 记录
             bo.setStatus("2");
-            bo.setCheckType("3");
-            bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
-            bo.setAssetsType("accessories");
+            handlerAssetSysReturnError(null,null,
+                    "3","accessories",bo,accessory,responseMap);
             // 记录物料checkOut 记录
             saveCheckOutRecord(bo);
             return null;
@@ -295,33 +254,18 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             try {
                 responseMap = instance.process(null, apiUrlCheckIn, "post");
             } catch (ApiCallException e) {
-                bo.setStatus("0");//失败
-                if (e.getCode() > 0 && e.getCode() != HttpStatus.SUCCESS) {
-                    bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
-                }
-                bo.setMessage(e.getMessage());
-                bo.setCode(Convert.toStr(e.getCode()));
-                bo.setCheckType("2");
-                bo.setAccessoryUserId(accessoryUserId);
-                bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
-                bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
-                bo.setAssetsType("accessories");
                 // 记录物料checkOut 记录
-                saveCheckOutRecord(bo);
+                bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
+                handlerApiCallException("2","accessories",bo,accessory,e);
+                bo.setAccessoryUserId(accessoryUserId);
                 return false;
             }
             if ("error".equals(responseMap.get("status"))) {
                 log.info("后台API接口返回错误：" + responseMap.get("messages"));
-                bo.setMessage(Convert.toStr(responseMap.get("messages")));
-                bo.setCode(Convert.toStr(responseMap.get("status")));
-                bo.setStatus("0");
-                bo.setCheckType("2");
-                bo.setAccessoryUserId(accessoryUserId);
-                bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
-                bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
-                bo.setAssetsType("accessories");
                 // 记录物料checkOut 记录
-                saveCheckOutRecord(bo);
+                bo.setStatus("2");
+                handlerAssetSysReturnError(accessoryUserId,Convert.toStr(recipient.get("assetUserId")),
+                        "2","accessories",bo,accessory,responseMap);
                 return false;
             }
             //归还成功
@@ -345,33 +289,18 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         try {
             responseMapOut = instance.process(requestBodyMapOut, apiUrlOut, "post");
         } catch (ApiCallException e) {
-            bo.setStatus("0");//失败
-            if (e.getCode() > 0 && e.getCode() != HttpStatus.SUCCESS) {
-                bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
-            }
-            bo.setMessage(e.getMessage());
-            bo.setCode(Convert.toStr(e.getCode()));
-            bo.setCheckType("1");
+            // 记录物料checkOut 记录
             bo.setAccessoryUserId(accessoryUserIdIn);
             bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
-            bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
-            bo.setAssetsType("accessories");
-            // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+            handlerApiCallException("1","hardware",bo,accessory,e);
             return;
         }
         if ("error".equals(responseMapOut.get("status"))) {
             log.info("后台API接口返回错误：" + responseMapOut.get("messages"));
-            bo.setMessage(Convert.toStr(responseMapOut.get("messages")));
-            bo.setCode(Convert.toStr(responseMapOut.get("status")));
-            bo.setStatus("0");
-            bo.setCheckType("1");
-            bo.setAccessoryUserId(accessoryUserIdIn);
-            bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
-            bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
-            bo.setAssetsType("accessories");
             // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+            bo.setStatus("0");
+            handlerAssetSysReturnError(accessoryUserIdIn,Convert.toStr(recipient.get("assetUserId")),
+                    "1","accessories",bo,accessory,responseMapOut);
             return;
         }
         //借出成功
@@ -379,17 +308,9 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         bo.setCheckType("1");
         bo.setAccessoryUserId(accessoryUserIdIn);
         bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
-        bo.setMessage("领用人：" + applicant + " 变更到：" + recipient.get("name"));
+        bo.setMessage("附属品借出成功 " + "领用人：" + applicant + " 变更到：" + recipient.get("name"));
         bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
         saveCheckOutRecord(bo);
-    }
-    // 统一校验方法
-    private boolean validateRecipient(Map<String, Object> recipient, DcwsAssetsCheckOutBo recordBo) {
-        if (ObjectUtil.isEmpty(recipient) || StrUtil.isBlank(Convert.toStr(recipient.get("assetUserId")))) {
-            recordBo.setMessage("未设置领用人");
-            return false;
-        }
-        return true;
     }
     // 创建基础记录对象
     private DcwsAssetsCheckOutBo createBaseRecord(TaskNodeDataBo taskNode, String assetType) {
@@ -421,5 +342,33 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         return mapper.readValue(JSON.toJSONString(entity), TaskNodeDataBo.class);
     }
 
+    // ApiCallException异常处理
+    private void handlerApiCallException(String checkType,String assetsType,DcwsAssetsCheckOutBo bo,Map<String, Object> accessory,ApiCallException e){
+        bo.setStatus("0");//失败
+        if (e.getCode() > 0 && e.getCode() != HttpStatus.SUCCESS) {
+            bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
+        }
+        bo.setMessage(e.getMessage());
+        bo.setCode(Convert.toStr(e.getCode()));
+        bo.setCheckType(checkType);
+        bo.setAssetsType(assetsType);
+        bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
+        // 记录物料checkOut 记录
+        saveCheckOutRecord(bo);
+    }
+
+    // 资产系统接口返回error处理
+    private void handlerAssetSysReturnError(String accessoryUserIdIn,String checkOutUser,String checkType,String assetsType,DcwsAssetsCheckOutBo bo,Map<String, Object> accessory,Map<String, Object> responseMapOut){
+        bo.setMessage(Convert.toStr(responseMapOut.get("messages")));
+        bo.setCode(Convert.toStr(responseMapOut.get("status")));
+//        bo.setStatus("0");
+        bo.setCheckType(checkType);
+        bo.setAssetsType(assetsType);
+        bo.setAccessoryUserId(accessoryUserIdIn);
+        bo.setCheckOutUser(checkOutUser);
+        bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
+        // 记录物料checkOut 记录
+        saveCheckOutRecord(bo);
+    }
 
 }

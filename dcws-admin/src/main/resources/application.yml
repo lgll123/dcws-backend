@@ -7,6 +7,10 @@ dcws:
   # 版权年份
   copyrightYear: 2024
 
+spring.thymeleaf.cache: false
+spring.thymeleaf.prefix: classpath:/templates/
+spring.thymeleaf.suffix: .html
+
 captcha:
   enable: true
   # 页面 <参数设置> 可开启关闭 验证码校验
@@ -156,6 +160,7 @@ tenant:
     - sys_file
     - dcws_assets_check_out
     - dcws_task_serial_number
+    - dcws_sys_file
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

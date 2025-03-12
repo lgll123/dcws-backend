@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        /* 中文字体定义 */
+       /* @font-face {
+            font-family: "SimSun";
+            src: url(/fonts/simsun.ttf);
+        }*/
+        @page {
+                size: A4;          /* 固定为A4尺寸 */
+                margin: 20mm;      /* 设置页边距（可选） */
+            }
+
+        body {
+            width: 210mm;      /* A4宽度 210mm ≈ 8.27英寸 */
+            height: 297mm;     /* A4高度 297mm ≈ 11.69英寸 */
+            margin: 0 auto;    /* 内容居中 */
+            box-sizing: border-box;
+        }
+        /*body {
+            font-family: SimSun;
+            line-height: 1.6;
+            margin: 20px;
+        }*/
+.title-divider th {
+    border-bottom: 0.5px solid #000;
+}
+        .header {
+            /*text-align: center;*/
+            border-bottom: 2px solid #333;
+            padding-bottom: 5px;
+        }
+        .light-text { font-weight: 200; }
+        .heavy-text { font-weight: 500; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: none;
+            margin-top: 5px;
+        }
+
+        th {
+            /*background-color: #f5f5f5;*/
+            padding: 3px;
+            border: none;
+        }
+
+        td {
+            padding: 3px;
+            border: none;
+        }
+
+        .signature {
+            margin-top: 30px;
+            text-align: right;
+        }
+        /* 标题和内容统一右对齐 */
+.table-right-align th,
+.table-right-align td {
+    text-align: left !important;  /* 强制覆盖默认样式 */
+}
+
+    </style>
+</head>
+<body>
+<!--<div class="header">
+    <h1>申请物料清单</h1>
+    &lt;!&ndash;<p>申请日期：<span th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></span></p>&ndash;&gt;
+</div>-->
+<h1  style="position: relative; margin-bottom: 40px;">
+    <span style="font-size: 28px;"> 申请物料清单</span>
+    <span style="float: right; font-size: 14px; color: #000;" th:text="${data.id}"></span>
+</h1>
+
+
+<!-- 基础信息 -->
+<h3 style="font-size: 16px;">基础信息</h3>
+<table class="table-right-align" style="font-size: 14px;">
+    <tr class="heavy-text">
+        <th>申请部门</th>
+        <th>申请人</th>
+        <th>申请日期</th>
+        <th>当前环节</th>
+    </tr>
+    <tr class="light-text">
+        <td th:text="${data.applyDept}"></td>
+        <td th:text="${data.applicant}"></td>
+        <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
+        <td th:text="${data.status}"></td>
+    </tr>
+    <tr class="heavy-text">
+        <th>需求日期</th>
+        <th>预计使用人</th>
+    </tr>
+    <tr class="light-text">
+        <td th:text="${data.requiredDateType}"></td>
+        <td th:text="${data.checkTo}"></td>
+    </tr>
+</table>
+<hr  style="border-top: 0.5px solid #000; margin: 10px 0;">
+<!--<table class="table-right-align" style="font-size: 14px;">
+    <tr>
+        <th   class="heavy-text">申请原因</th>
+        <td  class="light-text" th:text="${data.applyReson}"></td>
+    </tr>
+    <tr>
+        <th  class="heavy-text">备注</th>
+        <td class="light-text" th:text="${data.remark}"></td>
+    </tr>
+</table>-->
+<div class="table-right-align" style="font-size: 14px;">
+    <div style="margin: 10px 0;">
+        <span style="width:56px;margin: 10px 0;">申请原因</span><span style="padding-left: 20px;margin: 10px 0;" class="light-text" th:text="${data.applyReson}"></span>
+    </div>
+    <div style="margin: 10px 0;">
+        <span style="width:56px;margin: 10px 0;">备注</span><span style="padding-left: 45px;margin: 10px 0;" class="light-text" th:text="${data.applyRemarks}"></span>
+    </div>
+</div>
+
+<!-- 物料清单 -->
+<div th:if="${data.customApplyDetails != null and not #lists.isEmpty(data.customApplyDetails)}">
+    <!-- 当 data.customApplyDetails 非空且不为 null 时显示 -->
+<h3>申请物料清单</h3>
+<table class="table-right-align" style="font-size: 12px;">
+    <thead class="title-divider">
+    <tr class="heavy-text">
+        <th>规格</th>
+        <th>物料名称</th>
+        <th>单位</th>
+        <th>数量</th>
+    </tr>
+    </thead>
+    <tbody class="light-text">
+    <tr th:each="item : ${data.customApplyDetails}">
+        <td th:text="${item.modelNo}"></td>
+        <td th:text="${item.name}"></td>
+        <td th:text="${item.unit}"></td>
+        <td th:text="${item.applyNum}"></td>
+    </tr>
+    </tbody>
+</table>
+</div>
+
+<div style="padding-left: 80px;" >
+    <h3 class="heavy-text" style="font-size: 16px;">澄清物料清单</h3>
+    <div th:if="${data.hardware != null and not #lists.isEmpty(data.hardware)}">
+        <!-- 当 data.hardware 非空且不为 null 时显示 -->
+    <h3 class="heavy-text" style="font-size: 14px;">IT资产清单</h3>
+    <table  class="table-right-align"  style="font-size: 12px;">
+        <thead class="title-divider">
+        <tr class="heavy-text">
+            <th>资产名称</th>
+            <th>资产标签</th>
+            <th>序列号</th>
+            <th>型号</th>
+            <th>类别</th>
+            <th>状态</th>
+        </tr>
+        </thead>
+        <tbody class="light-text">
+        <tr th:each="item : ${data.hardware}">
+            <td th:text="${item.name}"></td>
+            <td th:text="${item.assetTag}"></td>
+            <td th:text="${item.serial}"></td>
+            <td th:text="${item.modelNo}"></td>
+            <td th:text="${item.categoryName}"></td>
+            <td th:text="${item.assetStatus}"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+    <div th:if="${data.licenses != null and not #lists.isEmpty(data.licenses)}">
+        <!-- 当 data.licenses 非空且不为 null 时显示 -->
+    <h3 class="heavy-text" style="font-size: 14px;">许可证清单</h3>
+    <table  class="table-right-align"  style="font-size: 12px;">
+        <thead class="title-divider">
+        <tr class="heavy-text">
+            <th>名称</th>
+            <th>产品序列号</th>
+            <th>到期日期</th>
+            <th>许可电子邮件</th>
+            <th>许可人</th>
+            <th>制造商</th>
+            <th>共计</th>
+            <th>可用</th>
+            <th>绑定资产</th>
+        </tr>
+        </thead>
+        <tbody class="light-text">
+        <tr th:each="item : ${data.licenses}">
+            <td th:text="${item.name}"></td>
+            <td th:text="${item.productKey}"></td>
+            <td th:text="${item.expirationDate}"></td>
+            <td th:text="${item.licenseEmail}"></td>
+            <td th:text="${item.licenseName}"></td>
+            <td th:text="${item.manufacturerName}"></td>
+            <td th:text="${item.qty}"></td>
+            <td th:text="${item.remainQty}"></td>
+            <td th:text="${item.asset.name}"></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div th:if="${data.accessories != null and not #lists.isEmpty(data.accessories)}">
+        <!-- 当 data.accessories 非空且不为 null 时显示 -->
+    <h3 class="heavy-text" style="font-size: 14px;">附属品清单</h3>
+    <table  class="table-right-align"  style="font-size: 12px;">
+        <thead class="title-divider">
+        <tr class="heavy-text">
+            <th>名称</th>
+            <th>配件类别</th>
+            <th>型号</th>
+            <th>位置</th>
+            <th>共计</th>
+            <th>剩余</th>
+            <th>申请数量</th>
+        </tr>
+        </thead>
+        <tbody class="light-text">
+        <tr th:each="item : ${data.accessories}">
+            <td th:text="${item.name}"></td>
+            <td th:text="${item.categoryName}"></td>
+            <td th:text="${item.modelNo}"></td>
+            <td th:text="${item.locationName}"></td>
+            <td th:text="${item.qty}"></td>
+            <td th:text="${item.remainQty}"></td>
+            <td th:text="${item.applyNum}"></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div th:if="${data.components != null and not #lists.isEmpty(data.components)}">
+        <!-- 当 data.components 非空且不为 null 时显示 -->
+    <h3 class="heavy-text" style="font-size: 14px;">组件清单</h3>
+    <table  class="table-right-align"  style="font-size: 12px;">
+        <thead class="title-divider">
+        <tr class="heavy-text">
+            <th>名称</th>
+            <th>配件类别</th>
+            <th>型号</th>
+            <th>位置</th>
+            <th>共计</th>
+            <th>剩余</th>
+            <th>绑定资产</th>
+            <th>申请数量</th>
+        </tr>
+        </thead>
+        <tbody class="light-text">
+        <tr th:each="item : ${data.components}">
+            <td th:text="${item.name}"></td>
+            <td th:text="${item.categoryName}"></td>
+            <td th:text="${item.modelNo}"></td>
+            <td th:text="${item.locationName}"></td>
+            <td th:text="${item.qty}"></td>
+            <td th:text="${item.remainQty}"></td>
+            <td th:text="${item.asset.name}"></td>
+            <td th:text="${item.applyNum}"></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+
+    <div th:if="${data.consumables != null and not #lists.isEmpty(data.consumables)}">
+        <!-- 当 data.consumables 非空且不为 null 时显示 -->
+    <h3 class="heavy-text" style="font-size: 14px;">消耗品清单</h3>
+    <table  class="table-right-align"  style="font-size: 12px;">
+        <thead class="title-divider">
+        <tr class="heavy-text">
+            <th>名称</th>
+            <th>配件类别</th>
+            <th>型号</th>
+            <th>位置</th>
+            <th>共计</th>
+            <th>剩余</th>
+            <th>申请数量</th>
+        </tr>
+        </thead>
+        <tbody class="light-text">
+        <tr th:each="item : ${data.consumables}">
+            <td th:text="${item.name}"></td>
+            <td th:text="${item.categoryName}"></td>
+            <td th:text="${item.modelNo}"></td>
+            <td th:text="${item.locationName}"></td>
+            <td th:text="${item.qty}"></td>
+            <td th:text="${item.remainQty}"></td>
+            <td th:text="${item.applyNum}"></td>
+        </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<hr  style="border-top: 0.5px solid #000; margin: 10px 0;">
+<div style="font-size: 14px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="width: 56px; margin: 5px 0; flex-shrink: 0;">澄清库存</span>
+        <span style="text-align: right; margin: 5px 0; flex-grow: 1;" class="light-text" th:text="${data.purchase}"></span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="width: 56px; margin: 5px 0; flex-shrink: 0;">采购金额</span>
+        <span style="text-align: right; margin: 5px 0; flex-grow: 1;" class="light-text" th:text="${data.purchaseDetail.purchaseAmount}"></span>
+    </div>
+</div>
+
+
+<div th:if="${data.purchaseDetail.materialInfo != null and not #lists.isEmpty(data.purchaseDetail.materialInfo)}">
+    <!-- 当 data.purchaseDetail.materialInfo 非空且不为 null 时显示 -->
+<h3>采购物料清单</h3>
+<table class="table-right-align" style="font-size: 12px;">
+    <thead class="title-divider">
+    <tr class="heavy-text">
+        <th>规格</th>
+        <th>物料名称</th>
+        <th>单位</th>
+        <th>数量</th>
+    </tr>
+    </thead>
+    <tbody class="light-text">
+    <tr th:each="item : ${data.purchaseDetail.materialInfo}">
+        <td th:text="${item.modelNo}"></td>
+        <td th:text="${item.name}"></td>
+        <td th:text="${item.unit}"></td>
+        <td th:text="${item.applyNum}"></td>
+    </tr>
+    </tbody>
+</table>
+</div>
+
+<!-- 审批信息 -->
+<hr  style="border-top: 0.5px solid #000; margin: 10px 0;">
+<!--<div style="font-size: 14px;">
+    <div>
+        <span style="width:56px;margin: 10px 0;">审批信息</span><span style="padding-right: 1px;margin: 10px 0;" class="light-text">同意申请</span>
+    </div>
+    <div>
+        <span style="width:56px;margin: 10px 0;"></span><span style="padding-right: 1px;margin: 10px 0;" class="light-text" th:text="${data.approver}"></span>
+    </div>
+</div>-->
+
+<div style="font-size: 14px;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="width: 56px; margin: 5px 0; flex-shrink: 0;">审批信息</span>
+        <span style="text-align: right; margin: 5px 0; flex-grow: 1;" class="light-text">同意申请</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="width: 56px; margin: 5px 0; flex-shrink: 0;"></span>
+        <span style="text-align: right; margin: 5px 0; flex-grow: 1;" class="light-text" th:text="${data.approver}"></span>
+    </div>
+</div>
+
+<h3>审批记录</h3>
+
+</body>
+</html>

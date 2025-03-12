@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.ASSETS_STATUS_11;
+import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.ASSETS_STATUS_12;
 
 @Slf4j
 @Component("CallAssetsSystemCheckOutTaskListener")
@@ -86,7 +87,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
         bo.setMessage(e.getMessage());
         bo.setAssetsDetail(String.valueOf(Convert.toStr(entityMap.get("applyDetail"))));
         bo.setCheckOutUser(String.valueOf(entityMap.get("applicantId")));
-        bo.setStatus("2");//部分异常待处理
+        bo.setStatus("3");//部分或全部异常待处理
         bo.setCheckType("1");
         bo.setAssetsType("0");
         bo.setCheckOutIn("1");
@@ -113,7 +114,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             try {
                 switch (categoryType){
                     case "hardware":
-                        requestBodyMap.put("status_id",  ASSETS_STATUS_11);//已领用
+                        requestBodyMap.put("status_id",  ASSETS_STATUS_12);//已预定
                         break;
                     case "consumables":
                         requestBodyMap.put("checkout_qty",  String.valueOf(assets.get(i).get("applyNum")));
@@ -145,7 +146,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             } catch (ApiCallException e) {
                 bo.setStatus("0");//失败
                 if(e.getCode()>0 && e.getCode()!=HttpStatus.SUCCESS){
-                    bo.setStatus("3");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
+                    bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
                 }
                 bo.setCode(String.valueOf(e.getCode()));
                 bo.setMessage(e.getMessage());
@@ -215,7 +216,7 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             } catch (ApiCallException e) {
                 bo.setStatus("0");//失败
                 if(e.getCode()>0 && e.getCode()!=HttpStatus.SUCCESS){
-                    bo.setStatus("3");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
+                    bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
                 }
                 bo.setCode(String.valueOf(e.getCode()));
                 bo.setMessage(e.getMessage());

@@ -124,6 +124,10 @@ public interface AssetsConstant {
      */
     String ASSETS_STATUS_11 = "11";
     /**
+     * 资产状态 已预定
+     */
+    String ASSETS_STATUS_12 = "12";
+    /**
      * 资产目录类型 附属品-accessories
      */
     String CATEGORIES_ACCESSORIES = "accessories";

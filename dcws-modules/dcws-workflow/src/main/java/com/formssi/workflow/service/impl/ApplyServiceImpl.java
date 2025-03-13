@@ -44,10 +44,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 申请Service业务层处理
@@ -159,7 +156,7 @@ public class ApplyServiceImpl implements IApplyService {
         lqw.like(StringUtils.isNotBlank(bo.getApplyDept()), TaskNodeData::getApplyDept, bo.getApplyDept());
         lqw.like(StringUtils.isNotBlank(bo.getApplicant()), TaskNodeData::getApplicant, bo.getApplicant());
         lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
-        lqw.eq(StringUtils.isNotBlank(bo.getStatus()), TaskNodeData::getStatus, bo.getStatus());
+        lqw.in(TaskNodeData::getStatus, Arrays.asList("back","draft"));
         lqw.eq(TaskNodeData::getCreateBy, LoginHelper.getUserId());
         lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
         return lqw;

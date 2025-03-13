@@ -153,6 +153,9 @@ public class DcwsActProcessInstanceServiceImpl implements DcwsIActProcessInstanc
         if (StringUtils.isNotBlank(bo.getBusinessKey())) {
             query.processInstanceBusinessKey(bo.getBusinessKey());
         }
+        if (StringUtils.isNotBlank(bo.getName())) {
+            query.processDefinitionName(bo.getName());
+        }
         if (StringUtils.isNotBlank(bo.getCategoryCode())) {
             query.processDefinitionCategory(bo.getCategoryCode());
         }

@@ -90,9 +90,8 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             Map<String, Object> purchaseDetail = (Map<String, Object>) applyDetails.get("purchaseDetail");
             String purchase = Convert.toStr(applyDetails.get("purchase"));
             String purchaseTrans = switch (purchase) {
-                case "0" -> "有库存";
-                case "1" -> "需采购";
-                case "2" -> "部分需采购";
+                case "0" -> "无需采购";
+                case "1", "2" -> "需采购";
                 default -> null;
             };
             data.put("purchase",purchaseTrans);//2:部分采购

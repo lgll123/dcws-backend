@@ -107,4 +107,9 @@ public class TaskNodeDataVo extends DcwsBaseEntity {
      * 印章信息
      */
     private SealJsonVo sealJsonVo;
+    /**
+     * 生成申请单PDF到minio/档案系统服务器状态 1-成功 0-失败 2-minio成功 3-档案系统成功 4-待处理
+     *
+     */
+    private Integer storageFileStatus;
 }

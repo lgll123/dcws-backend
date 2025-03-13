@@ -1,6 +1,7 @@
 package com.formssi.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.util.ObjectUtil;
 import com.alibaba.fastjson.JSON;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.validate.AddGroup;
@@ -14,6 +15,7 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
+import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.service.IApplyService;
@@ -128,5 +130,18 @@ public class TaskNodeDataController extends BaseController {
     @DeleteMapping("/{ids}")
     public R<Void> remove(@NotEmpty(message = "主键不能为空") @PathVariable String[] ids) {
         return toAjax(applyService.deleteWithValidByIds(List.of(ids)));
+    }
+
+
+    /**
+     * 获取申请单PDFurl
+     *
+     * @param id 申请单号
+     */
+    @SaCheckPermission("workflow:apply:query")
+    @GetMapping("/getApplyPDF")
+    public R<DcwsSysFileVo> getApplyPDF(@NotNull(message = "申请单号不能为空") String id) {
+        List<DcwsSysFileVo> applyPDFUrl = applyService.getApplyPDF(id);
+        return R.ok(ObjectUtil.isEmpty(applyPDFUrl)?null:applyPDFUrl.get(0));
     }
 }

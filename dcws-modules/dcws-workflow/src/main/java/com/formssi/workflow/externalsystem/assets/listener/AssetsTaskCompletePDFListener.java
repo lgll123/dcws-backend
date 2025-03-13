@@ -63,10 +63,10 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             data.put("applyDate",taskNodeDataVo.getApplyDate());//申请日期
             data.put("status",taskNodeDataVo.getStatus());//当前环节
             String requiredDateType = taskNodeDataVo.getRequiredDateType();
-            String requiredDate = switch (StringUtils.blankToDefault(requiredDateType,"3")) {
-                case "0" -> "截止日期  " + DateUtil.format(taskNodeDataVo.getCompleteDate(), "yyyy-MM-dd");
-                case "1" -> taskNodeDataVo.getRequiredDesc();
-                case "2" -> "尽快";
+            String requiredDate = switch (StringUtils.blankToDefault(requiredDateType,"4")) {
+                case "1" -> "截止日期  " + DateUtil.format(taskNodeDataVo.getCompleteDate(), "yyyy-MM-dd");
+                case "2" -> taskNodeDataVo.getRequiredDesc();
+                case "3" -> "尽快";
                 default -> null;
             };
             data.put("requiredDateType",requiredDate);//需求日期
@@ -109,25 +109,47 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             byte[] pdfBytes = pdfGeneratorService.generatePdf("material", data);
             // 转换为 InputStream
             InputStream inputStream = new ByteArrayInputStream(pdfBytes);
+            String documentTypeId=null;
+            String storagePathId=null;
+            String[] tags=null;
+            String objName=null;
+            String applyType = taskNodeDataVo.getApplyType();//19 IT 21 非IT
+            if("19".equals(applyType)){
+                documentTypeId="3";
+                storagePathId="2";
+                tags=new String[]{"6"};
+                objName="IT物料申请-";
+            }
+            if("21".equals(applyType)){
+                documentTypeId="3";
+                storagePathId="3";
+                tags=new String[]{"7"};
+                objName="非IT物料申请-";
+            }
+
+
             // 上传到文件服务器
             minioUtil.createBucket("dcws-assets");
-            minioUtil.uploadFile(inputStream, "dcws-assets", "IT物料申请-"+taskNodeDataVo.getId()+".pdf");
+            minioUtil.uploadFile(inputStream, "dcws-assets", objName+taskNodeDataVo.getId()+".pdf");
             // 获取永久访问URL
-            String fileUrl = minioUtil.getPermanentTimePreviewUrl("dcws-assets", "IT物料申请-"+taskNodeDataVo.getId()+".pdf");
+            String fileUrl = minioUtil.getPermanentTimePreviewUrl("dcws-assets", objName+taskNodeDataVo.getId()+".pdf");
             log.info("获取永久访问URL: "+fileUrl);
             //上传文件到档案系统
-            String taskId = pdfGeneratorService.uploadDocument(pdfBytes, "IT物料申请-" + taskNodeDataVo.getId() + ".pdf", taskNodeDataVo.getId(), null, null, "3", "2", new String[]{"6"}, null, null);
+            String taskId = pdfGeneratorService.uploadDocument(pdfBytes, objName + taskNodeDataVo.getId() + ".pdf",
+                    taskNodeDataVo.getId(), null, null, documentTypeId, storagePathId, tags,
+                    null, null);
 
              // 插入数据
             SysFileUploadVo sysFileUploadVo = new SysFileUploadVo();
             sysFileUploadVo.setUrl(fileUrl);
-            sysFileUploadVo.setFileName("IT物料申请-"+taskNodeDataVo.getId()+".pdf");
-            pdfGeneratorService.insertUploadResult(sysFileUploadVo, "IT物料申请-"+taskNodeDataVo.getId()+".pdf");
+            sysFileUploadVo.setFileName(objName+taskNodeDataVo.getId()+".pdf");
+            pdfGeneratorService.insertUploadResult(sysFileUploadVo, objName+taskNodeDataVo.getId()+".pdf");
             // 插入文件上传服务器记录存储表数据
             DcwsSysFileVo dcwsSysFileVo = new DcwsSysFileVo();
             dcwsSysFileVo.setFileUrl(fileUrl);
-            dcwsSysFileVo.setFileName("IT物料申请-"+taskNodeDataVo.getId()+".pdf");
-            pdfGeneratorService.insertUploadRecord(dcwsSysFileVo, "IT物料申请-"+taskNodeDataVo.getId()+".pdf");
+            dcwsSysFileVo.setTaskNodeDataId(taskNodeDataVo.getId());
+            dcwsSysFileVo.setFileName(objName+taskNodeDataVo.getId()+".pdf");
+            pdfGeneratorService.insertUploadRecord(dcwsSysFileVo, objName+taskNodeDataVo.getId()+".pdf");
         } catch (Exception e) {
             log.error("An error occurred while AssetsApplyTaskExeListener", e);
         }

@@ -5,6 +5,7 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
+import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 
@@ -57,4 +58,8 @@ public interface IApplyService {
      * 校验并批量删除申请信息
      */
     Boolean deleteWithValidByIds(Collection<String> ids);
+    /**
+     * 查询申请单PDFURL
+     */
+    List<DcwsSysFileVo> getApplyPDF(String id);
 }

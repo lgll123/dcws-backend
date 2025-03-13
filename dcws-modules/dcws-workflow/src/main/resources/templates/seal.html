@@ -142,7 +142,7 @@
                 <th>使用日期</th>
             </tr>
             <tr class="light-text">
-                <td th:text="${data.completeDate}"></td>
+                <td th:text="${#dates.format(data.completeDate, 'yyyy-MM-dd')}"></td>
             </tr>
         </table>
         <div class="table-right-align" style="font-size: 9px;">

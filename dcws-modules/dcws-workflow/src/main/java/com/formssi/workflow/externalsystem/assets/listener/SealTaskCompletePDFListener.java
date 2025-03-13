@@ -84,7 +84,9 @@ public class SealTaskCompletePDFListener implements ExecutionListener {
             String fileUrl = minioUtil.getPermanentTimePreviewUrl("dcws-seal", "用印申请-"+taskNodeDataVo.getId()+".pdf");
             log.info("获取永久访问URL: "+fileUrl);
             //上传文件到档案系统
-            String taskId = pdfGeneratorService.uploadDocument(pdfBytes, "用印申请-" + taskNodeDataVo.getId() + ".pdf", taskNodeDataVo.getId(), null, null, "3", "2", new String[]{"6"}, null, null);
+            String taskId = pdfGeneratorService.uploadDocument(pdfBytes, "用印申请-" + taskNodeDataVo.getId() + ".pdf",
+                    taskNodeDataVo.getId(), null, null, "3", "4",
+                    new String[]{"8"}, null, null);
 
              // 插入数据
             SysFileUploadVo sysFileUploadVo = new SysFileUploadVo();

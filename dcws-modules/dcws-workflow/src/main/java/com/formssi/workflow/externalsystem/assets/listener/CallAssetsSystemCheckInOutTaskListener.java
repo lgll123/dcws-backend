@@ -79,10 +79,13 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             Map<String, Object> recipient = (Map<String, Object>) hardware.get("recipient");
             //未设置领用人,将资产由已占用变为已领用，领用人默认申请人
             String assetUserId = null;
+            String name = null;//领用人名称
             if (ObjectUtil.isEmpty(recipient) || StrUtil.isBlank(Convert.toStr(recipient.get("assetUserId")))) {
                 assetUserId = Convert.toStr(taskNode.getApplicantId());
+                name = taskNode.getApplicant();
             }else {
                 assetUserId = Convert.toStr(recipient.get("assetUserId"));//领用人
+                name = Convert.toStr(recipient.get("name"));
             }
             String assetId = Convert.toStr(hardware.get("id"));//资产id
 
@@ -91,7 +94,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
 
             // 资产借出操作
             processHardwareCheckOut(assetId, assetUserId, taskNode.getApplicant(),
-                    Convert.toStr(recipient.get("name")), hardware, recordBo);
+                    name, hardware, recordBo);
         }
     }
     // 资产归还操作

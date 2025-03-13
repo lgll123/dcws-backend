@@ -65,6 +65,11 @@ public class PdfGeneratorService {
         } catch (Exception e) {
             throw new RuntimeException("字体加载失败", e);
         }
+        // 2. 资源基准路径（本地图片必须配置）
+//        props.setBaseUri("file:/absolute/path/to/static/");
+        // 或从 classpath 加载
+        // props.setBaseUri(new ClassPathResource("static/").getURI().toString());
+
 //        PdfFont font = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H");
 //        FontProgram fontProgram = FontProgramFactory.createFont("STSong-Light" );
         DefaultFontProvider fontProvider = new DefaultFontProvider();
@@ -77,7 +82,7 @@ public class PdfGeneratorService {
         HtmlConverter.convertToPdf(
                 htmlContent,
                 pdfDoc,
-                new ConverterProperties().setFontProvider(fontProvider)
+                new ConverterProperties().setFontProvider(fontProvider).setBaseUri(new ClassPathResource("templates/").getURI().toString())
         );
 
         return outputStream.toByteArray();

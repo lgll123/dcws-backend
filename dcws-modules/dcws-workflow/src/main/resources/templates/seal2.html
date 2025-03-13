@@ -116,7 +116,7 @@
 <!-- pdf头部 -->
 <div class="pdf-header" >
     <div class="left">
-        <span style="font-size: 18px; margin-right: 16px;">申请物料清单</span>
+        <span style="font-size: 18px; margin-right: 16px;">申请用印清单</span>
         <span style="font-size: 9px; " th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80">
@@ -155,8 +155,8 @@
         </div>
     </div>
 </div>
-<!-- 申请物料清单 -->
-<div class="basic-info apply-info" style="margin-top: 20px;" th:if="${data.customApplyDetails != null and not #lists.isEmpty(data.customApplyDetails)}">
+<!-- 印章信息 -->
+<div class="basic-info apply-info" style="margin-top: 20px;">
     <div style="font-size: 10px;">印章信息</div>
     <div style="padding-left: 43px">
         <table class="table-right-align" style="font-size: 9px;">

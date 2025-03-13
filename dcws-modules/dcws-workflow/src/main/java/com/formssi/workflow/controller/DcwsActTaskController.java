@@ -2,16 +2,11 @@ package com.formssi.workflow.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import com.formssi.common.core.utils.StringUtils;
-import com.formssi.common.core.validate.AddGroup;
-import com.formssi.common.idempotent.annotation.RepeatSubmit;
-import com.formssi.common.log.annotation.Log;
-import com.formssi.common.log.enums.BusinessType;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
 import com.formssi.workflow.domain.vo.*;
 import com.formssi.workflow.service.NormalTaskService;
 import lombok.RequiredArgsConstructor;
-import com.formssi.common.core.domain.R;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
@@ -38,18 +33,6 @@ public class DcwsActTaskController extends BaseController {
     private final DcwsIActTaskService actTaskService;
     private final NormalTaskService normalTaskService;
     private final ISysUserService iSysUserService;
-
-    /**
-     * 办理任务
-     *
-     * @param completeTaskBo 办理任务参数
-     */
-/*    @Log(title = "任务管理", businessType = BusinessType.INSERT)
-    @RepeatSubmit()
-    @PostMapping("/completeTask")
-    public R<Void> completeTask(@Validated(AddGroup.class) @RequestBody DcwsCompleteTaskBo completeTaskBo) {
-        return toAjax(actTaskService.completeTask(completeTaskBo));
-    }*/
 
     /**
      * 查询当前用户的待办任务

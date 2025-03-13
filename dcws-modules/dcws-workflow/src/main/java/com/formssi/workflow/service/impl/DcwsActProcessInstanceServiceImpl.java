@@ -67,7 +67,7 @@ public class DcwsActProcessInstanceServiceImpl implements DcwsIActProcessInstanc
         // 查询任务办理记录
         List<HistoricTaskInstance> list = DcwsQueryUtils.hisTaskBusinessKeyQuery(businessKey).orderByHistoricTaskInstanceEndTime().desc().list();
         list = StreamUtils.sorted(list, Comparator.comparing(HistoricTaskInstance::getEndTime, Comparator.nullsFirst(Date::compareTo)).reversed());
-        HistoricProcessInstance historicProcessInstance = QueryUtils.hisBusinessKeyQuery(businessKey).singleResult();
+        HistoricProcessInstance historicProcessInstance = DcwsQueryUtils.hisBusinessKeyQuery(businessKey).singleResult();
         String processInstanceId = historicProcessInstance.getId();
         List<DcwsActHistoryInfoVo> actHistoryInfoVoList = new ArrayList<>();
         List<Comment> processInstanceComments = taskService.getProcessInstanceComments(processInstanceId);

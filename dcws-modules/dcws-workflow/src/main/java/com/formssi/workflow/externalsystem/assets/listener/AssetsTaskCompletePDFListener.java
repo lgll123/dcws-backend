@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.formssi.common.core.service.UserService;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.minio.util.MinioUtil;
 import com.formssi.system.domain.vo.SysFileUploadVo;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 采购任务启动
@@ -39,6 +41,8 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
     private ISysDeptService sysDeptService;
     @Autowired
     private IApplyService applyService;
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private IActProcessInstanceService actProcessInstanceService;
@@ -61,7 +65,7 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             data.put("applyDept",taskNodeDataVo.getApplyDept());//申请部门
             data.put("applicant",taskNodeDataVo.getApplicant());//申请人
             data.put("applyDate",taskNodeDataVo.getApplyDate());//申请日期
-            data.put("status",taskNodeDataVo.getStatus());//当前环节
+            data.put("status","已完成");//当前环节 TODO
             String requiredDateType = taskNodeDataVo.getRequiredDateType();
             String requiredDate = switch (StringUtils.blankToDefault(requiredDateType,"4")) {
                 case "1" -> "截止日期  " + DateUtil.format(taskNodeDataVo.getCompleteDate(), "yyyy-MM-dd");
@@ -103,7 +107,23 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             data.put("customApplyDetails", customApplyDetails);
             // 审批记录
             List<ActHistoryInfoVo> historyRecords = actProcessInstanceService.getHistoryRecord(taskNodeDataVo.getId());
-            data.put("historyRecords", historyRecords);
+            // 查询审批人昵称名称
+            List<ActHistoryInfoVo> collect = historyRecords.stream()
+                    .map(h -> {
+                        if(!StringUtils.isEmpty(h.getAssignee())){
+                            h.setNickName(userService.selectNicknameById(Convert.toLong(h.getAssignee())));
+                        }else {
+                            h.setNickName("无");
+                        }
+                        if(StringUtils.isEmpty(h.getComment())){
+                            h.setComment("无");
+                        }
+                        if(StringUtils.isEmpty(h.getStatusName())){
+                            h.setStatusName("通过");
+                        }
+                        return h;
+                    }).toList();
+            data.put("historyRecords", collect);
 
             // 生成PDF
             byte[] pdfBytes = pdfGeneratorService.generatePdf("material", data);

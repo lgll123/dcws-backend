@@ -117,6 +117,7 @@ public class SealTaskCompletePDFListener implements ExecutionListener {
             // 插入文件上传服务器记录存储表数据
             DcwsSysFileVo dcwsSysFileVo = new DcwsSysFileVo();
             dcwsSysFileVo.setFileUrl(fileUrl);
+            dcwsSysFileVo.setTaskNodeDataId(taskNodeDataVo.getId());
             dcwsSysFileVo.setFileName("用印申请-"+taskNodeDataVo.getId()+".pdf");
             pdfGeneratorService.insertUploadRecord(dcwsSysFileVo, "用印申请-"+taskNodeDataVo.getId()+".pdf");
         } catch (Exception e) {

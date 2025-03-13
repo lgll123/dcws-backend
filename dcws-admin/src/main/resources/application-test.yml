@@ -284,10 +284,10 @@ hr-system:
 
 #定时任务配置
 schedule:
-  syncUserCron: "0 10 * * * *"
-  syncOrgCron: "0 20 * * * *"
-  syncAssetUserCron: "0 30 * * * *"
-  syncAssetOrgCron: "0 40 * * * *"
+  syncUserCron: "0 10 1 * * *"
+  syncOrgCron: "0 20 1 * * *"
+  syncAssetUserCron: "0 30 1 * * *"
+  syncAssetOrgCron: "0 40 1 * * *"
 
 #RSA加密密钥
 securityKey:

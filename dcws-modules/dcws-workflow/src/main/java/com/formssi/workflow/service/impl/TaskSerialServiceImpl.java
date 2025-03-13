@@ -39,14 +39,14 @@ public class TaskSerialServiceImpl implements TaskSerialService {
             add.setSystemName("DCWS");
             add.setTaskNum(1L);
             taskSerialNumberMapper.insert(add);
-            return "DCWS" + StringUtils.padl(Integer.parseInt(taskType),3)+ taskDate + StringUtils.padl(1,6);
+            return "DCWS" + StringUtils.padl(Integer.parseInt(taskType),3)+ taskDate + StringUtils.padl(1,4);
         }else {
             DcwsTaskSerialNumberVo taskSerialNumberVo = list.get(0);
             taskSerialNumberMapper.update(null, new LambdaUpdateWrapper<DcwsTaskSerialNumber>()
                     .set(DcwsTaskSerialNumber::getTaskNum, taskSerialNumberVo.getTaskNum() + 1)
                     .eq(DcwsTaskSerialNumber::getTaskType, taskType)
                     .eq(DcwsTaskSerialNumber::getTaskDate, taskDate));
-            return "DCWS" + StringUtils.padl(Integer.parseInt(taskType),3)+ taskDate + StringUtils.padl(taskSerialNumberVo.getTaskNum()+1,6);
+            return "DCWS" + StringUtils.padl(Integer.parseInt(taskType),3)+ taskDate + StringUtils.padl(taskSerialNumberVo.getTaskNum()+1,4);
         }
     }
 }

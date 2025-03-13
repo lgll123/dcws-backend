@@ -85,9 +85,6 @@
                 user_name = #{item.userName},
                 nick_name = #{item.nickName},
                 email = #{item.email},
-                phonenumber = #{item.phonenumber},
-                create_time = #{item.createTime},
-                sex = #{item.sex},
                 del_flag = '0'
             WHERE user_id = #{item.userId}
         </foreach>
@@ -110,11 +107,7 @@
             user_name,
             nick_name,
             email,
-            phonenumber,
-            sex,
-            create_time,
             password,
-            user_type,
             is_hruser
         )
         VALUES
@@ -126,11 +119,7 @@
             #{item.userName},
             #{item.nickName},
             #{item.email},
-            #{item.phonenumber},
-            #{item.sex},
-            #{item.createTime},
             #{item.password},
-            #{item.userType},
             #{item.isHruser}
             )
         </foreach>

@@ -92,7 +92,7 @@ public class SysAssetServiceImpl implements ISysAssetService {
             requestBodyMap.put("password_confirmation", "0123456789");
             requestBodyMap.put("department_id", e.getDeptId());
             requestBodyMap.put("email", e.getEmail());
-            requestBodyMap.put("phone", e.getPhonenumber());
+//            requestBodyMap.put("phone", e.getPhonenumber());
             requestBodyMap.put("activated", "1");
             requestBodyMap.put("locale", "zh-CN");
 
@@ -118,7 +118,7 @@ public class SysAssetServiceImpl implements ISysAssetService {
             requestBodyMap.put("first_name", i.getUserName());
             requestBodyMap.put("department_id", i.getDeptId());
             requestBodyMap.put("email", i.getEmail());
-            requestBodyMap.put("phone", i.getPhonenumber());
+//            requestBodyMap.put("phone", i.getPhonenumber());
             String requestBody = null;
             try {
                 requestBody = objectMapper.writeValueAsString(requestBodyMap);

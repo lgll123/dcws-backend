@@ -29,6 +29,11 @@ public class SealJsonVo implements Serializable {
     private Long id;
 
     /**
+     * 序号
+     */
+    private Long num;
+
+    /**
      * 印章名称
      */
     @JsonIgnore
@@ -93,6 +98,11 @@ public class SealJsonVo implements Serializable {
      * 文件
      */
     private List<SysFileUploadVo> sealFile;
+
+    /**
+     * 盖章文件
+     */
+    private List<SysFileUploadVo> sealFileFinal;
 
     /**
      * 印章list

@@ -74,7 +74,7 @@ public class SealTaskCompletePDFListener implements ExecutionListener {
             List<ActHistoryInfoVo> historyRecords = actProcessInstanceService.getHistoryRecord(taskNodeDataVo.getId());
             data.put("historyRecords", historyRecords);
             // 生成PDF
-            byte[] pdfBytes = pdfGeneratorService.generatePdf("seal2", data);
+            byte[] pdfBytes = pdfGeneratorService.generatePdf("seal", data);
             // 转换为 InputStream
             InputStream inputStream = new ByteArrayInputStream(pdfBytes);
             // 上传到文件服务器

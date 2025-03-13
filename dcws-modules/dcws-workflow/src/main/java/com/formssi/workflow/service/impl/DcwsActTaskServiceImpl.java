@@ -219,7 +219,7 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         if (StringUtils.isNotBlank(taskBo.getProcessDefinitionKey())) {
             queryWrapper.eq("t.processDefinitionKey", taskBo.getProcessDefinitionKey());
         }
-        if (StringUtils.isNotBlank(taskBo.getProcessDefinitionKey())) {
+        if (StringUtils.isNotBlank(taskBo.getBusinessKey())) {
             queryWrapper.eq("t.BUSINESS_KEY_", taskBo.getBusinessKey());
         }
         if (!Objects.isNull(taskBo.getStartTime())) {

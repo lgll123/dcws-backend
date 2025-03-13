@@ -15,6 +15,9 @@ import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.service.WorkflowService;
 import com.formssi.system.domain.vo.SealJsonVo;
+import com.formssi.workflow.domain.DcwsSysFile;
+import com.formssi.workflow.domain.vo.DcwsSysFileVo;
+import com.formssi.workflow.mapper.DcwsSysFileMapper;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
@@ -56,6 +59,7 @@ public class ApplyServiceImpl implements IApplyService {
 
     private final TaskNodeDataMapper taskNodeDataMapper;
     private final TaskNodeDataHisMapper taskNodeDataHisMapper;
+    private final DcwsSysFileMapper dcwsSysFileMapper;
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
 
@@ -209,6 +213,15 @@ public class ApplyServiceImpl implements IApplyService {
         List<String> idList = StreamUtils.toList(ids, String::valueOf);
         workflowService.deleteRunAndHisInstance(idList);
         return taskNodeDataMapper.deleteByIds(ids) > 0;
+    }
+    /**
+     * 查询申请单PDF
+     */
+    @Override
+    public List<DcwsSysFileVo> getApplyPDF(String id){
+        LambdaQueryWrapper<DcwsSysFile> lqw = Wrappers.lambdaQuery();
+        lqw.eq(id!=null, DcwsSysFile::getTaskNodeDataId, id);
+        return dcwsSysFileMapper.selectVoList(lqw);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.formssi.workflow.domain.vo;
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.formssi.workflow.domain.DcwsSysFile;
 import com.formssi.workflow.domain.TaskNodeData;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -17,7 +18,7 @@ import java.util.Date;
  */
 @Data
 @ExcelIgnoreUnannotated
-@AutoMapper(target = TaskNodeData.class)
+@AutoMapper(target = DcwsSysFile.class)
 public class DcwsSysFileVo {
     @Serial
     private static final long serialVersionUID = 1L;

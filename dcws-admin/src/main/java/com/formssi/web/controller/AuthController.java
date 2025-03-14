@@ -183,7 +183,7 @@ public class AuthController {
                 loginTokenRes.setSucc("0");
                 loginTokenRes.setData(loginTokenVo);
             } catch (Exception e) {
-                String dataRes = SecurityUtil.encrypt(e.getMessage().toString(),publicKey);
+                String dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.fail(e.getMessage().toString())),publicKey);
 
                 loginTokenVo.setData(dataRes);
                 loginTokenVo.setSign(SecurityUtil.sign(dataRes,privateKey));

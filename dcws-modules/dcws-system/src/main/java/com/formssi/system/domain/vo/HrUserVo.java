@@ -19,6 +19,10 @@ public class HrUserVo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**
+     * 上级领导userId
+     */
+    private String leader;
+    /**
      * 人事系统用户工号 FHxxx
      */
     private String empNo;

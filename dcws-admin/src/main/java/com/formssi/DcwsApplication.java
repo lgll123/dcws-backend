@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 启动程序 启动时加入--add-opens java.base/java.lang=ALL-UNNAMED 以兼容高版本JDK
@@ -14,6 +15,7 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
  * @author Lion Li
  */
 @Slf4j
+@EnableScheduling
 @SpringBootApplication
 public class DcwsApplication {
 

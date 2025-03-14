@@ -5,12 +5,14 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.formssi.common.core.constant.UserConstants;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.domain.model.LoginBody;
 import com.formssi.common.core.domain.model.PasswordLoginBody;
 import com.formssi.common.core.domain.model.RegisterBody;
 import com.formssi.common.core.domain.model.SocialLoginBody;
+import com.formssi.common.core.exception.user.UserException;
 import com.formssi.common.core.utils.*;
 import com.formssi.common.encrypt.annotation.ApiEncrypt;
 import com.formssi.common.json.utils.JsonUtils;
@@ -21,6 +23,7 @@ import com.formssi.common.social.utils.SocialUtils;
 import com.formssi.common.sse.dto.SseMessageDto;
 import com.formssi.common.sse.utils.SseMessageUtils;
 import com.formssi.common.tenant.helper.TenantHelper;
+import com.formssi.system.domain.SysUser;
 import com.formssi.system.domain.bo.SysTenantBo;
 import com.formssi.system.domain.vo.SysClientVo;
 import com.formssi.system.domain.vo.SysTenantVo;
@@ -165,19 +168,29 @@ public class AuthController {
             loginBody.setUsername(loginToken.getEmpNo());
             loginBody.setTenantId("000000");
             String body = JsonUtils.toJsonString(loginBody);
-            LoginVo loginVo = IAuthStrategy.login(body, client, "password");
-            LoginUserVo loginUserVo = new LoginUserVo();
-            loginUserVo.setToken(loginVo.getAccessToken());
-            loginUserVo.setEmpId(loginVo.getUserId());
-
+            LoginVo loginVo = null;
             LoginTokenVo loginTokenVo = new LoginTokenVo();
-            String dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.ok(loginUserVo)),publicKey);
-            loginTokenVo.setData(dataRes);
-            loginTokenVo.setSign(SecurityUtil.sign(dataRes,privateKey));
-
             LoginTokenResVo loginTokenRes = new LoginTokenResVo();
-            loginTokenRes.setSucc("0");
-            loginTokenRes.setData(loginTokenVo);
+            try {
+                loginVo = IAuthStrategy.login(body, client, "password");
+                LoginUserVo loginUserVo = new LoginUserVo();
+                loginUserVo.setToken(loginVo.getAccessToken());
+
+                String dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.ok(loginUserVo)),publicKey);
+                loginTokenVo.setData(dataRes);
+                loginTokenVo.setSign(SecurityUtil.sign(dataRes,privateKey));
+
+                loginTokenRes.setSucc("0");
+                loginTokenRes.setData(loginTokenVo);
+            } catch (Exception e) {
+                String dataRes = SecurityUtil.encrypt(e.getMessage().toString(),publicKey);
+
+                loginTokenVo.setData(dataRes);
+                loginTokenVo.setSign(SecurityUtil.sign(dataRes,privateKey));
+
+                loginTokenRes.setSucc("1");
+                loginTokenRes.setData(loginTokenVo);
+            }
             return loginTokenRes;
         }else {
             return null;

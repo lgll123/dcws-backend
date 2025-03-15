@@ -1,7 +1,13 @@
 package com.formssi.workflow.utils;
 
+import cn.hutool.core.collection.CollUtil;
+import com.formssi.common.core.domain.dto.UserDTO;
 import com.formssi.common.core.exception.ServiceException;
+import com.formssi.common.core.service.UserService;
+import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.workflow.common.constant.DcwsFlowConstant;
+import com.formssi.workflow.common.constant.FlowConstant;
+import com.formssi.workflow.domain.vo.ParticipantVo;
 import com.formssi.workflow.domain.vo.ProcessNode;
 import com.formssi.workflow.flowable.cmd.ExpressCmd;
 import lombok.AccessLevel;
@@ -11,6 +17,8 @@ import com.formssi.common.core.utils.StringUtils;
 import org.flowable.bpmn.model.*;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntityImpl;
+import org.flowable.identitylink.api.history.HistoricIdentityLink;
+import org.flowable.task.api.Task;
 
 import java.util.*;
 
@@ -213,6 +221,56 @@ public class DcwsWorkflowUtils {
         }
         return null;
     }
+    /**
+     * 获取当前任务参与者
+     *
+     * @param taskId 任务id
+     */
+    public static ParticipantVo getCurrentTaskParticipant(String taskId, UserService userService) {
+        ParticipantVo participantVo = new ParticipantVo();
+        List<HistoricIdentityLink> linksForTask = PROCESS_ENGINE.getHistoryService().getHistoricIdentityLinksForTask(taskId);
+        Task task = DcwsQueryUtils.taskQuery().taskId(taskId).singleResult();
+        if (task != null && CollUtil.isNotEmpty(linksForTask)) {
+            List<HistoricIdentityLink> groupList = StreamUtils.filter(linksForTask, e -> StringUtils.isNotBlank(e.getGroupId()));
+            if (CollUtil.isNotEmpty(groupList)) {
+                List<Long> groupIds = StreamUtils.toList(groupList, e -> Long.valueOf(e.getGroupId()));
+                List<Long> userIds = userService.selectUserIdsByRoleIds(groupIds);
+                if (CollUtil.isNotEmpty(userIds)) {
+                    participantVo.setGroupIds(groupIds);
+                    List<UserDTO> userList = userService.selectListByIds(userIds);
+                    if (CollUtil.isNotEmpty(userList)) {
+                        List<Long> userIdList = StreamUtils.toList(userList, UserDTO::getUserId);
+                        List<String> nickNames = StreamUtils.toList(userList, UserDTO::getNickName);
+                        participantVo.setCandidate(userIdList);
+                        participantVo.setCandidateName(nickNames);
+                        participantVo.setClaim(!StringUtils.isBlank(task.getAssignee()));
+                    }
+                }
+            } else {
+                List<HistoricIdentityLink> candidateList = StreamUtils.filter(linksForTask, e -> FlowConstant.CANDIDATE.equals(e.getType()));
+                List<Long> userIdList = new ArrayList<>();
+                for (HistoricIdentityLink historicIdentityLink : linksForTask) {
+                    try {
+                        userIdList.add(Long.valueOf(historicIdentityLink.getUserId()));
+                    } catch (NumberFormatException ignored) {
 
+                    }
+                }
+                List<UserDTO> userList = userService.selectListByIds(userIdList);
+                if (CollUtil.isNotEmpty(userList)) {
+                    List<Long> userIds = StreamUtils.toList(userList, UserDTO::getUserId);
+                    List<String> nickNames = StreamUtils.toList(userList, UserDTO::getNickName);
+                    participantVo.setCandidate(userIds);
+                    participantVo.setCandidateName(nickNames);
+                    // 判断当前任务是否具有多个办理人
+                    if (CollUtil.isNotEmpty(candidateList) && candidateList.size() > 1) {
+                        // 如果 assignee 存在，则设置当前任务已经被认领
+                        participantVo.setClaim(StringUtils.isNotBlank(task.getAssignee()));
+                    }
+                }
+            }
+        }
+        return participantVo;
+    }
 
 }

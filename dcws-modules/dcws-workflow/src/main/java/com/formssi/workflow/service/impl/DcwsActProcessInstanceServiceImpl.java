@@ -7,14 +7,12 @@ import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.formssi.common.core.service.UserService;
-import com.formssi.workflow.utils.DcwsDateUtils;
+import com.formssi.workflow.utils.*;
 import com.formssi.workflow.common.enums.TaskStatusEnum;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
 import com.formssi.workflow.service.DcwsIActProcessInstanceService;
 import com.formssi.workflow.service.IWfNodeConfigService;
-import com.formssi.workflow.utils.QueryUtils;
-import com.formssi.workflow.utils.WorkflowUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.formssi.common.core.enums.BusinessStatusEnum;
@@ -26,7 +24,6 @@ import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.workflow.common.constant.FlowConstant;
 import com.formssi.workflow.domain.bo.DcwsProcessInstanceBo;
 import com.formssi.workflow.domain.vo.*;
-import com.formssi.workflow.utils.DcwsQueryUtils;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
@@ -99,7 +96,7 @@ public class DcwsActProcessInstanceServiceImpl implements DcwsIActProcessInstanc
             }
             //设置人员id
             if (ObjectUtil.isEmpty(historicTaskInstance.getAssignee())) {
-                ParticipantVo participantVo = WorkflowUtils.getCurrentTaskParticipant(historicTaskInstance.getId(), userService);
+                ParticipantVo participantVo = DcwsWorkflowUtils.getCurrentTaskParticipant(historicTaskInstance.getId(), userService);
                 if (ObjectUtil.isNotEmpty(participantVo) && CollUtil.isNotEmpty(participantVo.getCandidate())) {
                     actHistoryInfoVo.setAssignee(StreamUtils.join(participantVo.getCandidate(), Convert::toStr));
                 }

@@ -1,66 +1,48 @@
-package com.formssi.workflow.externalsystem.assets.listener;
+package com.formssi.workflow.service.strategy;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.service.UserService;
 import com.formssi.common.core.utils.StringUtils;
-import com.formssi.common.minio.util.MinioUtil;
-import com.formssi.system.domain.vo.SysFileUploadVo;
-import com.formssi.system.service.ISysDeptService;
-import com.formssi.workflow.domain.bo.TaskNodeDataBo;
-import com.formssi.workflow.domain.vo.ActHistoryInfoVo;
-import com.formssi.workflow.domain.vo.DcwsSysFileVo;
+import com.formssi.workflow.domain.vo.DcwsActHistoryInfoVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
-import com.formssi.workflow.externalsystem.assets.service.PdfGeneratorService;
-import com.formssi.workflow.service.IActProcessInstanceService;
-import com.formssi.workflow.service.IApplyService;
+import com.formssi.workflow.externalsystem.assets.service.UploadFileServerService;
+import com.formssi.workflow.service.DcwsIActProcessInstanceService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.engine.delegate.ExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
- * 采购任务启动
+ * dcws 物料申请申请单生成PDF数据处理接口策略
+ *
+ * @author yqh
  */
 @Slf4j
-@Component("AssetsTaskCompletePDFListener")
-public class AssetsTaskCompletePDFListener implements ExecutionListener {
-    @Autowired
-    private ISysDeptService sysDeptService;
-    @Autowired
-    private IApplyService applyService;
+@Service("material")
+@RequiredArgsConstructor
+public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCreateStrategy<TaskNodeDataVo> {
     @Autowired
     private UserService userService;
+    @Autowired
+    private DcwsIActProcessInstanceService dcwsIActProcessInstanceService;
+    @Autowired
+    private UploadFileServerService uploadFileServerService;
 
-    @Autowired
-    private IActProcessInstanceService actProcessInstanceService;
-    @Autowired
-    private PdfGeneratorService pdfGeneratorService;
-    @Autowired
-    private MinioUtil minioUtil;
+
     @Override
-    public void notify(DelegateExecution delegateTask) {
-        try{
-            Map<String, Object> variables = delegateTask.getVariables();
-            Object entity = variables.get("entity");
-            if (ObjectUtil.isEmpty(entity)) return;
-            ObjectMapper objectMapper = new ObjectMapper();
-            TaskNodeDataBo taskNodeDataBo = objectMapper.readValue(JSONUtil.toJsonStr(entity), TaskNodeDataBo.class);
-            TaskNodeDataVo taskNodeDataVo = applyService.queryById(taskNodeDataBo.getId());//TODO
+    public Map<String, Object> process(String templateName,TaskNodeDataVo taskNodeDataVo) {
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
             Map<String, Object> data = new HashMap<>();
-
+            ObjectMapper objectMapper = new ObjectMapper();
             data.put("id",taskNodeDataVo.getId());//申请编号
             data.put("applyDept",taskNodeDataVo.getApplyDept());//申请部门
             data.put("applicant",taskNodeDataVo.getApplicant());//申请人
@@ -77,7 +59,6 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             data.put("checkTo",taskNodeDataVo.getCheckTo());//预计使用人
             data.put("applyReson",taskNodeDataVo.getApplyReson());//申请原因
             data.put("applyRemarks",taskNodeDataVo.getApplyRemarks());//备注
-            data.put("approver","管理员");//审批人 TODO
 
             String applyDetail = taskNodeDataVo.getApplyDetail();
             Map<String,Object> applyDetails = objectMapper.readValue(JSONUtil.toJsonStr(applyDetail), Map.class);
@@ -88,13 +69,14 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) applyDetails.get("components");
             ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) applyDetails.get("consumables");
             Map<String, Object> purchaseDetail = (Map<String, Object>) applyDetails.get("purchaseDetail");
-            String purchase = Convert.toStr(applyDetails.get("purchase"));
+            String purchase = StringUtils.blankToDefault(Convert.toStr(applyDetails.get("purchase")),"3");
             String purchaseTrans = switch (purchase) {
                 case "0" -> "无需采购";
                 case "1", "2" -> "需采购";
                 default -> null;
             };
-            data.put("purchase",purchaseTrans);//2:部分采购
+            data.put("purchaseTrans",purchaseTrans);//2:部分采购
+            data.put("purchase",purchase);//2:部分采购
             data.put("hardware", hardware);
             data.put("licenses", licenses);
             data.put("accessories", accessories);
@@ -105,9 +87,9 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             List<Map<String,Object>> customApplyDetails = objectMapper.readValue(JSONUtil.toJsonStr(customApplyDetail1), List.class);
             data.put("customApplyDetails", customApplyDetails);
             // 审批记录
-            List<ActHistoryInfoVo> historyRecords = actProcessInstanceService.getHistoryRecord(taskNodeDataVo.getId());
+            List<DcwsActHistoryInfoVo> historyRecords = dcwsIActProcessInstanceService.getHistoryRecord(taskNodeDataVo.getId());
             // 查询审批人昵称名称
-            List<ActHistoryInfoVo> collect = historyRecords.stream()
+            List<DcwsActHistoryInfoVo> collect = historyRecords.stream()
                     .map(h -> {
                         if(!StringUtils.isEmpty(h.getAssignee())){
                             h.setNickName(userService.selectNicknameById(Convert.toLong(h.getAssignee())));
@@ -125,9 +107,7 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
             data.put("historyRecords", collect);
 
             // 生成PDF
-            byte[] pdfBytes = pdfGeneratorService.generatePdf("material", data);
-            // 转换为 InputStream
-            InputStream inputStream = new ByteArrayInputStream(pdfBytes);
+            byte[] pdfBytes = uploadFileServerService.generatePdf(templateName, data);
             String documentTypeId=null;
             String storagePathId=null;
             String[] tags=null;
@@ -145,36 +125,17 @@ public class AssetsTaskCompletePDFListener implements ExecutionListener {
                 tags=new String[]{"7"};
                 objName="非IT物料申请-";
             }
-
-
-            // 上传到文件服务器
-            minioUtil.createBucket("dcws-assets");
-            minioUtil.uploadFile(inputStream, "dcws-assets", objName+taskNodeDataVo.getId()+".pdf");
-            // 获取永久访问URL
-            String fileUrl = minioUtil.getPermanentTimePreviewUrl("dcws-assets", objName+taskNodeDataVo.getId()+".pdf");
-            log.info("获取永久访问URL: "+fileUrl);
-            //上传文件到档案系统
-            pdfGeneratorService.uploadDocument(pdfBytes, objName + taskNodeDataVo.getId() + ".pdf",
-                    taskNodeDataVo.getId(), null, null, documentTypeId, storagePathId, tags,
-                    null, null);
-
-             // 插入数据
-            SysFileUploadVo sysFileUploadVo = new SysFileUploadVo();
-            sysFileUploadVo.setUrl(fileUrl);
-            sysFileUploadVo.setFileName(objName+taskNodeDataVo.getId()+".pdf");
-            pdfGeneratorService.insertUploadResult(sysFileUploadVo, objName+taskNodeDataVo.getId()+".pdf");
-            // 插入文件上传服务器记录存储表数据
-            DcwsSysFileVo dcwsSysFileVo = new DcwsSysFileVo();
-            dcwsSysFileVo.setFileUrl(fileUrl);
-            dcwsSysFileVo.setTaskNodeDataId(taskNodeDataVo.getId());
-            dcwsSysFileVo.setFileName(objName+taskNodeDataVo.getId()+".pdf");
-            pdfGeneratorService.insertUploadRecord(dcwsSysFileVo, objName+taskNodeDataVo.getId()+".pdf",null);
+            Map<String, Object> documentServerParam = new HashMap();
+            documentServerParam.put("documentTypeId",documentTypeId);
+            documentServerParam.put("storagePathId",storagePathId);
+            documentServerParam.put("tags",tags);
+            String fileName = objName + taskNodeDataVo.getId() + ".pdf";
+            resultMap.put("fileName",fileName);
+            resultMap.put("pdfBytes",pdfBytes);
+            resultMap.put("documentServerParam",documentServerParam);
         } catch (Exception e) {
-            log.error("An error occurred while AssetsApplyTaskExeListener", e);
+            throw new RuntimeException(e);
         }
+        return resultMap;
     }
-
-
-
-
 }

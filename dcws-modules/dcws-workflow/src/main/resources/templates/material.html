@@ -304,12 +304,12 @@
         </table>
       </div>
       <!-- 是否需采购 -->
-        <div  th:if="${data.purchaseDetail.materialInfo != null and not #lists.isEmpty(data.purchaseDetail.materialInfo)}">
+        <div  th:if="${data.purchase == '1' or data.purchase == '2'}">
       <div style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px; font-size: 10px;">采购详情</div>
       <div style="padding-left: 43px; font-size: 8px;">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <span>是否需采购</span>
-          <span  style="text-align: right; margin: 5px 0; flex-grow: 1;" class="light-text" th:text="${data.purchase}"></span>
+          <span  style="text-align: right; margin: 5px 0; flex-grow: 1;" class="light-text" th:text="${data.purchaseTrans}"></span>
         </div>
         <div style="display: flex; justify-content: space-between; margin-top: 10px;">
           <span>采购金额</span>

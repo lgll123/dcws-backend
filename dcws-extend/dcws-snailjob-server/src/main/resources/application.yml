@@ -5,7 +5,7 @@ server:
 
 spring:
   application:
-    name: low-code-snailjob-server
+    name: dcws-snailjob-server
   profiles:
     active: @profiles.active@
   web:
@@ -36,4 +36,4 @@ management:
     health:
       show-details: ALWAYS
     logfile:
-      external-file: ./logs/low-code-snailjob-server/console.log
+      external-file: ./logs/dcws-snailjob-server/console.log

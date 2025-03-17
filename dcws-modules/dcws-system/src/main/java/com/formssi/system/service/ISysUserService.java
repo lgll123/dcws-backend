@@ -241,4 +241,11 @@ public interface ISysUserService {
      * @return 结果
      */
     List<SysUserVo> selectUserListByDept(Long deptId);
+
+    /**
+     * 获取用户上级领导-截止到部门领导
+     * @param userId
+     * @return
+     */
+    List<SysUserVo> getUserLeader(Long userId);
 }

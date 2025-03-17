@@ -2,6 +2,7 @@ package com.formssi.system.domain.vo;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -26,5 +27,10 @@ public class UserInfoVo {
      * 角色权限
      */
     private Set<String> roles;
+
+    /**
+     * 上级领导列表-截止到部门领导
+     */
+    List<SysUserVo> leaders;
 
 }

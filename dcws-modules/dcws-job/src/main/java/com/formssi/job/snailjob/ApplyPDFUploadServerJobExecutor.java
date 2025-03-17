@@ -52,7 +52,7 @@ public class ApplyPDFUploadServerJobExecutor {
         LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
         lqw.eq(TaskNodeData::getStatus, "finish");
         lqw.eq(TaskNodeData::getStorageFileStatus, "4");
-        lqw.in(TaskNodeData::getApplyType, Arrays.asList(MATERIAL_IT.getCode(),MATERIAL_NOT_IT.getCode()));
+        lqw.in(TaskNodeData::getApplyType, Arrays.asList(MATERIAL_IT.getCode(),MATERIAL_NOT_IT.getCode(),SEAL.getCode()));
         lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
         PageQuery pageQuery = new PageQuery();
         pageQuery.setPageNum(1);

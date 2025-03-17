@@ -34,7 +34,7 @@ public enum ApplyTypeEnum {
             return MATERIAL_IT;
         }
         for (ApplyTypeEnum value : ApplyTypeEnum.values()) {
-            if (Objects.equals(type, value.getName())) {
+            if (Objects.equals(type, value.getCode())) {
                 return value;
             }
         }

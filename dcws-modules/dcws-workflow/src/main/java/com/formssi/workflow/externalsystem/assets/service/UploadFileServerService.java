@@ -17,31 +17,19 @@ import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
-import com.itextpdf.html2pdf.ConverterProperties;
-import com.itextpdf.html2pdf.HtmlConverter;
-import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
-import com.itextpdf.io.font.FontProgram;
-import com.itextpdf.io.font.FontProgramFactory;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.Duration;
@@ -61,8 +49,6 @@ public class UploadFileServerService {
     @Autowired
     private TaskNodeDataMapper taskNodeDataMapper;
     @Autowired
-    private TemplateEngine templateEngine;
-    @Autowired
     private IdentifierGenerator identifierGenerator;
     @Autowired
     private MinioUtil minioUtil;
@@ -78,7 +64,7 @@ public class UploadFileServerService {
 //            .baseUrl(apiUrl)
             .build();
     private final OkHttpClient client = new OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS) // 连接超时
+            .connectTimeout(30, TimeUnit.SECONDS) // 连接超时 TODO 时长待确认
             .readTimeout(30, TimeUnit.SECONDS)    // 读取超时
             .writeTimeout(30, TimeUnit.SECONDS)   // 写入超时
             .addInterceptor(chain -> {
@@ -90,63 +76,34 @@ public class UploadFileServerService {
             })
             .build();
 
-    public byte[] generatePdf(String templateName, Map<String, Object> data) throws Exception {
-        // 渲染HTML模板
-        Context context = new Context();
-        context.setVariable("data",data);
-        String htmlContent = templateEngine.process(templateName, context);
-
-        // 配置中文字体
-        /*FontProgram fontProgram = FontProgramFactory.createFont(
-                new ClassPathResource("fonts/SIMHEI.TTF").getFile().getAbsolutePath()
-        );*/
-        FontProgram fontProgram = null;
-        try (InputStream fontStream = new ClassPathResource("/fonts/SIMHEI.TTF").getInputStream()) {
-            byte[] fontData = IOUtils.toByteArray(fontStream);  // 将字体转换为字节数组
-            fontProgram = FontProgramFactory.createFont(fontData);  // 使用字节数组方式加载
-        } catch (Exception e) {
-            throw new RuntimeException("字体加载失败", e);
-        }
-        // 2. 资源基准路径（本地图片必须配置）
-//        props.setBaseUri("file:/absolute/path/to/static/");
-        // 或从 classpath 加载
-        // props.setBaseUri(new ClassPathResource("static/").getURI().toString());
-
-//        PdfFont font = PdfFontFactory.createFont("STSongStd-Light", "UniGB-UCS2-H");
-//        FontProgram fontProgram = FontProgramFactory.createFont("STSong-Light" );
-        DefaultFontProvider fontProvider = new DefaultFontProvider();
-        fontProvider.addFont(fontProgram);
-        // 转换HTML为PDF
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        // 初始化 PDF 文档并设置 A4 尺寸
-        PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputStream));
-//        pdfDoc.setDefaultPageSize(PageSize.A4);
-        HtmlConverter.convertToPdf(
-                htmlContent,
-                pdfDoc,
-                new ConverterProperties().setFontProvider(fontProvider).setBaseUri(new ClassPathResource("templates/").getURI().toString())
-        );
-
-        return outputStream.toByteArray();
-    }
-
     // 上传到minio文件服务器和档案系统服务器
     public void uploadFileMinioAndDocumentServer(byte[] pdfBytes,String fileName,Map<String, Object> documentServerParam,Object dataObject){
         TaskNodeDataVo taskNodeDataVo = (TaskNodeDataVo) dataObject;
+        String storageFileStatus = "0";//生成申请单PDF到minio/档案系统服务器状态 1-成功 0-失败 2-minio成功 3-档案系统成功 4-待处理
         // 上传到minio文件服务器
         Map<String, String> fileMinioServerResult = uploadFileMinioServer(new ByteArrayInputStream(pdfBytes), fileName);
-        // 插入文件上传服务器记录存储表数据
+                // 插入文件上传服务器记录存储表数据
         DcwsSysFileVo dcwsSysFileVo = new DcwsSysFileVo();
         dcwsSysFileVo.setFileUrl(fileMinioServerResult.get("fileUrl"));
         dcwsSysFileVo.setTaskNodeDataId(taskNodeDataVo.getId());
         dcwsSysFileVo.setFileName(fileName);
         Long recordId = insertUploadRecord(dcwsSysFileVo, fileName, fileMinioServerResult);
+        if(!ObjectUtil.isEmpty(fileMinioServerResult) && "succ".equals(fileMinioServerResult.get("code"))){
+             storageFileStatus = "2";//2-minio成功
+        }
         //上传文件到档案系统
-        uploadFileDocumentServer(pdfBytes,fileName,taskNodeDataVo.getId(),recordId,documentServerParam);
+        String documentStatus = uploadFileDocumentServer(pdfBytes, fileName, taskNodeDataVo.getId(), recordId, documentServerParam);
         // 更新文件上传状态
-        taskNodeDataVo.setStorageFileStatus(1);
         TaskNodeData convert = MapstructUtils.convert(taskNodeDataVo, TaskNodeData.class);
-        convert.setStorageFileStatus(1);
+        if("3".equals(documentStatus) && "2".equals(storageFileStatus)){
+            convert.setStorageFileStatus(1);// 成功
+        }else if("3".equals(documentStatus)){
+            convert.setStorageFileStatus(3);// document成功
+        }else if("2".equals(storageFileStatus)){
+            convert.setStorageFileStatus(2);// minio成功
+        }else {
+            convert.setStorageFileStatus(0);// 失败
+        }
         taskNodeDataMapper.updateById(convert);
 
     }
@@ -175,13 +132,13 @@ public class UploadFileServerService {
            minioResultMap.put("code","fail");
            minioResultMap.put("result",e.getMessage());
        }
-
        return minioResultMap;
    }
 
     //上传文件到档案系统并查询状态更新表数据
-   public void uploadFileDocumentServer(byte[]fileBytes,String fileName,String taskNodeDataId,long recordId,Map<String,Object> documentServerParams){
+   public String uploadFileDocumentServer(byte[]fileBytes,String fileName,String taskNodeDataId,long recordId,Map<String,Object> documentServerParams){
        Map<String, String> resultMap;
+       String storageFileStatus = "0";
        try {
            String documentTypeId = (String) documentServerParams.get("documentTypeId");
            String storagePathId = (String) documentServerParams.get("storagePathId");
@@ -194,6 +151,7 @@ public class UploadFileServerService {
            if(!ObjectUtil.isEmpty(resultMap.get("taskId")) && "1".equals(resultMap.get("code"))){
                // 上传文件返回成功，循环查询文件上传到档案系统的结果并更新数据库
                queryFileStatusAndUpdate(resultMap.get("taskId"),recordId);
+               storageFileStatus = "3";
            }else{
                // 更新文件上传状态和信息
                DcwsSysFile dcwsSysFile = dcwsSysFileMapper.selectById(recordId);
@@ -209,14 +167,15 @@ public class UploadFileServerService {
            dcwsSysFile.setStorageDocumentServer(0);//失败
            dcwsSysFile.setDocumentMessage(e.getMessage());
            dcwsSysFileMapper.updateById(dcwsSysFile);
-       }
+           }
+       return storageFileStatus;
    }
 
 
 
     public void queryFileStatusAndUpdate(String taskId,Long id){
-        log.info("token-------: {}", token);
-        log.info("apiurl-------: {}", apiUrl);
+//        log.info("token-------: {}", token);
+//        log.info("apiurl-------: {}", apiUrl);
         webClient.get()
                 .uri(apiUrl+"tasks/?task_id=" + taskId)
                 .header(HttpHeaders.AUTHORIZATION,token)

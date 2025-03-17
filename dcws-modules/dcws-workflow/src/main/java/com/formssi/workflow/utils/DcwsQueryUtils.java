@@ -1,14 +1,13 @@
 package com.formssi.workflow.utils;
 
 import cn.hutool.core.bean.BeanUtil;
-import com.formssi.common.core.utils.StringUtils;
-import com.formssi.workflow.domain.vo.WfUserTaskButtonVo;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import com.formssi.common.core.utils.SpringUtils;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.tenant.helper.TenantHelper;
 import com.formssi.workflow.domain.vo.DcwsTaskVo;
-import org.flowable.bpmn.model.*;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.ProcessEngine;
 import org.flowable.engine.history.HistoricActivityInstanceQuery;
 import org.flowable.engine.history.HistoricProcessInstanceQuery;
@@ -21,8 +20,9 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 查询工具
@@ -164,7 +164,7 @@ public class DcwsQueryUtils {
         // 根据流程实例ID获得流程定义信息 TODO yqh
         BpmnModel bpmnModel = PROCESS_ENGINE.getRepositoryService().getBpmnModel( processInstance.getProcessDefinitionId());
         // 查找与用户任务定义键匹配的 UserTask，并获取其按钮信息
-        List<WfUserTaskButtonVo> userTaskButtonVos = bpmnModel.getMainProcess().getFlowElements()
+       /* List<WfUserTaskButtonVo> userTaskButtonVos = bpmnModel.getMainProcess().getFlowElements()
                 .stream()
                 .filter(f -> f instanceof UserTask userTask && task.getTaskDefinitionKey().equals(userTask.getId()))
                 .findFirst() // 查找第一个匹配的 UserTask
@@ -177,13 +177,13 @@ public class DcwsQueryUtils {
                     userTaskButtonVo.setProp(buttonElement.getAttributeValue(null, "prop"));
                     userTaskButtonVo.setDisable(buttonElement.getAttributeValue(null, "disable"));
                     return userTaskButtonVo;
-                }).collect(Collectors.toList());
+                }).collect(Collectors.toList());*/
         DcwsTaskVo taskVo = BeanUtil.toBean(task, DcwsTaskVo.class);
         taskVo.setBusinessKey(processInstance.getBusinessKey());
         taskVo.setMultiInstance(WorkflowUtils.isMultiInstance(task.getProcessDefinitionId(), task.getTaskDefinitionKey()) != null);
         String businessStatus = WorkflowUtils.getBusinessStatus(taskVo.getBusinessKey());
         taskVo.setBusinessStatus(businessStatus);
-        taskVo.setUserTaskButtonVos(userTaskButtonVos);
+//        taskVo.setUserTaskButtonVos(userTaskButtonVos);
         return taskVo;
     }
 

@@ -173,15 +173,6 @@ public class DcwsTaskVo implements Serializable {
     private WfNodeConfigVo wfNodeConfigVo;
 
     /**
-     * 用户任务表单设置
-     */
-    private WfUserTaskButtonVo wfTaskFormVo;
-    /**
-     * 用户任务按钮设置 add by qyh
-     */
-    List<WfUserTaskButtonVo> userTaskButtonVos;
-
-    /**
      * 流程分类
      */
     private String wfType;

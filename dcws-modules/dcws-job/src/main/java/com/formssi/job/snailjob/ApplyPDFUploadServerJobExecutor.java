@@ -78,6 +78,7 @@ public class ApplyPDFUploadServerJobExecutor {
                         break;
                     default: dcwsApplyFilePDFCreateStrategy = null;
                 }
+                if(dcwsApplyFilePDFCreateStrategy == null) return ExecuteResult.failure("dcwsApplyFilePDFCreateStrategy为null");
                 // 转成PDF
                 Map<String, Object> pdfResultMap = dcwsApplyFilePDFCreateStrategy.process(ApplyTypeEnum.of(taskNodeDataVo.getApplyType()).getName(), taskNodeDataVo);
                 byte[] pdfBytes = (byte[])pdfResultMap.get("pdfBytes");

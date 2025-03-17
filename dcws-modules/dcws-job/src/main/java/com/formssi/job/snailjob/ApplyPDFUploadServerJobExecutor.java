@@ -9,6 +9,7 @@ import com.aizuda.snailjob.common.log.SnailJobLog;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.common.minio.util.MinioUtil;
@@ -30,7 +31,6 @@ import java.util.Map;
 
 import static com.formssi.workflow.common.enums.ApplyTypeEnum.*;
 
-
 /**
  * @author opensnail
  * @date 2024-05-17
@@ -41,18 +41,21 @@ import static com.formssi.workflow.common.enums.ApplyTypeEnum.*;
 public class ApplyPDFUploadServerJobExecutor {
     @Autowired
     private TaskNodeDataMapper taskNodeDataMapper;
-
     @Autowired
     private UploadFileServerService uploadFileServerService;
     @Autowired
     private MinioUtil minioUtil;
+    private static final List<String> queryTypes = Arrays.asList(MATERIAL_IT.getCode(),MATERIAL_NOT_IT.getCode()
+            ,SEAL.getCode()
+    );
+
     public ExecuteResult jobExecute(JobArgs jobArgs) {
         SnailJobLog.LOCAL.info("applyPDFUploadServerJobExecutor. jobArgs:{}", JsonUtil.toJsonString(jobArgs));
         SnailJobLog.REMOTE.info("applyPDFUploadServerJobExecutor. jobArgs:{}", JsonUtil.toJsonString(jobArgs));
         LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
-        lqw.eq(TaskNodeData::getStatus, "finish");
+        lqw.eq(TaskNodeData::getStatus, BusinessStatusEnum.FINISH.getStatus());
         lqw.eq(TaskNodeData::getStorageFileStatus, "4");
-        lqw.in(TaskNodeData::getApplyType, Arrays.asList(MATERIAL_IT.getCode(),MATERIAL_NOT_IT.getCode(),SEAL.getCode()));
+        lqw.in(TaskNodeData::getApplyType,queryTypes);
         lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
         PageQuery pageQuery = new PageQuery();
         pageQuery.setPageNum(1);
@@ -66,19 +69,19 @@ public class ApplyPDFUploadServerJobExecutor {
             TaskNodeDataVo taskNodeDataVo = records.get(i);
             try{
                 DcwsApplyFilePDFCreateStrategy dcwsApplyFilePDFCreateStrategy;
-                switch (ApplyTypeEnum.of(taskNodeDataVo.getApplyType())){
-                    case MATERIAL_IT : //IT物料申请
-                        dcwsApplyFilePDFCreateStrategy = SpringUtils.getBean(MATERIAL_IT.getName());
-                        break;
-                    case MATERIAL_NOT_IT://非IT物料申请
-                        dcwsApplyFilePDFCreateStrategy = SpringUtils.getBean(MATERIAL_NOT_IT.getName());
-                        break;
-                    case SEAL://用印申请
-                        dcwsApplyFilePDFCreateStrategy = SpringUtils.getBean(SEAL.getName());
-                        break;
-                    default: dcwsApplyFilePDFCreateStrategy = null;
+                ApplyTypeEnum applyTypeEnum = of(taskNodeDataVo.getApplyType());
+                if(applyTypeEnum == null){
+                    log.error("申请类型applyType:{} 不存在",taskNodeDataVo.getApplyType());
+                    continue;
                 }
-                if(dcwsApplyFilePDFCreateStrategy == null) return ExecuteResult.failure("dcwsApplyFilePDFCreateStrategy为null");
+                dcwsApplyFilePDFCreateStrategy = switch (applyTypeEnum) {
+                    case MATERIAL_IT -> //IT物料申请
+                            SpringUtils.getBean(MATERIAL_IT.getName());
+                    case MATERIAL_NOT_IT ->//非IT物料申请
+                            SpringUtils.getBean(MATERIAL_NOT_IT.getName());
+                    case SEAL ->//用印申请
+                            SpringUtils.getBean(SEAL.getName());
+                };
                 // 转成PDF
                 Map<String, Object> pdfResultMap = dcwsApplyFilePDFCreateStrategy.process(ApplyTypeEnum.of(taskNodeDataVo.getApplyType()).getName(), taskNodeDataVo);
                 byte[] pdfBytes = (byte[])pdfResultMap.get("pdfBytes");

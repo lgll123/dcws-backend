@@ -34,7 +34,7 @@ public class DcwsSealApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCreat
     @Autowired
     private DcwsIActProcessInstanceService dcwsIActProcessInstanceService;
     @Autowired
-    private UploadFileServerService uploadFileServerService;
+    private CreateApplyFilePDFService createApplyFilePDFService;
 
 
     @Override
@@ -76,7 +76,7 @@ public class DcwsSealApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCreat
             data.put("historyRecords", collect);
 
             // 生成PDF
-            byte[] pdfBytes = uploadFileServerService.generatePdf(templateName, data);
+            byte[] pdfBytes = createApplyFilePDFService.generatePdf(templateName, data);
             String documentTypeId=null;
             String storagePathId=null;
             String[] tags=null;

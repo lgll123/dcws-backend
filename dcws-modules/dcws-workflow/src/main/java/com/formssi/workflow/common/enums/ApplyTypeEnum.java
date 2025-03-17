@@ -31,13 +31,13 @@ public enum ApplyTypeEnum {
     private final String desc;
     public static ApplyTypeEnum of(String type) {
         if (type == null) {
-            return MATERIAL_IT;
+            return null;
         }
         for (ApplyTypeEnum value : ApplyTypeEnum.values()) {
             if (Objects.equals(type, value.getCode())) {
                 return value;
             }
         }
-        return MATERIAL_IT;
+        return null;
     }
 }

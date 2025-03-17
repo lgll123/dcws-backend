@@ -2,6 +2,7 @@ package com.formssi.workflow.service.strategy;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.service.UserService;
@@ -34,7 +35,7 @@ public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFC
     @Autowired
     private DcwsIActProcessInstanceService dcwsIActProcessInstanceService;
     @Autowired
-    private UploadFileServerService uploadFileServerService;
+    private CreateApplyFilePDFService createApplyFilePDFService;
 
 
     @Override
@@ -107,14 +108,14 @@ public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFC
             data.put("historyRecords", collect);
 
             // 生成PDF
-            byte[] pdfBytes = uploadFileServerService.generatePdf(templateName, data);
+            byte[] pdfBytes = createApplyFilePDFService.generatePdf(templateName, data);
             String documentTypeId=null;
             String storagePathId=null;
             String[] tags=null;
             String objName=null;
             String applyType = taskNodeDataVo.getApplyType();//19 IT 21 非IT
             if("19".equals(applyType)){
-                documentTypeId="3";
+                documentTypeId="3";//TODO 需要维护
                 storagePathId="2";
                 tags=new String[]{"6"};
                 objName="IT物料申请-";
@@ -125,15 +126,16 @@ public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFC
                 tags=new String[]{"7"};
                 objName="非IT物料申请-";
             }
-            Map<String, Object> documentServerParam = new HashMap();
-            documentServerParam.put("documentTypeId",documentTypeId);
-            documentServerParam.put("storagePathId",storagePathId);
-            documentServerParam.put("tags",tags);
+            Map<String, Object> documentServerParam = MapUtil.createMap(HashMap.class);
+            documentServerParam.put("documentTypeId",documentTypeId);//档案系统文件类型
+            documentServerParam.put("storagePathId",storagePathId);//档案系统文件路径
+            documentServerParam.put("tags",tags);//档案系统文件标签
             String fileName = objName + taskNodeDataVo.getId() + ".pdf";
             resultMap.put("fileName",fileName);
             resultMap.put("pdfBytes",pdfBytes);
             resultMap.put("documentServerParam",documentServerParam);
         } catch (Exception e) {
+            log.error("生成PDF失败:{}",e.getMessage());
             throw new RuntimeException(e);
         }
         return resultMap;

@@ -88,7 +88,7 @@
       top: 5px;
       left: -15px;
       width: 2px;
-      height: 66px;
+      height: 100%;
       background-color: #666;
     }
     .flow-chat .circle-container {
@@ -192,9 +192,9 @@
 <!-- 审批记录 -->
 <div class="flow-chat" style="margin-top: 20px;">
     <div style="font-size: 10px; margin-bottom: 12px">审批记录</div>
-    <div class="process-line" style="padding-left: 58px;" >
+    <div class="process-line" style="padding-left: 58px;"  th:each="record : ${data.historyRecords}" >
 
-        <div class="process-line__item" th:each="record : ${data.historyRecords}" >
+        <div class="process-line__item">
             <div class="title">
                 <div class="info">
                     <div>

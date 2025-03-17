@@ -300,6 +300,7 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setTaskNodeDataId(taskNodeData.getId());
             taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
             taskNodeDataHis.setCheckTo(taskNodeData.getCheckTo());
+            taskNodeDataHis.setApplyContentType(taskNodeData.getApplyContentType());
             taskNodeDataHisMapper.insert(taskNodeDataHis);
         }
 

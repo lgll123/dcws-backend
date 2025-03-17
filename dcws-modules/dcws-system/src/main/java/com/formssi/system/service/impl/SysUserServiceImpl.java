@@ -767,4 +767,41 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         // 转换为Long类型
         return Long.parseLong(userIdStr);
     }
+    @Override
+    public List<SysUserVo> getUserLeader(Long userId) {
+        List<SysUserVo> leaders = new ArrayList<>();
+
+        SysUserVo user = baseMapper.selectVoById(userId);
+        if (user == null) {
+            return leaders;
+        }
+        SysDeptVo dept = deptMapper.selectVoById(user.getDeptId());
+        if (dept == null) {
+            return leaders;
+        }
+        String userDeptLeader = ObjectUtil.isNull(dept.getLeader()) ? null : String.valueOf(dept.getLeader());
+        String userLeader = ObjectUtil.isNull(user.getLeader()) ? null : String.valueOf(user.getLeader());
+        //添加用户领导-除开部门领导
+        if(!StringUtils.isEmpty(userLeader)){
+            while (!userLeader.equals(userDeptLeader)) {
+                SysUserVo leader = baseMapper.selectVoById(userLeader);
+                if (leader == null) {
+                    break;
+                }
+                leaders.add(leader);
+                userLeader = ObjectUtil.isNull(leader.getLeader()) ? null : leader.getLeader().toString();
+                if(userLeader == null){
+                    break;
+                }
+            }
+        }
+        // 添加部门领导
+        if(!StringUtils.isEmpty(userDeptLeader)){
+            SysUserVo departmentLeader = baseMapper.selectVoById(userDeptLeader);
+            if (departmentLeader != null) {
+                leaders.add(departmentLeader);
+            }
+        }
+        return leaders;
+    }
 }

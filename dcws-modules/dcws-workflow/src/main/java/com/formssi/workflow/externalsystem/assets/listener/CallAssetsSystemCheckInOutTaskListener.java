@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
@@ -49,6 +51,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
                 //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
                 ArrayList<Map<String, Object>> hardware = (ArrayList<Map<String, Object>>) map.get("hardware");
                 ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) map.get("accessories");
+                ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) map.get("consumables");
                 // 资产
                 processHardwareAssets(taskNodeDataBo, hardware);
                 // 附属品
@@ -370,6 +373,193 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         bo.setCheckOutUser(checkOutUser);
         bo.setAssetsDetail(JSONUtil.toJsonStr(accessory));
         // 记录物料checkOut 记录
+        saveCheckOutRecord(bo);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // 处理消耗品
+    private void processConsumables(TaskNodeDataBo taskNode, List<Map<String, Object>> consumables){
+        if (CollectionUtils.isEmpty(consumables)) return;
+        String assetUserId = Convert.toStr(taskNode.getAssetUserId());//申请人资产系统ID
+        String applicant = taskNode.getApplicant();
+        for (int j = 0; j < consumables.size(); j++) {
+            DcwsAssetsCheckOutBo recordBo = createBaseRecord(taskNode, "accessories");
+            Map<String, Object> consumable = consumables.get(j);
+            //附属品要分配的人列表，默认一人一个附属品
+            List<Map<String, Object>> recipients = (List<Map<String, Object>>) consumables.get(j).get("recipient");
+            //未设置领用人
+            if (ObjectUtil.isEmpty(recipients)) {
+                recordBo.setMessage("未设置领用人");
+                recordBo.setCheckType("1");
+                recordBo.setAssetsDetail(JSONUtil.toJsonStr(consumable));
+                recordBo.setAssetsType("accessories");
+                // 记录物料checkOut 记录
+                saveCheckOutRecord(recordBo);
+                continue;
+            }
+            //查询附属品在资产系统checkout记录，用于变更领用人
+            List<String> checkOutIds = queryConsumablesChecks(assetUserId, consumable, recordBo);
+            if(checkOutIds==null) continue;
+
+            for (int i = 0; i < recipients.size(); i++) {
+                Map<String, Object> recipient = recipients.get(i);
+                if (i+1 > checkOutIds.size()) {
+                    recordBo.setMessage("申请人的checkOut数量不足：" + checkOutIds.size() + " 分配数量：" + i);
+                    recordBo.setCode("");
+                    recordBo.setStatus("0");
+                    recordBo.setCheckType("4");
+                    recordBo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
+                    recordBo.setAssetsDetail(JSONUtil.toJsonStr(consumables.get(j)));
+                    recordBo.setAssetsType("consumables");
+                    // 记录物料checkOut 记录
+                    saveCheckOutRecord(recordBo);
+                    continue;
+                }
+                String accessoryUserId = checkOutIds.get(i);
+                // 附属品归还操作
+                if(!processAccessoriesCheckIn(accessoryUserId, consumable,recipient, recordBo)) continue;
+                // 附属品借出操作
+                processAccessoriesCheckOut(accessoryUserId,applicant, consumable, recipient,  recordBo);
+            }
+
+        }
+    }
+
+    //查询消耗品在资产系统checkout记录，用于变更领用人
+    private List<String> queryConsumablesChecks(String assetUserId, Map<String, Object> consumable, DcwsAssetsCheckOutBo bo){
+        // 查询消耗品借出记录列表
+        String consumableId = Convert.toStr(consumable.get("id")); //消耗品id
+        String apiUrl = "consumables/" + consumableId + "/users";
+        Map<String, String> requestMap = new HashMap<>();
+        requestMap.put("sort","name");
+        requestMap.put("offset","0");
+        requestMap.put("limit","9999");
+        requestMap.put("order","asc");
+        Map<String, Object> responseMap = null;
+        try {
+            responseMap = instance.process(requestMap, apiUrl, "get");
+        } catch (ApiCallException e) {
+            handlerApiCallException("3","accessories",bo,consumable,e);
+            return null;
+        }
+        if ("error".equals(responseMap.get("status"))) {
+            log.info("后台API接口返回错误：" + responseMap.get("messages"));
+            // 记录物料checkOut 记录
+            bo.setStatus("2");
+            handlerAssetSysReturnError(null,null,
+                    "3","accessories",bo,consumable,responseMap);
+            // 记录物料checkOut 记录
+            saveCheckOutRecord(bo);
+            return null;
+        }
+        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get("rows");
+        //筛选出申请人的checkOut记录，This is the ID of the accessory+user relationships in the accessories_users table
+        return rows.stream().map(c->{
+                    // 提取 href 中的 URL
+                    Pattern hrefPattern = Pattern.compile("href\\s*=\\s*[\"']([^\"']*)[\"']");
+                    Matcher hrefMatcher = hrefPattern.matcher(Convert.toStr(c.get("name")));//<a href="http://10.101.68.29:8000/users/5">协同管理员</a>
+                    if (hrefMatcher.find()) {
+                        String url = hrefMatcher.group(1);
+                        // 提取用户 ID
+                        Pattern idPattern = Pattern.compile("/users/(\\d+)(?:/|\\?|$|#)");
+                        Matcher idMatcher = idPattern.matcher(url);
+                        if (idMatcher.find()) {
+                            String userId = idMatcher.group(1);
+                            c.put("userId",userId);
+                        }
+                    }
+                    return c;
+                })
+                .filter(r->Convert.toStr(r.get("userId")).equals(assetUserId))
+                .map(a -> Convert.toStr(a.get("userId")))
+                .collect(Collectors.toList());
+
+    }
+    // 消耗品归还操作
+    private boolean processConsumablesCheckIn(String accessoryUserId,Map<String, Object> consumable,Map<String, Object> recipient, DcwsAssetsCheckOutBo bo){
+        //1、归还
+        String apiUrlCheckIn = "consumables/" + accessoryUserId + "/checkin";
+        Map<String, Object> responseMap = null;
+        try {
+            responseMap = instance.process(null, apiUrlCheckIn, "post");
+        } catch (ApiCallException e) {
+            // 记录物料checkOut 记录
+            bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
+            handlerApiCallException("2","accessories",bo,consumable,e);
+            bo.setAccessoryUserId(accessoryUserId);
+            return false;
+        }
+        if ("error".equals(responseMap.get("status"))) {
+            log.info("后台API接口返回错误：" + responseMap.get("messages"));
+            // 记录物料checkOut 记录
+            bo.setStatus("2");
+            handlerAssetSysReturnError(accessoryUserId,Convert.toStr(recipient.get("assetUserId")),
+                    "2","accessories",bo,consumable,responseMap);
+            return false;
+        }
+        //归还成功
+        bo.setStatus("1");
+        bo.setCheckType("2");
+        bo.setAccessoryUserId(accessoryUserId);
+        bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
+        bo.setMessage("附属品归还成功accessoryUserIdIn: " + accessoryUserId);
+        bo.setAssetsDetail(JSONUtil.toJsonStr(consumable));
+        saveCheckOutRecord(bo);
+        return true;
+    }
+    // 消耗品借出操作
+    private void processConsumablesCheckOut(String accessoryUserIdIn,String applicant,Map<String, Object> consumable,Map<String, Object> recipient, DcwsAssetsCheckOutBo bo){
+        //2、借出
+        String apiUrlOut = "accessories/" + consumable.get("id") + "/checkout";
+        Map<String, String> requestBodyMapOut = new HashMap<>();
+        requestBodyMapOut.put("assigned_user", Convert.toStr(recipient.get("assetUserId"))); //领用人Id"4"
+        requestBodyMapOut.put("note", "领用人：" + applicant + " 变更到：" + recipient.get("name"));
+        Map<String, Object> responseMapOut = null;
+        try {
+            responseMapOut = instance.process(requestBodyMapOut, apiUrlOut, "post");
+        } catch (ApiCallException e) {
+            // 记录物料checkOut 记录
+            bo.setAccessoryUserId(accessoryUserIdIn);
+            bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
+            handlerApiCallException("1","hardware",bo,consumable,e);
+            return;
+        }
+        if ("error".equals(responseMapOut.get("status"))) {
+            log.info("后台API接口返回错误：" + responseMapOut.get("messages"));
+            // 记录物料checkOut 记录
+            bo.setStatus("0");
+            handlerAssetSysReturnError(accessoryUserIdIn,Convert.toStr(recipient.get("assetUserId")),
+                    "1","accessories",bo,consumable,responseMapOut);
+            return;
+        }
+        //借出成功
+        bo.setStatus("1");
+        bo.setCheckType("1");
+        bo.setAccessoryUserId(accessoryUserIdIn);
+        bo.setCheckOutUser(Convert.toStr(recipient.get("assetUserId")));
+        bo.setMessage("附属品借出成功 " + "领用人：" + applicant + " 变更到：" + recipient.get("name"));
+        bo.setAssetsDetail(JSONUtil.toJsonStr(consumable));
         saveCheckOutRecord(bo);
     }
 

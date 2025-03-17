@@ -147,5 +147,29 @@ public interface AssetsConstant {
      * 资产目录类型 资产-hardware
      */
     String CATEGORIES_HARDWARE = "hardware";
+    /**
+     * 文件名称
+     */
+    String FILENAME = "fileName";
+    /**
+     * PDF文件字节流
+     */
+    String PDFBYTES = "pdfBytes";
+    /**
+     * 档案系统接口参数
+     */
+    String DOCUMENTSERVERPARAM = "documentServerParam";
+    /**
+     * 档案系统接口参数-文件类型
+     */
+    String DOCUMENTTYPEID = "documentTypeId";
+    /**
+     * 档案系统接口参数-文件路径
+     */
+    String STORAGEPATHID = "storagePathId";
+    /**
+     * 档案系统接口参数-文件标签
+     */
+    String TAGS = "tags";
 
 }

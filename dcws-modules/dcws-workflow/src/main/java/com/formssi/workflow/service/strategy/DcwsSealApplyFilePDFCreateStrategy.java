@@ -1,24 +1,23 @@
 package com.formssi.workflow.service.strategy;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.service.UserService;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.workflow.domain.vo.DcwsActHistoryInfoVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
-import com.formssi.workflow.externalsystem.assets.service.UploadFileServerService;
 import com.formssi.workflow.service.DcwsIActProcessInstanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
 
 /**
  * dcws 用印申请申请单生成PDF数据处理接口策略
@@ -89,13 +88,13 @@ public class DcwsSealApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCreat
                 objName="用印申请-";
             }
             Map<String, Object> documentServerParam = new HashMap();
-            documentServerParam.put("documentTypeId",documentTypeId);
-            documentServerParam.put("storagePathId",storagePathId);
-            documentServerParam.put("tags",tags);
+            documentServerParam.put(DOCUMENTTYPEID,documentTypeId);//档案系统文件类型
+            documentServerParam.put(STORAGEPATHID,storagePathId);//档案系统文件路径
+            documentServerParam.put(TAGS,tags);//档案系统文件标签
             String fileName = objName + taskNodeDataVo.getId() + ".pdf";
-            resultMap.put("fileName",fileName);
-            resultMap.put("pdfBytes",pdfBytes);
-            resultMap.put("documentServerParam",documentServerParam);
+            resultMap.put(FILENAME,fileName);
+            resultMap.put(PDFBYTES,pdfBytes);
+            resultMap.put(DOCUMENTSERVERPARAM,documentServerParam);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

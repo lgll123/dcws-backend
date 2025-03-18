@@ -72,7 +72,7 @@ public class ApplyServiceImpl implements IApplyService {
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
     private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','seal_apply','claim_apply'" +
-            ",'data_apply','server_apply'}";
+            ",'data_apply','server_apply'}.contains(#event.key)";
     private final ISysFileService sysFileService;
 
     @Autowired
@@ -244,15 +244,15 @@ public class ApplyServiceImpl implements IApplyService {
      * 正常使用只需#processEvent.key=='leave1'
      * 示例为了方便则使用startsWith匹配了全部示例key
      *
-     * @param processEvent 参数
+     * @param event 参数
      */
-    @EventListener(condition = keys+".contains(#processEvent.key)")
-    public void processHandler(ProcessEvent processEvent) {
-        log.info("当前任务执行了{}", processEvent.toString());
-        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processEvent.getBusinessKey());
-        taskNodeData.setStatus(processEvent.getStatus());
-        if (processEvent.isSubmit()) {
-            taskNodeData.setStatus(processEvent.getStatus());
+    @EventListener(condition = keys)
+    public void processHandler(ProcessEvent event) {
+        log.info("当前任务执行了{}", event.toString());
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(event.getBusinessKey());
+        taskNodeData.setStatus(event.getStatus());
+        if (event.isSubmit()) {
+            taskNodeData.setStatus(event.getStatus());
         }
         taskNodeDataMapper.updateById(taskNodeData);
     }
@@ -265,16 +265,16 @@ public class ApplyServiceImpl implements IApplyService {
      * //执行业务逻辑
      * }
      *
-     * @param processTaskEvent 参数
+     * @param event 参数
      */
-    @EventListener(condition = keys+".contains(#processEvent.key)")
-    public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
-        log.info("当前任务执行了{}", processTaskEvent.toString());
-        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processTaskEvent.getBusinessKey());
+    @EventListener(condition = keys)
+    public void processTaskHandler(ProcessTaskEvent event) {
+        log.info("当前任务执行了{}", event.toString());
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(event.getBusinessKey());
         taskNodeData.setStatus(BusinessStatusEnum.WAITING.getStatus());
         TaskNodeDataBo taskNodeDataBo = new TaskNodeDataBo();
-        if (CollUtil.isNotEmpty(processTaskEvent.getVariables())) {
-            Map<String, Object> variables = processTaskEvent.getVariables();
+        if (CollUtil.isNotEmpty(event.getVariables())) {
+            Map<String, Object> variables = event.getVariables();
             Object entity = variables.get("entity");
             if(variables.get("entity")!=null){
                 try {
@@ -286,10 +286,10 @@ public class ApplyServiceImpl implements IApplyService {
             }
         }
         taskNodeData.setApplyDetail(taskNodeDataBo.getApplyDetail());
-        taskNodeData.setTaskId(processTaskEvent.getTaskId());
+        taskNodeData.setTaskId(event.getTaskId());
         taskNodeDataMapper.updateById(taskNodeData);
         QueryWrapper<TaskNodeDataHis> query = Wrappers.query();
-        query.eq("task_id",processTaskEvent.getTaskId());
+        query.eq("task_id",event.getTaskId());
         TaskNodeDataHisVo taskNodeDataHisVo = taskNodeDataHisMapper.selectVoOne(query);
         taskNodeDataBo.setTaskNodeDataId(taskNodeData.getId());
         if(taskNodeDataHisVo!=null){
@@ -297,7 +297,7 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeDataBo.getId());
-            taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
+            taskNodeDataHis.setTaskId(event.getTaskId());
             taskNodeDataHis.setAssetUserId(taskNodeDataBo.getAssetUserId());
             taskNodeDataHisMapper.updateById(taskNodeDataHis);
         }else {
@@ -316,7 +316,7 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeData.getId());
-            taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
+            taskNodeDataHis.setTaskId(event.getTaskId());
             taskNodeDataHis.setCheckTo(taskNodeData.getCheckTo());
             taskNodeDataHis.setApplyContentType(taskNodeData.getApplyContentType());
             taskNodeDataHisMapper.insert(taskNodeDataHis);

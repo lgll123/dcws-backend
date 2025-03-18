@@ -2,6 +2,7 @@ package com.formssi.system.domain;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.formssi.common.tenant.core.TenantEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -14,7 +15,7 @@ import java.util.Date;
 
 @Data
 @TableName("dcws_seal_info")
-public class SealInfo {
+public class SealInfo extends TenantEntity {
 
     /**
      * id
@@ -47,28 +48,28 @@ public class SealInfo {
      */
     private String remark;
 
-    /**
-     * 创建部门
-     */
-    private Long createDept;
-
-    /**
-     * 创建者
-     */
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新者
-     */
-    private Long updateBy;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
+//    /**
+//     * 创建部门
+//     */
+//    private Long createDept;
+//
+//    /**
+//     * 创建者
+//     */
+//    private Long createBy;
+//
+//    /**
+//     * 创建时间
+//     */
+//    private Date createTime;
+//
+//    /**
+//     * 更新者
+//     */
+//    private Long updateBy;
+//
+//    /**
+//     * 更新时间
+//     */
+//    private Date updateTime;
 }

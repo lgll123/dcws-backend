@@ -2,9 +2,7 @@ package com.formssi.system.mapper;
 
 import com.formssi.common.mybatis.core.mapper.BaseMapperPlus;
 import com.formssi.system.domain.SealInfo;
-import com.formssi.system.domain.SysDictType;
 import com.formssi.system.domain.vo.SealInfoVo;
-import com.formssi.system.domain.vo.SysDictTypeVo;
 
 /**
  * 印章维护表 数据层

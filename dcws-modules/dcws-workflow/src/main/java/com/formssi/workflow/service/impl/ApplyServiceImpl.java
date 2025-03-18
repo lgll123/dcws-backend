@@ -2,6 +2,8 @@ package com.formssi.workflow.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -15,39 +17,37 @@ import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.service.WorkflowService;
+import com.formssi.common.core.utils.MapstructUtils;
+import com.formssi.common.core.utils.StreamUtils;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.common.minio.util.MinioUtil;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.common.mybatis.core.page.PageQuery;
+import com.formssi.common.mybatis.core.page.TableDataInfo;
+import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.system.domain.vo.SealJsonVo;
 import com.formssi.system.domain.vo.SysFileVo;
 import com.formssi.system.service.ISysFileService;
 import com.formssi.workflow.domain.DcwsSysFile;
-import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
-import com.formssi.workflow.domain.vo.DcwsSysFileVo;
-import com.formssi.workflow.mapper.DcwsSysFileMapper;
-import com.formssi.workflow.utils.DcwsAiUtils;
-import com.formssi.workflow.utils.DcwsDateUtils;
-import com.formssi.common.core.utils.MapstructUtils;
-import com.formssi.common.core.utils.StreamUtils;
-import com.formssi.common.core.utils.StringUtils;
-import com.formssi.common.mybatis.core.page.PageQuery;
-import com.formssi.common.mybatis.core.page.TableDataInfo;
-import com.formssi.common.satoken.utils.LoginHelper;
-import com.formssi.system.domain.vo.SealInfoVo;
-import com.formssi.workflow.domain.DcwsBaseEntity;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
+import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
+import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
+import com.formssi.workflow.mapper.DcwsSysFileMapper;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
 import com.formssi.workflow.service.IApplyService;
 import com.formssi.workflow.service.TaskSerialService;
+import com.formssi.workflow.utils.DcwsAiUtils;
+import com.formssi.workflow.utils.DcwsDateUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -176,7 +176,7 @@ public class ApplyServiceImpl implements IApplyService {
         lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
         lqw.in(TaskNodeData::getStatus, Arrays.asList("back","draft"));
         lqw.eq(TaskNodeData::getCreateBy, LoginHelper.getUserId());
-        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
+        lqw.orderByDesc(BaseEntity::getCreateTime);
         return lqw;
     }
 
@@ -187,7 +187,7 @@ public class ApplyServiceImpl implements IApplyService {
         lqw.like(StringUtils.isNotBlank(bo.getApplicant()), TaskNodeData::getApplicant, bo.getApplicant());
         lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
         lqw.eq(StringUtils.isNotBlank(bo.getStatus()), TaskNodeData::getStatus, bo.getStatus());
-        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
+        lqw.orderByDesc(BaseEntity::getCreateTime);
         return lqw;
     }
 
@@ -272,53 +272,53 @@ public class ApplyServiceImpl implements IApplyService {
         log.info("当前任务执行了{}", event.toString());
         TaskNodeData taskNodeData = taskNodeDataMapper.selectById(event.getBusinessKey());
         taskNodeData.setStatus(BusinessStatusEnum.WAITING.getStatus());
-        TaskNodeDataBo taskNodeDataBo = new TaskNodeDataBo();
+        Map<String,Object> taskNodeDataMap = new HashMap<>();
         if (CollUtil.isNotEmpty(event.getVariables())) {
             Map<String, Object> variables = event.getVariables();
             Object entity = variables.get("entity");
             if(variables.get("entity")!=null){
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    taskNodeDataBo = objectMapper.readValue(JSON.toJSONString(entity), TaskNodeDataBo.class);
+                    taskNodeDataMap = (Map<String,Object>)objectMapper.readValue(JSON.toJSONString(entity), Map.class);
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-        taskNodeData.setApplyDetail(taskNodeDataBo.getApplyDetail());
+        taskNodeData.setApplyDetail(Convert.toStr(taskNodeDataMap.get("applyDetail")));
         taskNodeData.setTaskId(event.getTaskId());
         taskNodeDataMapper.updateById(taskNodeData);
         QueryWrapper<TaskNodeDataHis> query = Wrappers.query();
         query.eq("task_id",event.getTaskId());
         TaskNodeDataHisVo taskNodeDataHisVo = taskNodeDataHisMapper.selectVoOne(query);
-        taskNodeDataBo.setTaskNodeDataId(taskNodeData.getId());
+        taskNodeDataMap.put("taskNodeDataId",taskNodeData.getId());
         if(taskNodeDataHisVo!=null){
-            TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
-            taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
+            TaskNodeDataHis taskNodeDataHis = MapstructUtils.convert(taskNodeDataHisVo, TaskNodeDataHis.class);
+            taskNodeDataHis.setApplyDetail(Convert.toStr(taskNodeDataMap.get("applyDetail")));
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
-            taskNodeDataHis.setTaskNodeDataId(taskNodeDataBo.getId());
-            taskNodeDataHis.setTaskId(event.getTaskId());
-            taskNodeDataHis.setAssetUserId(taskNodeDataBo.getAssetUserId());
             taskNodeDataHisMapper.updateById(taskNodeDataHis);
         }else {
             TaskNodeDataHis taskNodeDataHis = new TaskNodeDataHis();
-            taskNodeDataHis.setApplicant(taskNodeDataBo.getApplicant());
-            taskNodeDataHis.setApplicantId(taskNodeDataBo.getApplicantId());
-            taskNodeDataHis.setAssetUserId(taskNodeDataBo.getAssetUserId());
-            taskNodeDataHis.setApplyDate(taskNodeDataBo.getApplyDate());
-            taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
-            taskNodeDataHis.setApplyReson(taskNodeDataBo.getApplyReson());
-            taskNodeDataHis.setApplyRemarks(taskNodeDataBo.getApplyRemarks());
-            taskNodeDataHis.setRequiredDateType(taskNodeDataBo.getRequiredDateType());
-            taskNodeDataHis.setCompleteDate(taskNodeDataBo.getCompleteDate());
-            taskNodeDataHis.setRequiredDesc(taskNodeDataBo.getRequiredDesc());
-            taskNodeDataHis.setApplyDept(taskNodeDataBo.getApplyDept());
-            taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
+            taskNodeDataHis.setApplicant(Convert.toStr(taskNodeDataMap.get("applicant")));
+            taskNodeDataHis.setApplicantId(Convert.toLong(taskNodeDataMap.get("applicantId")));
+            taskNodeDataHis.setAssetUserId(Convert.toLong(taskNodeDataMap.get("assetUserId")));
+            taskNodeDataHis.setApplyDate(DateUtil.parse(Convert.toStr(taskNodeDataMap.get("applyDate"))));
+            taskNodeDataHis.setApplyDetail(Convert.toStr(taskNodeDataMap.get("applyDetail")));
+            taskNodeDataHis.setApplyReson(Convert.toStr(taskNodeDataMap.get("applyReson")));
+            taskNodeDataHis.setApplyRemarks(Convert.toStr(taskNodeDataMap.get("applyRemarks")));
+            taskNodeDataHis.setRequiredDateType(Convert.toStr(taskNodeDataMap.get("requiredDateType")));
+            taskNodeDataHis.setCompleteDate(DateUtil.parse(Convert.toStr(taskNodeDataMap.get("completeDate"))));
+            taskNodeDataHis.setRequiredDesc(Convert.toStr(taskNodeDataMap.get("requiredDesc")));
+            taskNodeDataHis.setApplyDept(Convert.toStr(taskNodeDataMap.get("applyDept")));
+            taskNodeDataHis.setApplyType(Convert.toStr(taskNodeDataMap.get("applyType")));
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeData.getId());
             taskNodeDataHis.setTaskId(event.getTaskId());
             taskNodeDataHis.setCheckTo(taskNodeData.getCheckTo());
             taskNodeDataHis.setApplyContentType(taskNodeData.getApplyContentType());
+            taskNodeDataHis.setCreateDept(taskNodeData.getCreateDept());
+            taskNodeDataHis.setCreateBy(taskNodeData.getCreateBy());
+            taskNodeDataHis.setUpdateBy(taskNodeData.getUpdateBy());
             taskNodeDataHisMapper.insert(taskNodeDataHis);
         }
 

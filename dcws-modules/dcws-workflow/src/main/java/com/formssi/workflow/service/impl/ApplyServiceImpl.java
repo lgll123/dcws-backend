@@ -59,6 +59,8 @@ public class ApplyServiceImpl implements IApplyService {
     private final DcwsSysFileMapper dcwsSysFileMapper;
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
+    private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','seal_apply','claim_apply'" +
+            ",'data_apply','server_apply'}";
 
     /**
      * 查询申请
@@ -228,7 +230,7 @@ public class ApplyServiceImpl implements IApplyService {
      *
      * @param processEvent 参数
      */
-    @EventListener(condition = "#processEvent.key.contains('assets') || #processEvent.key.contains('seal')" )
+    @EventListener(condition = keys+".contains(#processEvent.key)")
     public void processHandler(ProcessEvent processEvent) {
         log.info("当前任务执行了{}", processEvent.toString());
         TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processEvent.getBusinessKey());
@@ -249,7 +251,7 @@ public class ApplyServiceImpl implements IApplyService {
      *
      * @param processTaskEvent 参数
      */
-    @EventListener(condition = "#processTaskEvent.key.contains('assets') || #processTaskEvent.key.contains('seal')")
+    @EventListener(condition = keys+".contains(#processEvent.key)")
     public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
         log.info("当前任务执行了{}", processTaskEvent.toString());
         TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processTaskEvent.getBusinessKey());

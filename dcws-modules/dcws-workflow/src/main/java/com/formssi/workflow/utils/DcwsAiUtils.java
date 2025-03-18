@@ -422,15 +422,15 @@ public class DcwsAiUtils {
             String applicationId = "7fa51d9e-0073-11f0-8ce3-fa163ee512e3";
             String chatid = getChatId(token,applicationId);
 
-            InputStream  InputStreamPdf =  new FileInputStream(new File("D:\\dzfp_invoice.pdf"));
-            InputStream  InputStreamJpg = convertPdfPageToJpg(InputStreamPdf);
-            // 创建临时文件
-            Path tempFilePath = Files.createTempFile("inputStreamTempFile", ".tmp");
-            // 将InputStream中的数据写入临时文件
-            Files.copy(InputStreamJpg, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
-
-            JSONObject imageJsonObject = uploadImage(tempFilePath.toFile(),applicationId,chatid,token);
-            //JSONObject imageJsonObject = uploadImage(new File("D:\\Invoice.jpg"),applicationId,chatid,token);
+//            InputStream  InputStreamPdf =  new FileInputStream(new File("D:\\dzfp_invoice.pdf"));
+//            InputStream  InputStreamJpg = convertPdfPageToJpg(InputStreamPdf);
+//            // 创建临时文件
+//            Path tempFilePath = Files.createTempFile("inputStreamTempFile", ".tmp");
+//            // 将InputStream中的数据写入临时文件
+//            Files.copy(InputStreamJpg, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
+//
+//            JSONObject imageJsonObject = uploadImage(tempFilePath.toFile(),applicationId,chatid,token);
+            JSONObject imageJsonObject = uploadImage(new File("D:\\Invoice.jpg"),applicationId,chatid,token);
             String answer  = chatMessage(token,chatid,imageJsonObject,question);
             Long end = System.currentTimeMillis();
             System.out.printf(answer+"\n" + "本地部署Qwen2.5-VL-7B-Instruct模型获取图片信息耗时：" + (end - start) +"\n\n");

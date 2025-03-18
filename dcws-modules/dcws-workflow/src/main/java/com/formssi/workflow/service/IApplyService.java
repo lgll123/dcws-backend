@@ -5,9 +5,12 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
+import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
 import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.List;
@@ -62,4 +65,9 @@ public interface IApplyService {
      * 查询申请单PDFURL
      */
     List<DcwsSysFileVo> getApplyPDF(String id);
+
+    /**
+     * 上传发票并匹配信息
+     */
+    List<DcwsInvoiceVo> uploadInvoice(String fileIds) throws Exception;
 }

@@ -13,11 +13,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.domain.event.ProcessEvent;
 import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.service.WorkflowService;
+import com.formssi.common.minio.util.MinioUtil;
 import com.formssi.system.domain.vo.SealJsonVo;
+import com.formssi.system.domain.vo.SysFileVo;
+import com.formssi.system.service.ISysFileService;
 import com.formssi.workflow.domain.DcwsSysFile;
+import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
 import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
+import com.formssi.workflow.utils.DcwsAiUtils;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
@@ -40,11 +46,17 @@ import com.formssi.workflow.service.TaskSerialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 申请Service业务层处理
@@ -59,6 +71,12 @@ public class ApplyServiceImpl implements IApplyService {
     private final DcwsSysFileMapper dcwsSysFileMapper;
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
+    private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','seal_apply','claim_apply'" +
+            ",'data_apply','server_apply'}.contains(#event.key)";
+    private final ISysFileService sysFileService;
+
+    @Autowired
+    private MinioUtil minioUtil;
 
     /**
      * 查询申请
@@ -226,15 +244,15 @@ public class ApplyServiceImpl implements IApplyService {
      * 正常使用只需#processEvent.key=='leave1'
      * 示例为了方便则使用startsWith匹配了全部示例key
      *
-     * @param processEvent 参数
+     * @param event 参数
      */
-    @EventListener(condition = "#processEvent.key.contains('assets') || #processEvent.key.contains('seal')" )
-    public void processHandler(ProcessEvent processEvent) {
-        log.info("当前任务执行了{}", processEvent.toString());
-        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processEvent.getBusinessKey());
-        taskNodeData.setStatus(processEvent.getStatus());
-        if (processEvent.isSubmit()) {
-            taskNodeData.setStatus(processEvent.getStatus());
+    @EventListener(condition = keys)
+    public void processHandler(ProcessEvent event) {
+        log.info("当前任务执行了{}", event.toString());
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(event.getBusinessKey());
+        taskNodeData.setStatus(event.getStatus());
+        if (event.isSubmit()) {
+            taskNodeData.setStatus(event.getStatus());
         }
         taskNodeDataMapper.updateById(taskNodeData);
     }
@@ -247,16 +265,16 @@ public class ApplyServiceImpl implements IApplyService {
      * //执行业务逻辑
      * }
      *
-     * @param processTaskEvent 参数
+     * @param event 参数
      */
-    @EventListener(condition = "#processTaskEvent.key.contains('assets') || #processTaskEvent.key.contains('seal')")
-    public void processTaskHandler(ProcessTaskEvent processTaskEvent) {
-        log.info("当前任务执行了{}", processTaskEvent.toString());
-        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(processTaskEvent.getBusinessKey());
+    @EventListener(condition = keys)
+    public void processTaskHandler(ProcessTaskEvent event) {
+        log.info("当前任务执行了{}", event.toString());
+        TaskNodeData taskNodeData = taskNodeDataMapper.selectById(event.getBusinessKey());
         taskNodeData.setStatus(BusinessStatusEnum.WAITING.getStatus());
         TaskNodeDataBo taskNodeDataBo = new TaskNodeDataBo();
-        if (CollUtil.isNotEmpty(processTaskEvent.getVariables())) {
-            Map<String, Object> variables = processTaskEvent.getVariables();
+        if (CollUtil.isNotEmpty(event.getVariables())) {
+            Map<String, Object> variables = event.getVariables();
             Object entity = variables.get("entity");
             if(variables.get("entity")!=null){
                 try {
@@ -268,10 +286,10 @@ public class ApplyServiceImpl implements IApplyService {
             }
         }
         taskNodeData.setApplyDetail(taskNodeDataBo.getApplyDetail());
-        taskNodeData.setTaskId(processTaskEvent.getTaskId());
+        taskNodeData.setTaskId(event.getTaskId());
         taskNodeDataMapper.updateById(taskNodeData);
         QueryWrapper<TaskNodeDataHis> query = Wrappers.query();
-        query.eq("task_id",processTaskEvent.getTaskId());
+        query.eq("task_id",event.getTaskId());
         TaskNodeDataHisVo taskNodeDataHisVo = taskNodeDataHisMapper.selectVoOne(query);
         taskNodeDataBo.setTaskNodeDataId(taskNodeData.getId());
         if(taskNodeDataHisVo!=null){
@@ -279,7 +297,7 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setApplyDetail(taskNodeDataBo.getApplyDetail());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeDataBo.getId());
-            taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
+            taskNodeDataHis.setTaskId(event.getTaskId());
             taskNodeDataHis.setAssetUserId(taskNodeDataBo.getAssetUserId());
             taskNodeDataHisMapper.updateById(taskNodeDataHis);
         }else {
@@ -298,11 +316,38 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHis.setApplyType(taskNodeDataBo.getApplyType());
             taskNodeDataHis.setStatus(taskNodeData.getStatus());
             taskNodeDataHis.setTaskNodeDataId(taskNodeData.getId());
-            taskNodeDataHis.setTaskId(processTaskEvent.getTaskId());
+            taskNodeDataHis.setTaskId(event.getTaskId());
             taskNodeDataHis.setCheckTo(taskNodeData.getCheckTo());
             taskNodeDataHis.setApplyContentType(taskNodeData.getApplyContentType());
             taskNodeDataHisMapper.insert(taskNodeDataHis);
         }
 
+    }
+
+    @Override
+    public List<DcwsInvoiceVo> uploadInvoice(String fileIds) throws Exception {
+        List<String> str = Arrays.asList(fileIds.split(","));
+        List<SysFileVo> fileList = sysFileService.listByFileIds(str.stream().map(Long::parseLong).collect(Collectors.toList()));
+        List<DcwsInvoiceVo> list = new ArrayList<>();
+        for (SysFileVo sysFileVo : fileList){
+            DcwsInvoiceVo dcwsInvoiceVo = new DcwsInvoiceVo();
+            dcwsInvoiceVo.setFileId(sysFileVo.getFileId().toString());
+            dcwsInvoiceVo.setInvoiceName(sysFileVo.getFileName());
+            InputStream file = minioUtil.download("dcws-assets",sysFileVo.getFileName());
+            //获取发票信息
+            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,sysFileVo.getFileSuffix(),"请识别图中的纳税人识别号，价税合计小写(不带币种)，并输出为纳税人识别号重命名为:taxnum,价税合计小写重命名为:amount的标准json字符串");
+            if (StringUtils.isEmpty(invoiceInfo)){
+                throw new ServiceException("发票识别错误");
+            }
+            JSONObject invoice = new JSONObject(invoiceInfo.replace("```json","").replace("```",""));
+            if(Objects.isNull(invoice.get("taxnum")) || Objects.isNull(invoice.get("amount"))){
+                throw new ServiceException("发票识别错误");
+            }
+            dcwsInvoiceVo.setVerify("91440300754269153R".equals(invoice.get("taxnum")) ? "Y":"N");
+            dcwsInvoiceVo.setAmount(new BigDecimal(String.valueOf(invoice.get("amount"))));
+            //dcwsInvoiceVo.setInvoiceType((String) invoice.get("invoiceType"));
+            list.add(dcwsInvoiceVo);
+        }
+        return list;
     }
 }

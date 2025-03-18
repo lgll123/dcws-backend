@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 印章管理 服务实现
@@ -120,8 +121,11 @@ public class SealInfoServiceImpl implements ISealInfoService {
     }
 
     private LambdaQueryWrapper<SealInfo> buildQueryWrapper(SealInfoBo bo) {
+        Map<String, Object> params = bo.getParams();
         LambdaQueryWrapper<SealInfo> lqw = Wrappers.lambdaQuery();
-        lqw.eq(ObjectUtil.isNotNull(bo.getSealName()), SealInfo::getSealName, bo.getSealName());
+        lqw.like(ObjectUtil.isNotNull(bo.getSealName()), SealInfo::getSealName, bo.getSealName());
+        lqw.between(params.get("beginTime") != null && params.get("endTime") != null,
+                SealInfo::getCreateTime, params.get("beginTime"), params.get("endTime"));
         lqw.orderByAsc(SealInfo::getSealSort);
         return lqw;
     }

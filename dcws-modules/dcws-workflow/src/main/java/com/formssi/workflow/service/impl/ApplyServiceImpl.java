@@ -13,11 +13,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.domain.event.ProcessEvent;
 import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.service.WorkflowService;
+import com.formssi.common.minio.util.MinioUtil;
 import com.formssi.system.domain.vo.SealJsonVo;
+import com.formssi.system.domain.vo.SysFileVo;
+import com.formssi.system.service.ISysFileService;
 import com.formssi.workflow.domain.DcwsSysFile;
+import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
 import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
+import com.formssi.workflow.utils.DcwsAiUtils;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
@@ -40,11 +46,17 @@ import com.formssi.workflow.service.TaskSerialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 申请Service业务层处理
@@ -59,6 +71,10 @@ public class ApplyServiceImpl implements IApplyService {
     private final DcwsSysFileMapper dcwsSysFileMapper;
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
+    private final ISysFileService sysFileService;
+
+    @Autowired
+    private MinioUtil minioUtil;
 
     /**
      * 查询申请
@@ -304,5 +320,32 @@ public class ApplyServiceImpl implements IApplyService {
             taskNodeDataHisMapper.insert(taskNodeDataHis);
         }
 
+    }
+
+    @Override
+    public List<DcwsInvoiceVo> uploadInvoice(String fileIds) throws Exception {
+        List<String> str = Arrays.asList(fileIds.split(","));
+        List<SysFileVo> fileList = sysFileService.listByFileIds(str.stream().map(Long::parseLong).collect(Collectors.toList()));
+        List<DcwsInvoiceVo> list = new ArrayList<>();
+        for (SysFileVo sysFileVo : fileList){
+            DcwsInvoiceVo dcwsInvoiceVo = new DcwsInvoiceVo();
+            dcwsInvoiceVo.setFileId(sysFileVo.getFileId().toString());
+            dcwsInvoiceVo.setInvoiceName(sysFileVo.getFileName());
+            InputStream file = minioUtil.download("dcws-assets",sysFileVo.getFileName());
+            //获取发票信息
+            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,sysFileVo.getFileSuffix(),"请识别图中的纳税人识别号，价税合计小写(不带币种)，并输出为纳税人识别号重命名为:taxnum,价税合计小写重命名为:amount的标准json字符串");
+            if (StringUtils.isEmpty(invoiceInfo)){
+                throw new ServiceException("发票识别错误");
+            }
+            JSONObject invoice = new JSONObject(invoiceInfo.replace("```json","").replace("```",""));
+            if(Objects.isNull(invoice.get("taxnum")) || Objects.isNull(invoice.get("amount"))){
+                throw new ServiceException("发票识别错误");
+            }
+            dcwsInvoiceVo.setVerify("91440300754269153R".equals(invoice.get("taxnum")) ? "Y":"N");
+            dcwsInvoiceVo.setAmount(new BigDecimal(String.valueOf(invoice.get("amount"))));
+            //dcwsInvoiceVo.setInvoiceType((String) invoice.get("invoiceType"));
+            list.add(dcwsInvoiceVo);
+        }
+        return list;
     }
 }

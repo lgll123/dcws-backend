@@ -374,4 +374,10 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
         return baseMapper.deleteById(deptId);
     }
 
+    @Override
+    public List<SysDeptVo> selectDeptByParentDeptId(Long parentDeptId) {
+        return baseMapper.selectDeptList(new LambdaQueryWrapper<SysDept>()
+                .eq(SysDept::getParentId, parentDeptId).orderByAsc(SysDept::getOrderNum));
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
-import com.formssi.workflow.domain.DcwsBaseEntity;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.workflow.domain.TaskNodeDataHis;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = TaskNodeDataHis.class)
-public class TaskNodeDataHisVo extends DcwsBaseEntity {
+public class TaskNodeDataHisVo extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

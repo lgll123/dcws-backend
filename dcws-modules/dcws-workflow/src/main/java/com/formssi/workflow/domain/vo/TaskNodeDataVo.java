@@ -2,9 +2,9 @@ package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.system.domain.vo.SealInfoVo;
 import com.formssi.system.domain.vo.SealJsonVo;
-import com.formssi.workflow.domain.DcwsBaseEntity;
 import com.formssi.workflow.domain.TaskNodeData;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -16,7 +16,7 @@ import java.util.Date;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = TaskNodeData.class)
-public class TaskNodeDataVo extends DcwsBaseEntity {
+public class TaskNodeDataVo extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

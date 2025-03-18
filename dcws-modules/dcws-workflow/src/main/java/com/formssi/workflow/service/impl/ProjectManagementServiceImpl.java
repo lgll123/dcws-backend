@@ -11,6 +11,7 @@ import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
 import com.formssi.common.core.utils.StringUtils;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.common.tenant.helper.TenantHelper;
@@ -59,7 +60,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
         if(!Objects.isNull(bo.getProjectStatus())){
             lqw.eq(DcwsProject::getProjectStatus, bo.getProjectStatus());
         }
-        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
+        lqw.orderByDesc(BaseEntity::getCreateTime);
         return dcwsProjectMapper.selectVoList(lqw);
     }
 
@@ -70,7 +71,7 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
     public List<DcwsProjectTaskVo> queryProjectTaskList(DcwsProjectTaskBo bo) {
         LambdaQueryWrapper<DcwsProjectTask> lqw = Wrappers.lambdaQuery();
         lqw.eq(DcwsProjectTask::getProjectId, bo.getProjectId());
-        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
+        lqw.orderByDesc(BaseEntity::getCreateTime);
         return dcwsProjectTaskMapper.selectVoList(lqw);
     }
 

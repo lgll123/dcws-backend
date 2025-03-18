@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StringUtils;
@@ -132,7 +133,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
 
     private LambdaQueryWrapper<DcwsNormalTask> buildQueryWrapper(DcwsNormalTaskBo bo) {
         LambdaQueryWrapper<DcwsNormalTask> lqw = Wrappers.lambdaQuery();
-        lqw.orderByDesc(DcwsBaseEntity::getCreateTime);
+        lqw.orderByDesc(BaseEntity::getCreateTime);
         return lqw;
     }
 

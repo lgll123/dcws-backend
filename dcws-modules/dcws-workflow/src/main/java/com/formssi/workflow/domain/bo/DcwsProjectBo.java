@@ -1,7 +1,7 @@
 package com.formssi.workflow.domain.bo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.formssi.workflow.domain.DcwsBaseEntity;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.workflow.domain.DcwsProject;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DcwsProject.class, reverseConvertGenerate = false)
-public class DcwsProjectBo extends DcwsBaseEntity {
+public class DcwsProjectBo extends BaseEntity {
 
     /**
      * 项目id

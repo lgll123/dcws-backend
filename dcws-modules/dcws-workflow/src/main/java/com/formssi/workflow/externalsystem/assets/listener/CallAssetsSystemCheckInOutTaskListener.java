@@ -4,13 +4,10 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.constant.HttpStatus;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
-import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
 import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.service.IAssetsCheckOutRecordService;
@@ -24,8 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
@@ -45,17 +40,17 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             Object entity = variables.get("entity");
             if (ObjectUtil.isEmpty(entity)) return;
             ObjectMapper mapper = new ObjectMapper();
-            TaskNodeDataBo taskNodeDataBo = mapper.readValue(JSONUtil.toJsonStr(entity), TaskNodeDataBo.class);
-            if (ObjectUtil.isEmpty(taskNodeDataBo)) return;
-            Map<String ,Object> map = mapper.readValue(taskNodeDataBo.getApplyDetail(), Map.class);
+            Map<String, Object> taskNodeData = (Map<String, Object>)mapper.readValue(JSONUtil.toJsonStr(entity), Map.class);
+            if (ObjectUtil.isEmpty(taskNodeData)) return;
+            Map<String ,Object> map = mapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
                 //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
                 ArrayList<Map<String, Object>> hardware = (ArrayList<Map<String, Object>>) map.get("hardware");
                 ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) map.get("accessories");
                 ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) map.get("consumables");
                 // 资产
-                processHardwareAssets(taskNodeDataBo, hardware);
+                processHardwareAssets(taskNodeData, hardware);
                 // 附属品
-                processAccessories(taskNodeDataBo,accessories);
+                processAccessories(taskNodeData,accessories);
 
         } catch (Exception e) {
             // 记录物料checkOut 记录
@@ -74,7 +69,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         }
     }
     // 处理硬件资产
-    private void processHardwareAssets(TaskNodeDataBo taskNode, List<Map<String, Object>> hardwareList) {
+    private void processHardwareAssets(Map<String, Object> taskNode, List<Map<String, Object>> hardwareList) {
         if (CollectionUtils.isEmpty(hardwareList)) return;
         for (int i = 0; i < hardwareList.size(); i++) {
             DcwsAssetsCheckOutBo recordBo = createBaseRecord(taskNode, "hardware");
@@ -84,8 +79,8 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             String assetUserId = null;
             String name = null;//领用人名称
             if (ObjectUtil.isEmpty(recipient) || StrUtil.isBlank(Convert.toStr(recipient.get("assetUserId")))) {
-                assetUserId = Convert.toStr(taskNode.getApplicantId());
-                name = taskNode.getApplicant();
+                assetUserId = Convert.toStr(taskNode.get("applicantId"));
+                name = Convert.toStr(taskNode.get("applicant"));
             }else {
                 assetUserId = Convert.toStr(recipient.get("assetUserId"));//领用人
                 name = Convert.toStr(recipient.get("name"));
@@ -96,7 +91,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             if (!processHardwareCheckIn(assetId, assetUserId, hardware, recordBo)) continue;
 
             // 资产借出操作
-            processHardwareCheckOut(assetId, assetUserId, taskNode.getApplicant(),
+            processHardwareCheckOut(assetId, assetUserId, Convert.toStr(taskNode.get("applicant")),
                     name, hardware, recordBo);
         }
     }
@@ -171,10 +166,10 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
     }
 
     // 处理附属品
-    private void processAccessories(TaskNodeDataBo taskNode, List<Map<String, Object>> accessories){
+    private void processAccessories(Map<String, Object> taskNode, List<Map<String, Object>> accessories){
         if (CollectionUtils.isEmpty(accessories)) return;
-        String assetUserId = Convert.toStr(taskNode.getAssetUserId());//申请人资产系统ID
-        String applicant = taskNode.getApplicant();
+        String assetUserId = Convert.toStr(taskNode.get("assetUserId"));//申请人资产系统ID
+        String applicant = Convert.toStr(taskNode.get("applicant"));
         for (int j = 0; j < accessories.size(); j++) {
             DcwsAssetsCheckOutBo recordBo = createBaseRecord(taskNode, "accessories");
             Map<String, Object> accessory = accessories.get(j);
@@ -318,9 +313,9 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         saveCheckOutRecord(bo);
     }
     // 创建基础记录对象
-    private DcwsAssetsCheckOutBo createBaseRecord(TaskNodeDataBo taskNode, String assetType) {
+    private DcwsAssetsCheckOutBo createBaseRecord(Map<String, Object> taskNode, String assetType) {
         DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
-        bo.setTaskNodeDataId(taskNode.getId());
+        bo.setTaskNodeDataId(Convert.toStr(taskNode.get("id")));
         bo.setAssetsType(assetType);
         bo.setCheckOutIn("2");
         bo.setStatus("1");
@@ -337,14 +332,6 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         } catch (Exception e) {
             log.error("物料申请借出记录新增失败", e);
         }
-    }
-    // 数据解析方法
-    private TaskNodeDataBo parseTaskNodeData(Map<String, Object> variables) throws JsonProcessingException {
-        Object entity = variables.get("entity");
-        if (entity == null) return null;
-
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(JSON.toJSONString(entity), TaskNodeDataBo.class);
     }
 
     // ApiCallException异常处理
@@ -399,7 +386,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
 
 
     // 处理消耗品
-    private void processConsumables(TaskNodeDataBo taskNode, List<Map<String, Object>> consumables){
+    /*private void processConsumables(TaskNodeDataBo taskNode, List<Map<String, Object>> consumables){
         if (CollectionUtils.isEmpty(consumables)) return;
         String assetUserId = Convert.toStr(taskNode.getAssetUserId());//申请人资产系统ID
         String applicant = taskNode.getApplicant();
@@ -561,6 +548,6 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         bo.setMessage("附属品借出成功 " + "领用人：" + applicant + " 变更到：" + recipient.get("name"));
         bo.setAssetsDetail(JSONUtil.toJsonStr(consumable));
         saveCheckOutRecord(bo);
-    }
+    }*/
 
 }

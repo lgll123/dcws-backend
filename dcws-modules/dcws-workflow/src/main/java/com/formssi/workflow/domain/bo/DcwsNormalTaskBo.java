@@ -1,7 +1,7 @@
 package com.formssi.workflow.domain.bo;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.formssi.workflow.domain.DcwsBaseEntity;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.workflow.domain.DcwsNormalTask;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
@@ -10,7 +10,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DcwsNormalTask.class, reverseConvertGenerate = false)
-public class DcwsNormalTaskBo extends DcwsBaseEntity {
+public class DcwsNormalTaskBo extends BaseEntity {
 
     /**
      * 任务ID

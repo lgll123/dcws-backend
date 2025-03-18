@@ -1,12 +1,13 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.CompleteTaskBo;
-import com.formssi.workflow.domain.bo.DcwsCompleteTaskBo;
+import com.formssi.workflow.domain.bo.StartProcessBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.externalsystem.assets.servicewrapper.IActTaskServiceWrapper;
@@ -17,8 +18,11 @@ import org.flowable.engine.delegate.ExecutionListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
-import com.formssi.workflow.domain.bo.StartProcessBo;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 采购任务启动
@@ -31,8 +35,8 @@ public class PurchaseTaskStartExeListener implements ExecutionListener {
     @Override
     public void notify(DelegateExecution delegateTask) {
         Map<String, Object> variables = delegateTask.getVariables();
-        TaskNodeDataBo taskNodeDataBo = null;
-        HashMap<String,Object> hashMap =null;
+        Map<String, Object> taskNodeData = null;
+        Map<String,Object> map =null;
         Map<String, Object> purchaseDetail =null;
         String materialInfoJson = null;
         try {
@@ -40,9 +44,9 @@ public class PurchaseTaskStartExeListener implements ExecutionListener {
             if(variables.get("entity")!=null) {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    taskNodeDataBo = objectMapper.readValue(JSON.toJSONString(entity), TaskNodeDataBo.class);
-                    hashMap = objectMapper.readValue(taskNodeDataBo.getApplyDetail(), HashMap.class);
-                    purchaseDetail = (Map<String, Object>) hashMap.get("purchaseDetail");
+                    taskNodeData = ((Map<String, Object>)objectMapper.readValue(JSON.toJSONString(entity), Map.class));
+                    map = objectMapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
+                    purchaseDetail = (Map<String, Object>) map.get("purchaseDetail");
                     materialInfoJson = JSON.toJSONString(purchaseDetail.get("materialInfo"));
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);

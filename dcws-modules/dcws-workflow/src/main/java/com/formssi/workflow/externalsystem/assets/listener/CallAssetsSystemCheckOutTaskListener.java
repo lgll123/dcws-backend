@@ -9,7 +9,6 @@ import com.formssi.common.core.constant.HttpStatus;
 import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
-import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
 import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.service.IAssetsCheckOutRecordService;
@@ -23,7 +22,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.ASSETS_STATUS_11;
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.ASSETS_STATUS_12;
 
 @Slf4j
@@ -39,17 +37,17 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             Object entity = variables.get("entity");
             if (ObjectUtil.isEmpty(entity)) return;
             ObjectMapper mapper = new ObjectMapper();
-            TaskNodeDataBo taskNodeDataBo = mapper.readValue(JSONUtil.toJsonStr(entity), TaskNodeDataBo.class);
-            if (ObjectUtil.isEmpty(taskNodeDataBo)) return;
-            Map<String ,Object> map = mapper.readValue(taskNodeDataBo.getApplyDetail(), Map.class);
+            Map<String, Object> taskNodeData = (Map<String, Object>)mapper.readValue(JSONUtil.toJsonStr(entity), Map.class);
+            if (ObjectUtil.isEmpty(taskNodeData)) return;
+            Map<String ,Object> map = mapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
             //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
             ArrayList<Map<String, Object>> hardware = (ArrayList<Map<String, Object>>) map.get("hardware");
             ArrayList<Map<String, Object>> licenses = (ArrayList<Map<String, Object>>) map.get("licenses");
             ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) map.get("accessories");
             ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) map.get("components");
             ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) map.get("consumables");
-            Long assetUserId = taskNodeDataBo.getAssetUserId();
-            String taskNodeDataId = taskNodeDataBo.getId();
+            Long assetUserId = Convert.toLong(taskNodeData.get("assetUserId"));
+            String taskNodeDataId = Convert.toStr(taskNodeData.get("id"));
             // 资产-hardware 借出
             if (!CollectionUtil.isEmpty(hardware)) {
                 Map<String, String> requestBodyMap = new HashMap<>();

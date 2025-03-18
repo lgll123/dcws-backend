@@ -1,8 +1,8 @@
 package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.workflow.domain.DcwsAssetsCheckOut;
-import com.formssi.workflow.domain.DcwsBaseEntity;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
@@ -11,7 +11,7 @@ import java.io.Serial;
 @Data
 @ExcelIgnoreUnannotated
 @AutoMapper(target = DcwsAssetsCheckOut.class)
-public class DcwsAssetsCheckOutVo extends DcwsBaseEntity {
+public class DcwsAssetsCheckOutVo extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

@@ -138,4 +138,12 @@ public interface ISysDeptService {
      * @return 结果
      */
     int deleteDeptById(Long deptId);
+
+    /**
+     * 根据父部门ID获取部门列表
+     *
+     * @param parentDeptId
+     * @return 部门列表信息
+     */
+    List<SysDeptVo> selectDeptByParentDeptId(Long parentDeptId);
 }

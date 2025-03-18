@@ -137,4 +137,14 @@ public class SysDeptController extends BaseController {
         return R.ok(deptService.selectDeptByIds(deptIds == null ? null : List.of(deptIds)));
     }
 
+    /**
+     * 根据父部门ID获取部门列表
+     *
+     * @param parentDeptId
+     */
+    @GetMapping("/optionSelectByParent")
+    public R<List<SysDeptVo>> optionSelectByParent(@RequestParam(value = "parentDeptId") Long parentDeptId) {
+        return R.ok(deptService.selectDeptByParentDeptId(parentDeptId));
+    }
+
 }

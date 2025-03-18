@@ -15,6 +15,7 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
+import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
 import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
@@ -23,9 +24,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -144,4 +148,14 @@ public class TaskNodeDataController extends BaseController {
         List<DcwsSysFileVo> applyPDFUrl = applyService.getApplyPDF(id);
         return R.ok(ObjectUtil.isEmpty(applyPDFUrl)?null:applyPDFUrl.get(0));
     }
+
+    /**
+     * 上传发票并识别发票信息
+     *
+     */
+    @GetMapping("/uploadInvoice")
+    public R<List<DcwsInvoiceVo>> uploadInvoice(@RequestParam(value = "fileIds") String fileIds) throws Exception {
+        return R.ok(applyService.uploadInvoice(fileIds));
+    }
+
 }

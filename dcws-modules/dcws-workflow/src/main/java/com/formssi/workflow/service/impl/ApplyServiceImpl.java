@@ -13,11 +13,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.domain.event.ProcessEvent;
 import com.formssi.common.core.domain.event.ProcessTaskEvent;
 import com.formssi.common.core.enums.BusinessStatusEnum;
+import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.service.WorkflowService;
+import com.formssi.common.minio.util.MinioUtil;
 import com.formssi.system.domain.vo.SealJsonVo;
+import com.formssi.system.domain.vo.SysFileVo;
+import com.formssi.system.service.ISysFileService;
 import com.formssi.workflow.domain.DcwsSysFile;
+import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
 import com.formssi.workflow.domain.vo.DcwsSysFileVo;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
+import com.formssi.workflow.utils.DcwsAiUtils;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StreamUtils;
@@ -40,11 +46,17 @@ import com.formssi.workflow.service.TaskSerialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 申请Service业务层处理
@@ -61,6 +73,10 @@ public class ApplyServiceImpl implements IApplyService {
     private final TaskSerialService taskSerialService;
     private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','seal_apply','claim_apply'" +
             ",'data_apply','server_apply'}";
+    private final ISysFileService sysFileService;
+
+    @Autowired
+    private MinioUtil minioUtil;
 
     /**
      * 查询申请

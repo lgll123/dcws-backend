@@ -1,7 +1,5 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
-import cn.hutool.core.convert.Convert;
-import com.formssi.common.core.service.DeptService;
 import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.system.service.ISysDeptService;

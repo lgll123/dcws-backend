@@ -1,14 +1,9 @@
 package com.formssi.system.domain.bo;
 
-import com.formssi.common.core.constant.UserConstants;
-import com.formssi.common.core.xss.Xss;
+
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.system.domain.SealInfo;
-import com.formssi.system.domain.SysUser;
 import io.github.linpeilie.annotations.AutoMapper;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -57,29 +52,29 @@ public class SealInfoBo extends BaseEntity {
      */
     private String remark;
 
-    /**
-     * 创建部门
-     */
-    private Long createDept;
-
-    /**
-     * 创建者
-     */
-    private Long createBy;
-
-    /**
-     * 创建时间
-     */
-    private Date createTime;
-
-    /**
-     * 更新者
-     */
-    private Long updateBy;
-
-    /**
-     * 更新时间
-     */
-    private Date updateTime;
+//    /**
+//     * 创建部门
+//     */
+//    private Long createDept;
+//
+//    /**
+//     * 创建者
+//     */
+//    private Long createBy;
+//
+//    /**
+//     * 创建时间
+//     */
+//    private Date createTime;
+//
+//    /**
+//     * 更新者
+//     */
+//    private Long updateBy;
+//
+//    /**
+//     * 更新时间
+//     */
+//    private Date updateTime;
 
 }

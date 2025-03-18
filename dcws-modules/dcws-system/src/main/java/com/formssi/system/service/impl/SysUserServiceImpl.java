@@ -797,6 +797,11 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         }
         // 添加部门领导
         if(!StringUtils.isEmpty(userDeptLeader)){
+            String userIdStr = String.valueOf(userId);
+            //用户本身是部门领导，则不用添加
+            if(userIdStr.equals(userDeptLeader)){
+                return leaders;
+            }
             SysUserVo departmentLeader = baseMapper.selectVoById(userDeptLeader);
             if (departmentLeader != null) {
                 leaders.add(departmentLeader);

@@ -25,9 +25,11 @@ import com.formssi.common.mybatis.core.domain.BaseEntity;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.satoken.utils.LoginHelper;
+import com.formssi.system.domain.SealInfo;
 import com.formssi.system.domain.vo.SealJsonVo;
 import com.formssi.system.domain.vo.SysFileVo;
 import com.formssi.system.service.ISysFileService;
+import com.formssi.workflow.common.enums.ApplyTypeEnum;
 import com.formssi.workflow.domain.DcwsSysFile;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
@@ -83,7 +85,32 @@ public class ApplyServiceImpl implements IApplyService {
      */
     @Override
     public TaskNodeDataVo queryById(String id) {
-        return taskNodeDataMapper.selectVoById(id);
+        TaskNodeDataVo taskNodeDataVo = taskNodeDataMapper.selectVoById(id);
+        if(ApplyTypeEnum.SEAL.getCode().equals(taskNodeDataVo.getApplyType())){
+            try {
+                //如果是用印申请，则给出当前登录人需要使用哪些印章
+                ObjectMapper mapper = new ObjectMapper();
+                String data = taskNodeDataVo.getApplyDetail();
+                List<SealJsonVo> list = mapper.readValue(data, new TypeReference<>() {});
+                List<SealInfo> sealList = new ArrayList<>();
+                list.forEach(e ->{
+                    sealList.addAll(e.getSealInfoList());
+                });
+                String userId = String.valueOf(LoginHelper.getUserId());
+                String sealNameStr = sealList.stream()
+                        .filter(e -> userId.equals(String.valueOf(e.getSealUser())))
+                        .map(SealInfo::getSealName)
+                        .distinct()
+                        .collect(Collectors.joining(","));
+                SealJsonVo sealJsonVo = new SealJsonVo();
+                sealJsonVo.setSealNameStr(sealNameStr);
+                taskNodeDataVo.setSealJsonVo(sealJsonVo);
+                return taskNodeDataVo;
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return taskNodeDataVo;
     }
 
     /**
@@ -115,7 +142,7 @@ public class ApplyServiceImpl implements IApplyService {
         ObjectMapper mapper = new ObjectMapper();
         //查询已完成的
         bo.setStatus(BusinessStatusEnum.FINISH.getStatus());
-        bo.setApplyType("22");
+        bo.setApplyType(ApplyTypeEnum.SEAL.getCode());
         LambdaQueryWrapper<TaskNodeData> lqw = buildQueryWrapper2(bo);
         List<TaskNodeDataVo> sealList = taskNodeDataMapper.selectVoList(lqw);
         if(!CollectionUtil.isEmpty(sealList)){

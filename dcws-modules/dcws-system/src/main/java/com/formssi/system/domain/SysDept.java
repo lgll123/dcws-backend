@@ -83,4 +83,14 @@ public class SysDept extends TenantEntity {
      */
     private String ancestors;
 
+    /**
+     * 是否技术部门
+     */
+    private String isTecDept;
+
+    /**
+     * 公司类型
+     */
+    private String companyType;
+
 }

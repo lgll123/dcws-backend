@@ -1,13 +1,16 @@
 package com.formssi.system.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.formssi.system.domain.DcwsFinanceApproval;
+import com.formssi.system.domain.SysUser;
+import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 @Data
-@ExcelIgnoreUnannotated
+@AutoMapper(target = DcwsFinanceApproval.class)
 public class DcwsFinanceApprovalVo implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;

@@ -105,7 +105,6 @@ public class ApplyServiceImpl implements IApplyService {
                 SealJsonVo sealJsonVo = new SealJsonVo();
                 sealJsonVo.setSealNameStr(sealNameStr);
                 taskNodeDataVo.setSealJsonVo(sealJsonVo);
-                return taskNodeDataVo;
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }

@@ -21,11 +21,9 @@
       color: #000;
       width: 595px;
       margin: 0 auto;
-      font-weight: 600;
     }
     .basic-info table {
       width: 100%;
-      font-size: 9px;
       padding-left: 43px;
       margin-top: 10px;
       border-collapse: collapse;
@@ -35,34 +33,30 @@
     .basic-info table td {
       text-align: left;
     }
-    .basic-info table .heavy-text th {
-      /* font-weight: 500; */
-    }
     .basic-info .light-text td {
       padding: 5px 0 10px 0;
+    }
+    .title-divider th {
+      padding-bottom: 7px;
+      border-bottom: 1px solid #000;
+    }
+    .table-apply-info {
+      font-size: 11px;
       font-weight: 400;
     }
-    /*.title-divider {
-      border-bottom: 1px solid #000;
-    }*/
-    .title-divider th {
-      /*padding-bottom: 10px;*/
-      border-bottom: 1px solid #000;
+    .table-apply-title {
+      font-size: 14px;
+      font-weight: 900;
+      margin-top: 10px;
     }
     .apply-info .light-text td,
     .clear-info .light-text td {
       padding-top: 8px;
     }
-    .apply-info table th,
-    .clear-info table th {
-      font-weight: 400!important;
-    }
     .flow-chat .process-line .process-line__item {
       position: relative;
       display: block;
       padding-bottom: 20px;
-      font-size: 8px;
-      font-weight: 400;
     }
 
     /* 时间轴容器
@@ -76,7 +70,7 @@
       top: 5px;
       left: -15px;
       width: 2px;
-      height: 66px;
+      height: 80px;
       background-color: #666;
     }
     .flow-chat .circle-container {
@@ -104,55 +98,55 @@
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 18px; margin-right: 16px;">申请物料清单</span>
-        <span style="font-size: 9px; " th:text="${data.id}"></span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 900;">物料申请清单</span>
+        <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
     <!--<img th:src="@{/templates/seal.png}" alt="" width="80">-->
 </div>
 <!-- 基础信息 -->
 <div class="basic-info">
-    <div style="font-size: 10px;">基础信息</div>
+    <div style="font-size: 14px;font-weight: 900;">基础信息</div>
     <div style="padding-left: 43px">
-        <table class="table-right-align">
-            <tr class="heavy-text">
+        <table>
+            <tr style="font-size: 13px;font-weight: 900;">
                 <th>申请部门</th>
                 <th>申请人</th>
                 <th>申请日期</th>
                 <th>当前环节</th>
             </tr>
-            <tr class="light-text">
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
                 <td th:text="${data.applyDept}"></td>
                 <td th:text="${data.applicant}"></td>
                 <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
                 <td th:text="${data.status}"></td>
             </tr>
-            <tr class="heavy-text">
+            <tr style="font-size: 13px;font-weight: 900;">
                 <th>需求日期</th>
                 <th>预计使用人</th>
             </tr>
-            <tr class="light-text">
-                <td th:text="${data.requiredDateType}">2025-03-06</td>
-                <td th:text="${data.checkTo}">管理员</td>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.requiredDateType}"></td>
+                <td th:text="${data.checkTo}"></td>
             </tr>
         </table>
-        <div class="table-right-align" style="font-size: 9px;">
+        <div>
             <div>
-                <span style="margin-right: 15px; display: inline-block; width: 40px;">申请原因</span><span class="light-text" th:text="${data.applyReson}" style="font-weight: 400;"></span>
+                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">申请原因</span><span class="light-text" th:text="${data.applyReson}" style="font-size: 11px;font-weight: 400;"></span>
             </div>
             <div style="margin-top: 10px;">
-                <span style="margin-right: 15px; display: inline-block; width: 40px;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="font-weight: 400;"></span>
+                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="font-size: 11px;font-weight: 400;"></span>
             </div>
         </div>
     </div>
 </div>
 <!-- 申请物料清单 -->
 <div class="basic-info apply-info" style="margin-top: 20px;" th:if="${data.customApplyDetails != null and not #lists.isEmpty(data.customApplyDetails)}">
-    <div style="font-size: 10px;">申请物料清单</div>
+    <div  style="font-size: 14px;font-weight: 900;">物料申请清单</div>
     <div style="padding-left: 43px">
-        <table class="table-right-align" style="font-size: 9px;">
+        <table class="table-apply-info">
             <thead class="title-divider">
-            <tr class="heavy-text">
+            <tr>
                 <th>规格</th>
                 <th style="text-align: right;">类别</th>
                 <th style="text-align: right;">单位</th>
@@ -172,14 +166,14 @@
 </div>
 <!-- 澄清物料清单 -->
 <div class="basic-info clear-info" style="margin-top: 20px;">
-    <div style="font-size: 10px;">澄清物料清单</div>
-    <div style="padding-left: 23px; margin-top: 10px; font-size: 10px;">已有物料</div>
+    <div  style="font-size: 14px;font-weight: 900;">澄清物料清单</div>
+    <div style="padding-left: 23px; margin-top: 10px; font-size: 14px;font-weight: 900;">已有物料</div>
     <!-- IT资产清单 -->
     <div style="padding-left: 43px"  th:if="${data.hardware != null and not #lists.isEmpty(data.hardware)}">
-        <div style="font-size: 9px; margin-top: 10px;">IT资产清单</div>
-        <table class="table-right-align" style="font-size: 9px;">
+        <div class="table-apply-title">IT资产清单</div>
+        <table class="table-apply-info">
             <thead class="title-divider">
-            <tr class="heavy-text">
+            <tr>
                 <th>资产名称</th>
                 <th style="text-align: right;">资产标签</th>
                 <th style="text-align: right;">序列号</th>
@@ -200,10 +194,10 @@
     </div>
     <!-- 许可证清单 -->
     <div style="padding-left: 43px" th:if="${data.licenses != null and not #lists.isEmpty(data.licenses)}">
-        <div style="font-size: 9px; margin-top: 10px;">许可证清单</div>
-        <table class="table-right-align" style="font-size: 9px;">
+        <div class="table-apply-title">许可证清单</div>
+        <table class="table-apply-info">
             <thead class="title-divider">
-            <tr class="heavy-text">
+            <tr>
                 <th>名称</th>
                 <th style="text-align: right;">产品序列号</th>
                 <th style="text-align: right;">到期日期</th>
@@ -224,10 +218,10 @@
     </div>
     <!-- 附属品清单 -->
     <div style="padding-left: 43px"  th:if="${data.accessories != null and not #lists.isEmpty(data.accessories)}">
-        <div style="font-size: 9px; margin-top: 10px;">附属品清单</div>
-        <table class="table-right-align" style="font-size: 9px;">
+        <div class="table-apply-title">附属品清单</div>
+        <table class="table-apply-info">
             <thead class="title-divider">
-            <tr class="heavy-text">
+            <tr>
                 <th>名称</th>
                 <th style="text-align: right;">配件类别</th>
                 <th style="text-align: right;">型号</th>
@@ -248,10 +242,10 @@
     </div>
     <!-- 组件清单 -->
     <div style="padding-left: 43px"  th:if="${data.components != null and not #lists.isEmpty(data.components)}">
-        <div style="font-size: 9px; margin-top: 10px;">组件清单</div>
-        <table class="table-right-align" style="font-size: 9px;">
+        <div class="table-apply-title">组件清单</div>
+        <table class="table-apply-info">
             <thead class="title-divider">
-            <tr class="heavy-text">
+            <tr>
                 <th>名称</th>
                 <th style="text-align: right;">配件类别</th>
                 <th style="text-align: right;">型号</th>
@@ -274,10 +268,10 @@
     </div>
     <!-- 消耗品清单 -->
     <div style="padding-left: 43px"  th:if="${data.consumables != null and not #lists.isEmpty(data.consumables)}">
-        <div style="font-size: 9px; margin-top: 10px;">消耗品清单</div>
-        <table class="table-right-align" style="font-size: 9px;">
+        <div class="table-apply-title">消耗品清单</div>
+        <table class="table-apply-info">
             <thead class="title-divider">
-            <tr class="heavy-text">
+            <tr>
                 <th>名称</th>
                 <th style="text-align: right;">配件类别</th>
                 <th style="text-align: right;">型号</th>
@@ -298,23 +292,23 @@
     </div>
     <!-- 是否需采购 -->
     <div  th:if="${data.purchase == '1' or data.purchase == '2'}">
-        <div style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px; font-size: 10px;">采购详情</div>
-        <div style="padding-left: 43px; font-size: 8px;">
+        <div style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px; font-size: 14px;font-weight: 900;">采购详情</div>
+        <div style="padding-left: 43px; font-size: 11px;font-weight: 400;">
             <div style="overflow: hidden;padding-right: 43px;">
                 <span style="float: left">是否需采购</span>
-                <span  style="float: right;" class="light-text" th:text="${data.purchaseTrans}"></span>
+                <span  style="float: right;font-weight: 900;" class="light-text" th:text="${data.purchaseTrans}"></span>
             </div>
             <div style="overflow: hidden; margin-top: 10px;padding-right: 43px;">
                 <span style="float: left">采购金额</span>
-                <span style="float: right; "  th:text="${data.purchaseDetail.purchaseAmount}"></span>
+                <span style="float: right;font-weight: 900; "  th:text="${data.purchaseDetail.purchaseAmount}"></span>
             </div>
         </div>
         <!-- 待采购物料 -->
-        <div style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px; font-size: 10px;">待采购物料</div>
+        <div class="table-apply-title" style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px;">待采购物料</div>
         <div style="padding-left: 43px; font-size: 8px;">
-            <table class="table-right-align" style="font-size: 9px;">
+            <table class="table-apply-info">
                 <thead class="title-divider">
-                <tr class="heavy-text">
+                <tr>
                     <th style="width: 60%;">规格</th>
                     <th style="text-align: right;">类别</th>
                     <th style="text-align: right;">单位</th>
@@ -333,14 +327,14 @@
         </div>
     </div>
     <div class="flow-chat" style="margin-top: 20px;">
-        <div style="font-size: 10px; margin-bottom: 12px">审批记录</div>
+        <div style="font-size: 14px;font-weight: 900; margin-bottom: 12px">审批记录</div>
         <div class="process-line" style="padding-left: 58px;"  >
 
             <div class="process-line__item" th:each="record : ${data.historyRecords}" >
                 <div class="title">
-                    <div class="info">
+                    <div class="info" style="font-size: 11px;font-weight: 400;">
                         <div>
-                            <span style="font-size: 9px; margin-right: 12px;" th:text="${#dates.format(record.endTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                            <span style="margin-right: 12px;" th:text="${#dates.format(record.endTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
                             <span class="status-tag" style="margin-right: 12px;" th:text="${record.name}"></span>
                             <span class="status-tag" th:text="${record.statusName}"></span>
                         </div>

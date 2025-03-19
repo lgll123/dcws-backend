@@ -40,6 +40,11 @@ public class SealJsonVo implements Serializable {
     private String sealName;
 
     /**
+     * 当前用户需要使用的印章
+     */
+    private String sealNameStr;
+
+    /**
      * 用印排序
      */
     private int sealSort;

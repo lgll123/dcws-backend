@@ -1,5 +1,6 @@
 package com.formssi.system.domain.bo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import io.github.linpeilie.annotations.AutoMapper;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -72,5 +73,15 @@ public class SysDeptBo extends BaseEntity {
      * 部门状态（0正常 1停用）
      */
     private String status;
+
+    /**
+     * 是否技术部门
+     */
+    private String isTecDept;
+
+    /**
+     * 公司类型
+     */
+    private String companyType;
 
 }

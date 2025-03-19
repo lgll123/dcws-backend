@@ -102,4 +102,15 @@ public class SysDeptVo implements Serializable {
     @ExcelProperty(value = "创建时间")
     private Date createTime;
 
+    /**
+     * 是否技术部门
+     */
+    @ExcelProperty(value = "是否技术部门")
+    private String isTecDept;
+
+    /**
+     * 公司类型
+     */
+    private String companyType;
+
 }

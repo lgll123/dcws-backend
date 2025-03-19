@@ -395,3 +395,14 @@ ureport:
   fileStoreDir: /WEB-INF/ureportfiles
   debug: false
 
+#公司信息
+companyInfo:
+  #公司名称
+  name: "深圳市四方精创资讯股份有限公司"
+  #纳税人识别号
+  taxpayerIdentificationNumber: "91440300754269153R"
+  #VL图片识别模型token
+  vlToken: "eyJhcHBsaWNhdGlvbl9pZCI6IjdmYTUxZDllLTAwNzMtMTFmMC04Y2UzLWZhMTYzZWU1MTJlMyIsInVzZXJfaWQiOiIwMzZhZDQ5ZS1mNDJmLTExZWYtOWFmYy1mYTE2M2VlNTEyZTMiLCJhY2Nlc3NfdG9rZW4iOiIzY2YxZTk4NTZlYjViMjY0IiwidHlwZSI6IkFQUExJQ0FUSU9OX0FDQ0VTU19UT0tFTiIsImNsaWVudF9pZCI6Ijk0YmJmYmU4LTAxNzgtMTFmMC04ODQzLWZhMTYzZWU1MTJlMyIsImF1dGhlbnRpY2F0aW9uIjp7fX0:1ttN0L:5sb7C33PadgFRUf_lFLt6Ff8dM2ePdR3wlIC8cr0ZKc"
+  #VL图片识别模型ApplicationId
+  vlApplicationId: "7fa51d9e-0073-11f0-8ce3-fa163ee512e3"
+

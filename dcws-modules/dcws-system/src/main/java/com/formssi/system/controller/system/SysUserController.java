@@ -148,6 +148,7 @@ public class SysUserController extends BaseController {
                 userInfoVo.setPostIds(postService.selectPostListByUserId(userId));
             }
         }
+        userInfoVo.setLeaders(userService.getUserLeader(userId));
         return R.ok(userInfoVo);
     }
 

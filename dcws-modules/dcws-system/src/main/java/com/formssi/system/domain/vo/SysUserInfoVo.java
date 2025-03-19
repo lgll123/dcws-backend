@@ -37,4 +37,9 @@ public class SysUserInfoVo {
      */
     private List<SysPostVo> posts;
 
+    /**
+     * 上级领导列表-截止到部门领导
+     */
+    List<SysUserVo> leaders;
+
 }

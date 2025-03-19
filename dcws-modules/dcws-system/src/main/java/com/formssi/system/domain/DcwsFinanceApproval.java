@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @TableName("dcws_finance_approval")
 public class DcwsFinanceApproval extends BaseEntity {
 

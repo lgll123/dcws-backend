@@ -5,8 +5,10 @@ import com.formssi.system.domain.DcwsFinanceApproval;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @AutoMapper(target = DcwsFinanceApproval.class, reverseConvertGenerate = false)
 public class DcwsFinanceApprovalBo extends BaseEntity {

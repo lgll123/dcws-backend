@@ -1,11 +1,9 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.formssi.system.domain.DcwsFinanceApproval;
 import com.formssi.system.domain.vo.DcwsFinanceApprovalVo;
 import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.system.domain.vo.SysUserVo;
-import com.formssi.system.mapper.DcwsFinanceApprovalMapper;
+import com.formssi.system.service.IFinanceApprovalService;
 import com.formssi.system.service.ISysDeptService;
 import com.formssi.system.service.ISysUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -27,14 +25,15 @@ public class ReimbursementApplyTaskExeListener implements ExecutionListener {
     private ISysDeptService sysDeptService;
     @Autowired
     private ISysUserService iSysUserService;
-    private DcwsFinanceApprovalMapper dcwsFinanceApprovalMapper;
+    @Autowired
+    private IFinanceApprovalService iFinanceApprovalService;
     @Override
     public void notify(DelegateExecution delegateTask) {
         try{
             Map<String, Object> variables = delegateTask.getVariables();
             SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(variables.get("reimbursementId").toString()));
             SysDeptVo sysDeptVo = sysDeptService.selectDeptById(sysUserVo.getDeptId());
-            DcwsFinanceApprovalVo dcwsFinanceApprovalVo = dcwsFinanceApprovalMapper.selectVoOne(new LambdaQueryWrapper<DcwsFinanceApproval>().eq(DcwsFinanceApproval::getDeptId, sysUserVo.getDeptId()));
+            DcwsFinanceApprovalVo dcwsFinanceApprovalVo = iFinanceApprovalService.selectFinanceApprovalByDeptId(sysUserVo.getDeptId());
             delegateTask.setVariable("leader", sysDeptVo.getLeader());
             delegateTask.setVariable("respLeader", sysDeptVo.getRespLeader());
             delegateTask.setVariable("userId", sysUserVo.getUserId());

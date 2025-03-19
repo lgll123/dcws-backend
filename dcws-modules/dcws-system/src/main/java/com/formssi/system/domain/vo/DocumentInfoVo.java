@@ -1,22 +1,21 @@
 package com.formssi.system.domain.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.formssi.system.domain.SealInfo;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.formssi.system.domain.DocumentInfo;
 import io.github.linpeilie.annotations.AutoMapper;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 
 /**
  * @author Michelle.Chung
  */
 @Data
-@AutoMapper(target = SealInfo.class)
-public class SealInfoVo implements Serializable {
+@AutoMapper(target = DocumentInfo.class)
+public class DocumentInfoVo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -24,27 +23,23 @@ public class SealInfoVo implements Serializable {
     /**
      * id
      */
+    @TableId(value = "id")
     private Long id;
 
     /**
-     * 印章名称
+     * 资料所属部门名称
      */
-    private String sealName;
+    private String deptName;
 
     /**
-     * 用印排序
+     * 提供资料人
      */
-    private int sealSort;
+    private String providerUser;
 
     /**
-     * 印章保管人
+     * 部门负责人
      */
-    private Long sealUser;
-
-    /**
-     * 历史印章保管人
-     */
-    private String sealUserHis;
+    private Long leaderUser;
 
     /**
      * 备注
@@ -75,25 +70,5 @@ public class SealInfoVo implements Serializable {
      * 更新时间
      */
     private Date updateTime;
-
-    /**
-     * 公司名称
-     */
-    private String companyName;
-
-    /**
-     * 份数
-     */
-    private String applyNum;
-
-    /**
-     * 文件
-     */
-    private List<SysFileUploadVo> sealFile;
-
-    /**
-     * 印章list
-     */
-    private List<SealInfo> sealInfoList;
 
 }

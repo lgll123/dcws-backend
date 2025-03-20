@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * 采购任务启动
+ * 申请任务执行，查询申请人部门领导和分管领导，在流程后面的用户任务中用来设置申审批人
  */
 @Slf4j
 @Component("AssetsApplyTaskExeListener")

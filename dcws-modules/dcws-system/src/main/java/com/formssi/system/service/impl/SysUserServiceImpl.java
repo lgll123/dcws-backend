@@ -790,7 +790,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
                 }
                 leaders.add(leader);
                 userLeader = ObjectUtil.isNull(leader.getLeader()) ? null : leader.getLeader().toString();
-                if(userLeader == null){
+                if(userLeader == null || String.valueOf(userId).equals(userLeader)){
                     break;
                 }
             }

@@ -243,7 +243,7 @@ public interface ISysUserService {
     List<SysUserVo> selectUserListByDept(Long deptId);
 
     /**
-     * 获取用户上级领导-截止到部门领导
+     * 获取用户上级领导-不包含部门领导
      * @param userId
      * @return
      */

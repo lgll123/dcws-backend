@@ -41,4 +41,10 @@ public class DocumentInfo extends TenantEntity {
      */
     private String remark;
 
+    /**
+     * 默认部门（1是 0否  发展部是默认部门）
+     */
+    private String isDeaultDept;
+
+
 }

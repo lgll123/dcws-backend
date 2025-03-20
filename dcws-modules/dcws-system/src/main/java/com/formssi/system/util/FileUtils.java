@@ -118,7 +118,7 @@ public class FileUtils {
 
         // 2. 使用PDFRenderer将PDF文件渲染为BufferedImage对象
         PDFRenderer pdfRenderer = new PDFRenderer(document);
-        BufferedImage image = pdfRenderer.renderImageWithDPI(0, 300); // 这里以300 DPI的分辨率渲染第一页
+        BufferedImage image = pdfRenderer.renderImageWithDPI(0, 120); // 这里以300 DPI的分辨率渲染第一页
 
         // 3. 将BufferedImage对象转换为字节数组
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

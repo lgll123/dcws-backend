@@ -113,13 +113,11 @@
                 <th>申请部门</th>
                 <th>申请人</th>
                 <th>申请日期</th>
-                <th>当前环节</th>
             </tr>
             <tr class="light-text" style="font-size: 11px;font-weight: 400;">
                 <td th:text="${data.applyDept}"></td>
                 <td th:text="${data.applicant}"></td>
                 <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
-                <td th:text="${data.status}"></td>
             </tr>
             <tr style="font-size: 13px;font-weight: 900;">
                 <th>需求日期</th>
@@ -131,11 +129,11 @@
             </tr>
         </table>
         <div>
-            <div>
-                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">申请原因</span><span class="light-text" th:text="${data.applyReson}" style="font-size: 11px;font-weight: 400;"></span>
+            <div style="overflow: hidden;">
+                <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">申请原因</span><span class="light-text" th:text="${data.applyReson}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
             </div>
-            <div style="margin-top: 10px;">
-                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="font-size: 11px;font-weight: 400;"></span>
+            <div style="margin-top: 10px;overflow: hidden;">
+                <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
             </div>
         </div>
     </div>
@@ -155,7 +153,7 @@
             </thead>
             <tbody class="light-text">
             <tr th:each="item : ${data.customApplyDetails}">
-                <td th:text="${item.modelNo}" style="width: 60%;"></td>
+                <td th:text="${item.modelNo}" style="width: 60%;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></td>
                 <td th:text="${item.name}" style="text-align: right;"></td>
                 <td th:text="${item.unit}" style="text-align: right;"></td>
                 <td th:text="${item.applyNum}" style="text-align: right;"></td>
@@ -317,7 +315,7 @@
                 </thead>
                 <tbody class="light-text">
                 <tr th:each="item : ${data.purchaseDetail.materialInfo}">
-                    <td th:text="${item.modelNo}"></td>
+                    <td th:text="${item.modelNo}" style="white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></td>
                     <td th:text="${item.name}" style="text-align: right;"></td>
                     <td th:text="${item.unit}" style="text-align: right;"></td>
                     <td th:text="${item.applyNum}" style="text-align: right;"></td>
@@ -354,6 +352,7 @@
 
 
         </div>
+    </div>
     </div>
 </body>
 </html>

@@ -45,7 +45,7 @@ public class SealInfoController extends BaseController {
     @SaCheckPermission("system:seal:listByPage")
     @GetMapping("/listByPage")
     public TableDataInfo<SealInfoVo> list(SealInfoBo info, PageQuery pageQuery) {
-        return sealInfoService.selectPageUserList(info, pageQuery);
+        return sealInfoService.selectPageSealList(info, pageQuery);
     }
 
     /**

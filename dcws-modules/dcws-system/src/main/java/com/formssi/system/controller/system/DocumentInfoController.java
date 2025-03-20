@@ -8,11 +8,8 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.system.domain.bo.DocumentInfoBo;
-import com.formssi.system.domain.bo.SealInfoBo;
 import com.formssi.system.domain.vo.DocumentInfoVo;
-import com.formssi.system.domain.vo.SealInfoVo;
 import com.formssi.system.service.IDocumentInfoService;
-import com.formssi.system.service.ISealInfoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +30,7 @@ public class DocumentInfoController extends BaseController {
     private final IDocumentInfoService documentInfoService;
 
     /**
-     * 获取印章列表
+     * 获取资料-部门列表
      */
     @SaCheckPermission("system:document:list")
     @GetMapping("/list")
@@ -42,52 +39,52 @@ public class DocumentInfoController extends BaseController {
         return R.ok(infos);
     }
 
-//    /**
-//     * 获取印章列表-分页
-//     */
-//    @SaCheckPermission("system:seal:listByPage")
-//    @GetMapping("/listByPage")
-//    public TableDataInfo<SealInfoVo> list(SealInfoBo info, PageQuery pageQuery) {
-//        return sealInfoService.selectPageUserList(info, pageQuery);
-//    }
-//
-//    /**
-//     * 新增印章
-//     */
-//    @SaCheckPermission("system:seal:add")
-//    @Log(title = "印章", businessType = BusinessType.INSERT)
-//    @PostMapping("/add")
-//    public R<Void> add(@Validated @RequestBody SealInfoBo info) {
-//        if (!sealInfoService.checkSealNameUnique(info)) {
-//            return R.fail("新增印章" + info.getSealName() + "'失败，印章名称已存在");
-//        }
-//        sealInfoService.insertSeal(info);
-//        return R.ok();
-//    }
-//
-//    /**
-//     * 修改印章
-//     */
-//    @SaCheckPermission("system:seal:edit")
-//    @Log(title = "印章", businessType = BusinessType.UPDATE)
-//    @PostMapping("/edit")
-//    public R<Void> edit(@Validated @RequestBody SealInfoBo info) {
-//        if (!sealInfoService.checkSealNameUnique(info)) {
-//            return R.fail("修改印章" + info.getSealName() + "'失败，印章名称已存在");
-//        }
-//        sealInfoService.updateSeal(info);
-//        return R.ok();
-//    }
-//
-//    /**
-//     * 删除印章
-//     */
-//    @SaCheckPermission("system:seal:delete")
-//    @Log(title = "印章", businessType = BusinessType.DELETE)
-//    @PostMapping("/delete")
-//    public R<Void> delete(@Validated @RequestBody SealInfoBo info) {
-//        sealInfoService.deleteSealById(info.getId());
-//        return R.ok();
-//    }
+    /**
+     * 获取资料-部门列表-分页
+     */
+    @SaCheckPermission("system:document:listByPage")
+    @GetMapping("/listByPage")
+    public TableDataInfo<DocumentInfoVo> list(DocumentInfoBo info, PageQuery pageQuery) {
+        return documentInfoService.selectPageDocumentList(info, pageQuery);
+    }
+
+    /**
+     * 新增资料-部门
+     */
+    @SaCheckPermission("system:document:add")
+    @Log(title = "资料-部门", businessType = BusinessType.INSERT)
+    @PostMapping("/add")
+    public R<Void> add(@Validated @RequestBody DocumentInfoBo info) {
+        if (!documentInfoService.checkSealNameUnique(info)) {
+            return R.fail("新增资料-部门" + info.getDeptName() + "'失败，部门名称已存在");
+        }
+        documentInfoService.insertDocument(info);
+        return R.ok();
+    }
+
+    /**
+     * 修改资料-部门
+     */
+    @SaCheckPermission("system:document:edit")
+    @Log(title = "资料-部门", businessType = BusinessType.UPDATE)
+    @PostMapping("/edit")
+    public R<Void> edit(@Validated @RequestBody DocumentInfoBo info) {
+        if (!documentInfoService.checkSealNameUnique(info)) {
+            return R.fail("修改资料-部门" + info.getDeptName() + "'失败，部门名称已存在");
+        }
+        documentInfoService.updateDocument(info);
+        return R.ok();
+    }
+
+    /**
+     * 删除资料-部门
+     */
+    @SaCheckPermission("system:document:delete")
+    @Log(title = "资料-部门", businessType = BusinessType.DELETE)
+    @PostMapping("/delete")
+    public R<Void> delete(@Validated @RequestBody DocumentInfoBo info) {
+        documentInfoService.deleteDocumentById(info.getId());
+        return R.ok();
+    }
 
 }

@@ -45,9 +45,9 @@ public class ServiceApplyTaskListener implements TaskListener {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
                     taskNodeData = ((Map<String, Object>)objectMapper.readValue(JSON.toJSONString(entity), Map.class));
-                    map = objectMapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
-                    purchaseDetail = (Map<String, Object>) map.get("purchaseDetail");
-                    materialInfoJson = JSON.toJSONString(purchaseDetail.get("materialInfo"));
+//                    map = objectMapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
+//                    purchaseDetail = (Map<String, Object>) map.get("purchaseDetail");
+//                    materialInfoJson = JSON.toJSONString(purchaseDetail.get("materialInfo"));
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
@@ -61,6 +61,7 @@ public class ServiceApplyTaskListener implements TaskListener {
             purchaseBo.setAssetUserId(Convert.toLong(taskNodeData.get("assetUserId")));
             purchaseBo.setApplyReson("服务申请采购物料");
             purchaseBo.setCheckTo("服务申请采购物料");
+            purchaseBo.setApplyRemarks("服务申请采购物料");
             purchaseBo.setApplyContentType(Convert.toStr(taskNodeData.get("applyContentType")));
             purchaseBo.setApplyDetail(Convert.toStr(taskNodeData.get("applyDetail")));//采购清单
 

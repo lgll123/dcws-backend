@@ -37,9 +37,19 @@ public class DocumentInfoVo implements Serializable {
     private String providerUser;
 
     /**
+     * 提供资料人名称
+     */
+    private String providerName;
+
+    /**
      * 部门负责人
      */
     private Long leaderUser;
+
+    /**
+     * 部门负责人名称
+     */
+    private String leaderName;
 
     /**
      * 备注

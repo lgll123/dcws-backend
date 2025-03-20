@@ -12,8 +12,10 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.system.domain.DocumentInfo;
 import com.formssi.system.domain.bo.DocumentInfoBo;
 import com.formssi.system.domain.vo.DocumentInfoVo;
+import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.mapper.DocumentInfoMapper;
 import com.formssi.system.service.IDocumentInfoService;
+import com.formssi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +35,7 @@ import java.util.Map;
 public class DocumentInfoServiceImpl implements IDocumentInfoService {
 
     private final DocumentInfoMapper baseMapper;
+    private final ISysUserService iSysUserService;
 
     /**
      * 查询资料-部门列表
@@ -40,7 +43,18 @@ public class DocumentInfoServiceImpl implements IDocumentInfoService {
     @Override
     public List<DocumentInfoVo> selectDocumentInfoList(DocumentInfoBo info) {
         LambdaQueryWrapper<DocumentInfo> lqw = buildQueryWrapper(info);
-        return baseMapper.selectVoList(lqw);
+        List<DocumentInfoVo> documentInfoVos = baseMapper.selectVoList(lqw);
+        documentInfoVos.forEach(e ->{
+            SysUserVo u1 = iSysUserService.selectUserById(Long.valueOf(e.getLeaderUser()));
+            SysUserVo u2 = iSysUserService.selectUserById(Long.valueOf(e.getProviderUser()));
+            if(!ObjectUtil.isEmpty(u1)){
+                e.setLeaderName(u1.getUserName());
+            }
+            if(!ObjectUtil.isEmpty(u2)){
+                e.setProviderName(u2.getUserName());
+            }
+        });
+        return documentInfoVos;
     }
     /**
      * 获取资料-部门列表-分页
@@ -48,6 +62,17 @@ public class DocumentInfoServiceImpl implements IDocumentInfoService {
     @Override
     public TableDataInfo<DocumentInfoVo> selectPageDocumentList(DocumentInfoBo info, PageQuery pageQuery) {
         Page<DocumentInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), this.buildQueryWrapper(info));
+        List<DocumentInfoVo> records = result.getRecords();
+        records.forEach(e ->{
+            SysUserVo u1 = iSysUserService.selectUserById(Long.valueOf(e.getLeaderUser()));
+            SysUserVo u2 = iSysUserService.selectUserById(Long.valueOf(e.getProviderUser()));
+            if(!ObjectUtil.isEmpty(u1)){
+                e.setLeaderName(u1.getUserName());
+            }
+            if(!ObjectUtil.isEmpty(u2)){
+                e.setProviderName(u2.getUserName());
+            }
+        });
         return TableDataInfo.build(result);
     }
 

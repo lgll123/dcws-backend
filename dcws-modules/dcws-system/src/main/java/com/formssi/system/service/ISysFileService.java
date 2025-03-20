@@ -63,4 +63,7 @@ public interface ISysFileService extends IService<SysFile> {
      */
     Boolean deleteWithValidByIds(Collection<Long> ids, Boolean isValid);
 
+
+    int updateFileInfo(SysFileBo sysFileBo);
+
 }

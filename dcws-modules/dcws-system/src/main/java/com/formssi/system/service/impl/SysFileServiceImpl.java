@@ -2,6 +2,7 @@ package com.formssi.system.service.impl;
 
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -123,6 +124,13 @@ public class SysFileServiceImpl extends ServiceImpl<SysFileMapper, SysFile> impl
 
         // 数据库文件删除
         return baseMapper.deleteByIds(ids) > 0;
+    }
+
+    @Override
+    public int updateFileInfo(SysFileBo sysFileBo) {
+        return baseMapper.update(null, new LambdaUpdateWrapper<SysFile>()
+                .set(SysFile::getAssociationFileId, sysFileBo.getAssociationFileId())
+                .eq(SysFile::getFileId, sysFileBo.getFileId()));
     }
 
     private List<SysFile> getListByFileIdList(List<Long> fileIdList) {

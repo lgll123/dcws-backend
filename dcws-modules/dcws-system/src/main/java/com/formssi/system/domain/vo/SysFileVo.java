@@ -68,4 +68,9 @@ public class SysFileVo implements Serializable {
      */
     private String service;
 
+    /**
+     * 关联文件id
+     */
+    private Long associationFileId;
+
 }

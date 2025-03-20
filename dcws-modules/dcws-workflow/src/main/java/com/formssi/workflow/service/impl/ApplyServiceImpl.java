@@ -359,9 +359,17 @@ public class ApplyServiceImpl implements IApplyService {
             DcwsInvoiceVo dcwsInvoiceVo = new DcwsInvoiceVo();
             dcwsInvoiceVo.setFileId(sysFileVo.getFileId().toString());
             dcwsInvoiceVo.setInvoiceName(sysFileVo.getFileName());
-            InputStream file = minioUtil.download("dcws-assets",sysFileVo.getFileName());
+            InputStream file = null;
+            if (".pdf".equals(sysFileVo.getFileSuffix())){
+                List<Long> associationFileIds = new ArrayList<>();
+                associationFileIds.add(sysFileVo.getAssociationFileId());
+                SysFileVo sysFileVoJpg = sysFileService.listByFileIds(associationFileIds).get(0);
+                file = minioUtil.download("dcws-assets",sysFileVoJpg.getFileName());
+            }else{
+                file = minioUtil.download("dcws-assets",sysFileVo.getFileName());
+            }
             //获取发票信息
-            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,sysFileVo.getFileSuffix(),"请识别图中的纳税人识别号，价税合计小写(不带币种)，并输出为纳税人识别号重命名为:taxnum,价税合计小写重命名为:amount的标准json字符串");
+            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,"请识别图中的纳税人识别号，价税合计小写(不带币种)，并输出为纳税人识别号重命名为:taxnum,价税合计小写重命名为:amount的标准json字符串");
             if (StringUtils.isEmpty(invoiceInfo)){
                 throw new ServiceException("发票识别错误");
             }

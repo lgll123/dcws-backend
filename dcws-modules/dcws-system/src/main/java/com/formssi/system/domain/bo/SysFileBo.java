@@ -46,4 +46,9 @@ public class SysFileBo extends BaseEntity {
      */
     private String service;
 
+    /**
+     * 关联文件id
+     */
+    private Long associationFileId;
+
 }

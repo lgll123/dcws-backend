@@ -12,6 +12,7 @@ import com.formssi.system.domain.bo.SysFileBo;
 import com.formssi.system.domain.vo.SysFileUploadVo;
 import com.formssi.system.domain.vo.SysFileVo;
 import com.formssi.system.service.ISysFileService;
+import com.formssi.system.util.FileUtils;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
@@ -60,12 +61,20 @@ public class SysFileController extends BaseController {
      */
     @Log(title = "文件对象存储", businessType = BusinessType.INSERT)
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public R<SysFileUploadVo> upload(@RequestPart("file") MultipartFile file) {
+    public R<SysFileUploadVo> upload(@RequestPart("file") MultipartFile file) throws IOException {
         if (ObjectUtil.isNull(file)) {
             return R.fail("上传文件不能为空");
         }
-
         SysFileUploadVo fileUploadVo = sysFileService.uploadFile(file);
+
+        if("application/pdf".equals(file.getContentType())){
+            MultipartFile jpgfile = FileUtils.convertPdfToJpg(file);
+            SysFileUploadVo jpgFileUploadVo = sysFileService.uploadFile(jpgfile);
+            SysFileBo sysFileBo = new SysFileBo();
+            sysFileBo.setFileId(Long.valueOf(fileUploadVo.getFileId()));
+            sysFileBo.setAssociationFileId(Long.valueOf(jpgFileUploadVo.getFileId()));
+            sysFileService.updateFileInfo(sysFileBo);
+        }
 
         return R.ok(fileUploadVo);
     }

@@ -47,7 +47,7 @@ public class SealInfoServiceImpl implements ISealInfoService {
      * 获取印章列表-分页
      */
     @Override
-    public TableDataInfo<SealInfoVo> selectPageUserList(SealInfoBo info, PageQuery pageQuery) {
+    public TableDataInfo<SealInfoVo> selectPageSealList(SealInfoBo info, PageQuery pageQuery) {
         Page<SealInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), this.buildQueryWrapper(info));
         return TableDataInfo.build(result);
     }

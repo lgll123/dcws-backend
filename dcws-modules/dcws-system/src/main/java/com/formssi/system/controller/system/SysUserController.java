@@ -114,7 +114,7 @@ public class SysUserController extends BaseController {
         if (ObjectUtil.isNull(user)) {
             return R.fail("没有权限访问用户数据!");
         }
-        //获取用户上级领导-截止到部门领导
+        //获取用户上级领导-不包含部门领导
         userInfoVo.setLeaders(userService.getUserLeader(loginUser.getUserId()));
         userInfoVo.setUser(user);
         userInfoVo.setPermissions(loginUser.getMenuPermission());
@@ -148,6 +148,7 @@ public class SysUserController extends BaseController {
                 userInfoVo.setPostIds(postService.selectPostListByUserId(userId));
             }
         }
+        userInfoVo.setLeaders(userService.getUserLeader(userId));
         return R.ok(userInfoVo);
     }
 

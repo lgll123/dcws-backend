@@ -28,7 +28,7 @@ public interface ISealInfoService {
      * @param pageQuery
      * @return
      */
-    TableDataInfo<SealInfoVo> selectPageUserList(SealInfoBo info, PageQuery pageQuery);
+    TableDataInfo<SealInfoVo> selectPageSealList(SealInfoBo info, PageQuery pageQuery);
 
     /**
      * 校验印章名称是否唯一

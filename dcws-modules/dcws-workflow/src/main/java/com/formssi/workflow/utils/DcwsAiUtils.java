@@ -363,20 +363,17 @@ public class DcwsAiUtils {
         return new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
     }
 
-    public static String invoiceIdentification(InputStream file, String fileType, String question) throws IOException, JSONException {
+    public static String invoiceIdentification(InputStream file, String question) throws IOException, JSONException {
         String token = "eyJhcHBsaWNhdGlvbl9pZCI6IjdmYTUxZDllLTAwNzMtMTFmMC04Y2UzLWZhMTYzZWU1MTJlMyIsInVzZXJfaWQiOiIwMzZhZDQ5ZS1mNDJmLTExZWYtOWFmYy1mYTE2M2VlNTEyZTMiLCJhY2Nlc3NfdG9rZW4iOiIzY2YxZTk4NTZlYjViMjY0IiwidHlwZSI6IkFQUExJQ0FUSU9OX0FDQ0VTU19UT0tFTiIsImNsaWVudF9pZCI6Ijk0YmJmYmU4LTAxNzgtMTFmMC04ODQzLWZhMTYzZWU1MTJlMyIsImF1dGhlbnRpY2F0aW9uIjp7fX0:1ttN0L:5sb7C33PadgFRUf_lFLt6Ff8dM2ePdR3wlIC8cr0ZKc";
         String applicationId = "7fa51d9e-0073-11f0-8ce3-fa163ee512e3";
-        String chatid = getChatId(token,applicationId);
-        if(".pdf".equals(fileType)){
-            file = convertPdfPageToJpg(file);
-        }
+        String chatId = getChatId(token,applicationId);
         // 创建临时文件
         Path tempFilePath = Files.createTempFile("inputStreamTempFile", ".tmp");
         // 将InputStream中的数据写入临时文件
         Files.copy(file, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
         // 返回File对象
-        JSONObject imageJsonObject = uploadImage(tempFilePath.toFile(),applicationId,chatid,token);
-        return chatMessage(token,chatid,imageJsonObject,question);
+        JSONObject imageJsonObject = uploadImage(tempFilePath.toFile(),applicationId,chatId,token);
+        return chatMessage(token,chatId,imageJsonObject,question);
     }
 
     public static void convert(String pdfFilePath, String outputDir) throws IOException {

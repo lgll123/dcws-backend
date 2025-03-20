@@ -790,23 +790,23 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
                 }
                 leaders.add(leader);
                 userLeader = ObjectUtil.isNull(leader.getLeader()) ? null : leader.getLeader().toString();
-                if(userLeader == null){
+                if(userLeader == null || String.valueOf(userId).equals(userLeader)){
                     break;
                 }
             }
         }
         // 添加部门领导
-        if(!StringUtils.isEmpty(userDeptLeader)){
-            String userIdStr = String.valueOf(userId);
-            //用户本身是部门领导，则不用添加
-            if(userIdStr.equals(userDeptLeader)){
-                return leaders;
-            }
-            SysUserVo departmentLeader = baseMapper.selectVoById(userDeptLeader);
-            if (departmentLeader != null) {
-                leaders.add(departmentLeader);
-            }
-        }
+//        if(!StringUtils.isEmpty(userDeptLeader)){
+//            String userIdStr = String.valueOf(userId);
+//            //用户本身是部门领导，则不用添加
+//            if(userIdStr.equals(userDeptLeader)){
+//                return leaders;
+//            }
+//            SysUserVo departmentLeader = baseMapper.selectVoById(userDeptLeader);
+//            if (departmentLeader != null) {
+//                leaders.add(departmentLeader);
+//            }
+//        }
         return leaders;
     }
 }

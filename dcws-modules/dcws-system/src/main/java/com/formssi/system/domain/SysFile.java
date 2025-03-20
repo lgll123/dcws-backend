@@ -87,4 +87,9 @@ public class SysFile {
      */
     private Long updateBy;
 
+    /**
+     * 关联文件id
+     */
+    private Long associationFileId;
+
 }

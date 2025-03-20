@@ -1,9 +1,17 @@
 package com.formssi.system.util;
 
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.PDFRenderer;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 
 /**
  * @author lizhangyu
@@ -95,6 +103,39 @@ public class FileUtils {
             e.printStackTrace();
         }
         return flag;
+    }
+
+    /**
+     * 将PDF的MultipartFile转换为JPG的MultipartFile
+     *
+     * @param pdfMultipartFile PDF格式的MultipartFile
+     * @return JPG格式的MultipartFile
+     * @throws IOException 如果转换过程中发生IO异常
+     */
+    public static MultipartFile convertPdfToJpg(MultipartFile pdfMultipartFile) throws IOException {
+        // 1. 从MultipartFile中获取PDF文件内容并加载为PDDocument对象
+        PDDocument document = PDDocument.load(pdfMultipartFile.getInputStream());
+
+        // 2. 使用PDFRenderer将PDF文件渲染为BufferedImage对象
+        PDFRenderer pdfRenderer = new PDFRenderer(document);
+        BufferedImage image = pdfRenderer.renderImageWithDPI(0, 120); // 这里以300 DPI的分辨率渲染第一页
+
+        // 3. 将BufferedImage对象转换为字节数组
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", baos);
+        byte[] jpgBytes = baos.toByteArray();
+
+        // 4. 创建并返回JPG格式的MultipartFile
+        String jpgFileName = "converted_" + System.currentTimeMillis() + ".jpg";
+        MultipartFile jpgMultipartFile = new MockMultipartFile(
+                "file",
+                jpgFileName,
+                "image/jpeg",
+                jpgBytes
+        );
+        // 关闭PDDocument对象以释放资源
+        document.close();
+        return jpgMultipartFile;
     }
 
 }

@@ -5,6 +5,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -50,7 +51,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -373,7 +373,7 @@ public class ApplyServiceImpl implements IApplyService {
             if (StringUtils.isEmpty(invoiceInfo)){
                 throw new ServiceException("发票识别错误");
             }
-            JSONObject invoice = new JSONObject(invoiceInfo.replace("```json","").replace("```",""));
+            JSONObject invoice = JSON.parseObject(invoiceInfo.replace("```json","").replace("```",""));
             if(Objects.isNull(invoice.get("taxnum")) || Objects.isNull(invoice.get("amount"))){
                 throw new ServiceException("发票识别错误");
             }

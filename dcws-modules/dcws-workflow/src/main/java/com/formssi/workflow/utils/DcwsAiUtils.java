@@ -12,7 +12,8 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -156,7 +157,7 @@ public class DcwsAiUtils {
                 log.info(profileurl.toString());
                 log.info(response.toString());
             }
-            return (String) new JSONObject(response.toString()).get("data");
+            return (String) JSON.parseObject(response.toString()).get("data");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -185,11 +186,11 @@ public class DcwsAiUtils {
                     response.append(inputLine);
                 }
                 // 将JSON字符串转换为JSONObject
-                JSONObject jsonObject = new JSONObject(response.toString());
+                JSONObject jsonObject = JSON.parseObject((response.toString()));
                 // 创建一个Map来存储转换后的数据
                 Map<String, Object> map = new HashMap<>();
                 // 迭代JSONObject的键集合并将其添加到Map中
-                Iterator<String> keys = jsonObject.keys();
+                Iterator<String> keys = jsonObject.keySet().iterator();
                 while (keys.hasNext()) {
                     String key = keys.next();
                     Object value = jsonObject.get(key);
@@ -231,11 +232,11 @@ public class DcwsAiUtils {
                     response.append(inputLine);
                 }
                 // 将JSON字符串转换为JSONObject
-                JSONObject jsonObject = new JSONObject(response.toString());
+                JSONObject jsonObject =  JSON.parseObject(response.toString());
                 // 创建一个Map来存储转换后的数据
                 Map<String, Object> map = new HashMap<>();
                 // 迭代JSONObject的键集合并将其添加到Map中
-                Iterator<String> keys = jsonObject.keys();
+                Iterator<String> keys = jsonObject.keySet().iterator();
                 while (keys.hasNext()) {
                     String key = keys.next();
                     Object value = jsonObject.get(key);
@@ -304,7 +305,7 @@ public class DcwsAiUtils {
             log.error("Failed to upload image. Response code: " + responseCode);
         }
         connection.disconnect();
-        return new JSONObject(response.toString());
+        return JSON.parseObject((response.toString()));
     }
 
 
@@ -324,7 +325,7 @@ public class DcwsAiUtils {
             connection.setDoInput(true);
 
             String str = "{\"message\":\"\",\"re_chat\":false,\"stream\":false,\"image_list\":[{\"name\":\"\",\"percentage\":0,\"status\":\"ready\",\"size\":99227,\"raw\":{\"uid\":1742007245631},\"uid\":1742007245631,\"url\":\"\",\"file_id\":\"\"}],\"document_list\":[],\"audio_list\":[],\"video_list\":[],\"form_data\":{}}";
-            JSONObject j = new JSONObject(str);
+            JSONObject j = JSON.parseObject(str);
             j.put("message",question);
             JSONObject imageObject = (JSONObject) j.getJSONArray("image_list").get(0);
             JSONObject imageDetail = (JSONObject) imageJsonObject.getJSONArray("data").get(0);
@@ -346,7 +347,7 @@ public class DcwsAiUtils {
                 log.info(profileurl.toString());
                 log.info(response.toString());
             }
-            JSONObject jSONObject = (JSONObject) new JSONObject(response.toString()).get("data");
+            JSONObject jSONObject = (JSONObject) JSON.parseObject(response.toString()).get("data");
             return (String) jSONObject.get("content");
         } catch (Exception e) {
             e.printStackTrace();
@@ -427,7 +428,7 @@ public class DcwsAiUtils {
 //            Files.copy(InputStreamJpg, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 //
 //            JSONObject imageJsonObject = uploadImage(tempFilePath.toFile(),applicationId,chatid,token);
-            JSONObject imageJsonObject = uploadImage(new File("D:\\Invoice.jpg"),applicationId,chatid,token);
+            JSONObject imageJsonObject = uploadImage(new File("D:\\page_1.jpg"),applicationId,chatid,token);
             String answer  = chatMessage(token,chatid,imageJsonObject,question);
             Long end = System.currentTimeMillis();
             System.out.printf(answer+"\n" + "本地部署Qwen2.5-VL-7B-Instruct模型获取图片信息耗时：" + (end - start) +"\n\n");

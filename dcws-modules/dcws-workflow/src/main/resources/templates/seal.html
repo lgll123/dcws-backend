@@ -101,7 +101,8 @@
         <span style="font-size: 25px; margin-right: 16px;font-weight: 900;">用印申请清单</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
-    <img src="./seal.png" alt="" width="80">
+    <img src="./seal.png" alt="" width="80" style="float: right">
+
 </div>
 <!-- 基础信息 -->
 <div class="basic-info">
@@ -128,11 +129,11 @@
             </tr>
         </table>
         <div>
-            <div>
-                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">用印事由</span><span class="light-text" th:text="${data.applyReson}" style="font-size: 11px;font-weight: 400;"></span>
+            <div style="overflow: hidden;">
+                <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">用印事由</span><span class="light-text" th:text="${data.applyReson}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
             </div>
-            <div style="margin-top: 10px;">
-                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="font-size: 11px;font-weight: 400;"></span>
+            <div style="margin-top: 10px;overflow: hidden;">
+                <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
             </div>
         </div>
     </div>
@@ -141,7 +142,7 @@
 <div class="basic-info apply-info" style="margin-top: 20px;">
     <div style="font-size: 14px;font-weight: 900;">用印详情</div>
     <div style="padding-left: 43px">
-        <table class="table-right-align" style="font-size: 9px;">
+        <table class="table-apply-info">
             <thead class="title-divider">
             <tr>
                 <th>序号</th>

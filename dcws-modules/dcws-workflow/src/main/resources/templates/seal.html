@@ -129,7 +129,7 @@
         </table>
         <div>
             <div>
-                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">申请内容</span><span class="light-text" th:text="${data.applyReson}" style="font-size: 11px;font-weight: 400;"></span>
+                <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">用印事由</span><span class="light-text" th:text="${data.applyReson}" style="font-size: 11px;font-weight: 400;"></span>
             </div>
             <div style="margin-top: 10px;">
                 <span style="margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="font-size: 11px;font-weight: 400;"></span>
@@ -137,18 +137,20 @@
         </div>
     </div>
 </div>
-<!-- 印章信息 -->
+<!-- 用印详情 -->
 <div class="basic-info apply-info" style="margin-top: 20px;">
-    <div style="font-size: 14px;font-weight: 900;">印章信息</div>
+    <div style="font-size: 14px;font-weight: 900;">用印详情</div>
     <div style="padding-left: 43px">
         <table class="table-right-align" style="font-size: 9px;">
             <thead class="title-divider">
             <tr>
                 <th>序号</th>
-                <th>公司名称</th>
+                <th>印章主体</th>
+                <th style="text-align: right;">用印文件</th>
                 <th style="text-align: right;">印章名称</th>
                 <th style="text-align: right;">份数</th>
-                <th style="text-align: right;">用印文件</th>
+                <th style="text-align: right;">用印要求</th>
+                <th style="text-align: right;">盖章文件</th>
             </tr>
             </thead>
             <tbody class="light-text">
@@ -156,13 +158,19 @@
                 <td th:text="${item.num}"></td>
                 <td th:text="${item.companyName}"></td>
                 <td style="text-align: right;">
+                    <span th:each="file : ${item.sealFile}">
+                        <span th:text="${file.fileName}"></span><br>
+                    </span>
+                </td>
+                <td style="text-align: right;">
                     <span th:each="info : ${item.sealInfoList}">
                         <span th:text="${info.sealName}"></span><br>
                     </span>
                 </td>
                 <td th:text="${item.applyNum}" style="text-align: right;">份</td>
+                <td th:text="${item.remark}"></td>
                 <td style="text-align: right;">
-                    <span th:each="file : ${item.sealFile}">
+                    <span th:each="file : ${item.sealFileFinal}">
                         <span th:text="${file.fileName}"></span><br>
                     </span>
                 </td>

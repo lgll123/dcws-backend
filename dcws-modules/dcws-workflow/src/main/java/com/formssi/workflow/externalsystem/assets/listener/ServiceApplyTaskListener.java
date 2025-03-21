@@ -1,9 +1,11 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
+import cn.hutool.core.convert.Convert;
 import com.alibaba.fastjson.JSON;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.utils.SpringUtils;
+import com.formssi.common.core.utils.StringUtils;
 import com.formssi.workflow.domain.bo.DcwsProjectBo;
 import com.formssi.workflow.externalsystem.assets.servicewrapper.IActTaskServiceWrapper;
 import com.formssi.workflow.service.IApplyService;
@@ -44,9 +46,8 @@ public class ServiceApplyTaskListener implements TaskListener {
                     throw new RuntimeException(e);
                 }
             }
-
             DcwsProjectBo projectBo =new DcwsProjectBo();
-            projectBo.setProjectName("采购项目测试-服务申请");
+            projectBo.setProjectName(StringUtils.blankToDefault(Convert.toStr(taskNodeData.get("projectName")),"服务申请-采购项目"));
             projectBo.setProjectType("2");
             Map<String, Object> finalTaskNodeData = taskNodeData;
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {

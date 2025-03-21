@@ -75,7 +75,7 @@ public class IActTaskServiceWrapper {
                 dcwsProjectTask.setTaskType(Convert.toStr(taskNodeData.get("applyType")));
                 dcwsProjectTask.setProjectId(dcwsProjectVo.getProjectId());
                 dcwsProjectTask.setTaskName("服务申请");
-                dcwsProjectTask.setTaskStatus("inprogress");
+                dcwsProjectTask.setTaskStatus("finish");
                 dcwsProjectTask.setCreateBy(Convert.toLong(taskNodeData.get("applicantId")));
                 dcwsProjectTask.setCreateTime(DateUtil.parse(Convert.toStr(taskNodeData.get("applyDate"))));
                 dcwsProjectTask.setCreateEmpName(Convert.toStr(taskNodeData.get("applicant")));

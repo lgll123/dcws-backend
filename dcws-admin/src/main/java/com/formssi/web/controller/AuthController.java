@@ -190,6 +190,8 @@ public class AuthController {
 
                 loginTokenRes.setSucc("1");
                 loginTokenRes.setData(loginTokenVo);
+
+                log.error("乐联获取token异常 => {}", e.getMessage());
             }
             return loginTokenRes;
         }else {

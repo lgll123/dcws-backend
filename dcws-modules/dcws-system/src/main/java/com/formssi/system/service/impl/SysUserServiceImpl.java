@@ -779,8 +779,13 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         if (dept == null) {
             return leaders;
         }
+
         String userDeptLeader = ObjectUtil.isNull(dept.getLeader()) ? null : String.valueOf(dept.getLeader());
         String userLeader = ObjectUtil.isNull(user.getLeader()) ? null : String.valueOf(user.getLeader());
+        //用户本身是部门领导返回空
+        if(String.valueOf(user.getUserId()).equals(userDeptLeader)){
+            return leaders;
+        }
         //添加用户领导-除开部门领导
         if(!StringUtils.isEmpty(userLeader)){
             while (!userLeader.equals(userDeptLeader)) {

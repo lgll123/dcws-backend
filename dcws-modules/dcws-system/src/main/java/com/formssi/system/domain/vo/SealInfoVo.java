@@ -42,6 +42,11 @@ public class SealInfoVo implements Serializable {
     private Long sealUser;
 
     /**
+     * 印章保管人
+     */
+    private String sealUserName;
+
+    /**
      * 历史印章保管人
      */
     private String sealUserHis;

@@ -98,7 +98,7 @@
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 25px; margin-right: 16px;font-weight: 900;">用印申请清单</span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 900;">资料申请清单</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
@@ -120,15 +120,25 @@
                 <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
             </tr>
             <tr style="font-size: 13px;font-weight: 900;">
+                <th>资料类型</th>
                 <th>使用日期</th>
             </tr>
             <tr class="light-text" style="font-size: 11px;font-weight: 400;">
-                <td th:text="${#dates.format(data.completeDate, 'yyyy-MM-dd')}"></td>
+                <td th:text="${data.applyDetails.applyContentTypeName}"></td>
+                <td th:text="${data.applyDetails.useDate}"></td>
+            </tr>
+            <tr style="font-size: 13px;font-weight: 900;">
+                <th>是否原件</th>
+                <th th:if="${data.applyDetails.isOriginal == 1}">归还日期</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.applyDetails.isOriginal == 1 ? '是' : '否'}"></td>
+                <td th:if="${data.applyDetails.isOriginal == 1}" th:text="${data.applyDetails.returnDate}"></td>
             </tr>
         </table>
         <div>
             <div style="overflow: hidden;">
-                <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">用印事由</span><span class="light-text" th:text="${data.applyReson}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
+                <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">申请内容</span><span class="light-text" th:text="${data.applyReson}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
             </div>
             <div style="margin-top: 10px;overflow: hidden;">
                 <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
@@ -136,45 +146,28 @@
         </div>
     </div>
 </div>
-<!-- 用印详情 -->
-<div class="basic-info apply-info" style="margin-top: 20px;">
-    <div style="font-size: 14px;font-weight: 900;">用印详情</div>
+<!-- 指派信息 -->
+<div class="basic-info" style="margin-top: 20px;">
+    <div style="font-size: 14px;font-weight: 900;">指派信息</div>
     <div style="padding-left: 43px">
-        <table class="table-apply-info">
-            <thead class="title-divider">
-            <tr>
-                <th>序号</th>
-                <th>印章主体</th>
-                <th style="text-align: right;">用印文件</th>
-                <th style="text-align: right;">印章名称</th>
-                <th style="text-align: right;">份数</th>
-                <th style="text-align: right;">用印要求</th>
-                <th style="text-align: right;">盖章文件</th>
+        <table>
+            <tr style="font-size: 13px;font-weight: 900;">
+                <th>是否指派部门</th>
+                <th>指派部门</th>
             </tr>
-            </thead>
-            <tbody class="light-text">
-            <tr th:each="item : ${data.applyDetails}">
-                <td th:text="${item.num}"></td>
-                <td th:text="${item.companyName}"></td>
-                <td style="text-align: right;">
-                    <span th:each="file : ${item.sealFile}">
-                        <span th:text="${file.fileName}"></span><br>
-                    </span>
-                </td>
-                <td style="text-align: right;">
-                    <span th:each="info : ${item.sealInfoList}">
-                        <span th:text="${info.sealName}"></span><br>
-                    </span>
-                </td>
-                <td th:text="${item.applyNum}" style="text-align: right;">份</td>
-                <td th:text="${item.remark}"></td>
-                <td style="text-align: right;">
-                    <span th:each="file : ${item.sealFileFinal}">
-                        <span th:text="${file.fileName}"></span><br>
-                    </span>
-                </td>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.applyDetails.isNeedAssign == 1 ? '是' : '否'}"></td>
+                <td th:text="${data.applyDetails.isNeedAssign == 1 ? data.applyDetails.deptName : '无'}"></td>
             </tr>
-            </tbody>
+
+            <tr style="font-size: 13px;font-weight: 900;" th:if="${data.applyDetails.isOriginal == 1}">
+                <th>是否已提供原件</th>
+                <th>是否已归还原件</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;" th:if="${data.applyDetails.isOriginal == 1}">
+                <td th:text="${data.applyDetails.isProviderOriginal == true ? '是' : '否'}"></td>
+                <td th:text="${data.applyDetails.isReturnOriginal == true ? '是' : '否'}"></td>
+            </tr>
         </table>
     </div>
 </div>

@@ -46,7 +46,7 @@ public class ApplyPDFUploadServerJobExecutor {
     @Autowired
     private MinioUtil minioUtil;
     private static final List<String> queryTypes = Arrays.asList(MATERIAL_IT.getCode(),MATERIAL_NOT_IT.getCode()
-            ,SEAL.getCode(),SERVICE.getCode()
+            ,SEAL.getCode(),SERVICE.getCode(),INFO_APPLY.getCode()
     );
 
     public ExecuteResult jobExecute(JobArgs jobArgs) {
@@ -83,6 +83,8 @@ public class ApplyPDFUploadServerJobExecutor {
                             SpringUtils.getBean(SEAL.getName());
                     case SERVICE ->//服务申请
                             SpringUtils.getBean(SERVICE.getName());
+                    case INFO_APPLY ->//资料申请
+                            SpringUtils.getBean(INFO_APPLY.getName());
                 };
                 // 转成PDF
                 Map<String, Object> pdfResultMap = dcwsApplyFilePDFCreateStrategy.process(ApplyTypeEnum.of(taskNodeDataVo.getApplyType()).getName(), taskNodeDataVo);

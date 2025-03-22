@@ -26,9 +26,13 @@ public enum ApplyTypeEnum {
      */
     SEAL("22", "seal","用印申请"),
     /**
-     * 用印申请
+     * 服务申请
      */
-    SERVICE("23", "service","服务申请");
+    SERVICE("23", "service","服务申请"),
+    /**
+     * 资料申请
+     */
+    INFO_APPLY("24", "infoApply","资料申请");
 
     private final String code;
     private final String name;

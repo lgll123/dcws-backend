@@ -27,7 +27,7 @@ public class AssetsMaintRecordAddTaskListener implements TaskListener {
     @Override
     public void notify(DelegateTask delegateTask) {
         try{
-            String url = "/maintenances";
+            String url = "maintenances";
             Map<String, String> requestBodyMap = new HashMap<>();
             requestBodyMap.put("title","title-维护");
             requestBodyMap.put("asset_id","1");
@@ -37,7 +37,7 @@ public class AssetsMaintRecordAddTaskListener implements TaskListener {
             Map<String, Object> responseMap = instance.process(requestBodyMap,url,"post");
 
         } catch (Exception e) {
-            log.error("An error occurred while AssetsApplyTaskExeListener", e);
+            log.error("An error occurred while AssetsMaintRecordAddTaskListener", e);
         }
     }
 

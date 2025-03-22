@@ -51,16 +51,12 @@ public class DcwsServiceApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCr
             data.put("applyDept",taskNodeDataVo.getApplyDept());//申请部门
             data.put("applicant",taskNodeDataVo.getApplicant());//申请人
             data.put("applyDate",taskNodeDataVo.getApplyDate());//申请日期
-            String applyContentTypeDesc;
-            switch (ApplyContentTypeEnum.of(taskNodeDataVo.getApplyContentType())){
-                case SERVICE_1: applyContentTypeDesc = SERVICE_1.getDesc();
-                    break;
-                case SERVICE_2: applyContentTypeDesc = SERVICE_2.getDesc();
-                    break;
-                case SERVICE_3: applyContentTypeDesc = SERVICE_3.getDesc();
-                    break;
-                default: applyContentTypeDesc = taskNodeDataVo.getApplyContentType();
-            }
+            String applyContentTypeDesc = switch (ApplyContentTypeEnum.of(taskNodeDataVo.getApplyContentType())) {
+                case SERVICE_1 -> SERVICE_1.getDesc();
+                case SERVICE_2 -> SERVICE_2.getDesc();
+                case SERVICE_3 -> SERVICE_3.getDesc();
+                default -> taskNodeDataVo.getApplyContentType();
+            };
             data.put("applyContentType",applyContentTypeDesc);//类型
             data.put("checkTo",taskNodeDataVo.getCheckTo());//预计使用人
             data.put("applyReson",taskNodeDataVo.getApplyReson());//申请原因

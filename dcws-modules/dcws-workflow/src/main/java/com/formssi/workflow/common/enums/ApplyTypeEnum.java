@@ -24,7 +24,11 @@ public enum ApplyTypeEnum {
     /**
      * 用印申请
      */
-    SEAL("22", "seal","用印申请");
+    SEAL("22", "seal","用印申请"),
+    /**
+     * 用印申请
+     */
+    SERVICE("23", "service","服务申请");
 
     private final String code;
     private final String name;

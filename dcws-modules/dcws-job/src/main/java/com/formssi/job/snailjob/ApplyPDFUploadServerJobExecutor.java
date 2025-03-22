@@ -65,7 +65,7 @@ public class ApplyPDFUploadServerJobExecutor {
                 uploadFileServerService.uploadFileMinioAndDocumentServer(pdfResultMap,taskNodeDataVo);
 //                SnailJobLog.LOCAL.info("taskNodeDataMapper.updateById result:{}", ret);
             } catch (Exception e) {
-                log.error("PDF生成失败{}", e.getMessage(), e);
+                log.error("PDF生成异常{}", e.getMessage(), e);
                 SnailJobLog.LOCAL.info("applyPDFUploadServerJobExecutor. exception:{}", e.getMessage());
                 // 更新文件上传状态
                 TaskNodeDataBo bo = new TaskNodeDataBo();

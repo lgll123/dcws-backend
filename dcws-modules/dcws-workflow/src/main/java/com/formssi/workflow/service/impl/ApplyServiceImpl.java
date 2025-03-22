@@ -60,6 +60,9 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.formssi.workflow.common.enums.ApplyTypeEnum.values;
+import static com.formssi.workflow.common.enums.StorageFileStatusEnum.STORAGEFILESTATUS_4;
+
 /**
  * 申请Service业务层处理
  */
@@ -383,5 +386,21 @@ public class ApplyServiceImpl implements IApplyService {
             list.add(dcwsInvoiceVo);
         }
         return list;
+    }
+    /**
+     * 查询已完成finish待生成PDF的申请列表，分页
+     */
+    @Override
+    public Page<TaskNodeDataVo> queryPageApplyPDF() {
+        LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
+        lqw.eq(TaskNodeData::getStatus, BusinessStatusEnum.FINISH.getStatus());
+        lqw.eq(TaskNodeData::getStorageFileStatus, STORAGEFILESTATUS_4.getCode());// 待生成PDF
+        PageQuery pageQuery = new PageQuery();
+        pageQuery.setPageNum(1);
+        pageQuery.setPageSize(10);
+        // 查询所有枚举中的申请类型交易
+        lqw.in(TaskNodeData::getApplyType,Arrays.stream(values()).map(ApplyTypeEnum::getCode).toList());
+        lqw.orderByDesc(BaseEntity::getCreateTime);
+        return taskNodeDataMapper.selectVoPage(pageQuery.build(), lqw);
     }
 }

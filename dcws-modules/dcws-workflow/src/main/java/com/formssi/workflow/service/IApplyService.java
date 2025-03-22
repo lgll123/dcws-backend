@@ -1,6 +1,7 @@
 package com.formssi.workflow.service;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
@@ -70,4 +71,9 @@ public interface IApplyService {
      * 上传发票并匹配信息
      */
     List<DcwsInvoiceVo> uploadInvoice(String fileIds) throws Exception;
+
+    /**
+     * 查询已完成finish待生成PDF的申请列表，分页
+     */
+    Page<TaskNodeDataVo> queryPageApplyPDF();
 }

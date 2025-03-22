@@ -15,6 +15,7 @@ import com.formssi.system.domain.bo.SealInfoBo;
 import com.formssi.system.domain.vo.*;
 import com.formssi.system.mapper.*;
 import com.formssi.system.service.ISealInfoService;
+import com.formssi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,13 +36,23 @@ public class SealInfoServiceImpl implements ISealInfoService {
 
     private final SealInfoMapper baseMapper;
 
+    private final ISysUserService iSysUserService;
+
     /**
      * 查询印章列表
      */
     @Override
     public List<SealInfoVo> selectSealInfoList(SealInfoBo info) {
         LambdaQueryWrapper<SealInfo> lqw = buildQueryWrapper(info);
-        return baseMapper.selectVoList(lqw);
+        List<SealInfoVo> sealInfoVos = baseMapper.selectVoList(lqw);
+        sealInfoVos.forEach(e ->{
+            SysUserVo u1 = iSysUserService.selectUserById(Long.valueOf(e.getSealUser()));
+            if(!ObjectUtil.isEmpty(u1)){
+                e.setSealUserName(u1.getUserName());
+            }
+
+        });
+        return sealInfoVos;
     }
     /**
      * 获取印章列表-分页
@@ -49,6 +60,14 @@ public class SealInfoServiceImpl implements ISealInfoService {
     @Override
     public TableDataInfo<SealInfoVo> selectPageSealList(SealInfoBo info, PageQuery pageQuery) {
         Page<SealInfoVo> result = baseMapper.selectVoPage(pageQuery.build(), this.buildQueryWrapper(info));
+        List<SealInfoVo> records = result.getRecords();
+        records.forEach(e ->{
+            SysUserVo u1 = iSysUserService.selectUserById(Long.valueOf(e.getSealUser()));
+            if(!ObjectUtil.isEmpty(u1)){
+                e.setSealUserName(u1.getUserName());
+            }
+
+        });
         return TableDataInfo.build(result);
     }
 

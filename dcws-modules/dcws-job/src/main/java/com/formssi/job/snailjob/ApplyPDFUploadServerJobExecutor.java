@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import static com.formssi.workflow.common.enums.ApplyTypeEnum.of;
-import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
 
 /**
  * @author opensnail
@@ -60,14 +59,10 @@ public class ApplyPDFUploadServerJobExecutor {
                     continue;
                 }
                 DcwsApplyFilePDFCreateStrategy dcwsApplyFilePDFCreateStrategy = SpringUtils.getBean(applyTypeEnum.getName());
-
                 // 转成PDF
-                Map<String, Object> pdfResultMap = dcwsApplyFilePDFCreateStrategy.process(of(taskNodeDataVo.getApplyType()).getName(), taskNodeDataVo);
-                byte[] pdfBytes = (byte[])pdfResultMap.get(PDFBYTES);
-                String fileName = (String)pdfResultMap.get(FILENAME);
-                Map<String, Object> documentServerParam = (Map<String, Object>)pdfResultMap.get(DOCUMENTSERVERPARAM);
+                Map<String, Object> pdfResultMap = dcwsApplyFilePDFCreateStrategy.process(applyTypeEnum.getName(), taskNodeDataVo);
                 // 上传PDF到minio/document server
-                uploadFileServerService.uploadFileMinioAndDocumentServer(pdfBytes,fileName,documentServerParam,taskNodeDataVo);
+                uploadFileServerService.uploadFileMinioAndDocumentServer(pdfResultMap,taskNodeDataVo);
 //                SnailJobLog.LOCAL.info("taskNodeDataMapper.updateById result:{}", ret);
             } catch (Exception e) {
                 log.error("PDF生成失败{}", e.getMessage(), e);

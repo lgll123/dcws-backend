@@ -61,7 +61,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.formssi.workflow.common.enums.ApplyTypeEnum.values;
-import static com.formssi.workflow.common.enums.StorageFileStatusEnum.STORAGEFILESTATUS_4;
+import static com.formssi.workflow.common.enums.StorageFileStatusEnum.STORAGE_FILE_STATUS_4;
 
 /**
  * 申请Service业务层处理
@@ -394,7 +394,7 @@ public class ApplyServiceImpl implements IApplyService {
     public Page<TaskNodeDataVo> queryPageApplyPDF() {
         LambdaQueryWrapper<TaskNodeData> lqw = Wrappers.lambdaQuery();
         lqw.eq(TaskNodeData::getStatus, BusinessStatusEnum.FINISH.getStatus());
-        lqw.eq(TaskNodeData::getStorageFileStatus, STORAGEFILESTATUS_4.getCode());// 待生成PDF
+        lqw.eq(TaskNodeData::getStorageFileStatus, STORAGE_FILE_STATUS_4.getCode());// 待生成PDF
         PageQuery pageQuery = new PageQuery();
         pageQuery.setPageNum(1);
         pageQuery.setPageSize(10);

@@ -38,6 +38,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -77,7 +79,10 @@ public class UploadFileServerService {
             .build();
 
     // 上传到minio文件服务器和档案系统服务器
-    public void uploadFileMinioAndDocumentServer(byte[] pdfBytes,String fileName,Map<String, Object> documentServerParam,Object dataObject){
+    public void uploadFileMinioAndDocumentServer(Map<String, Object> pdfResultMap,Object dataObject){
+        byte[] pdfBytes = (byte[])pdfResultMap.get(PDFBYTES);
+        String fileName = (String)pdfResultMap.get(FILENAME);
+        Map<String, Object> documentServerParam = (Map<String, Object>)pdfResultMap.get(DOCUMENTSERVERPARAM);
         TaskNodeDataVo taskNodeDataVo = (TaskNodeDataVo) dataObject;
         String storageFileStatus = "0";//生成申请单PDF到minio/档案系统服务器状态 1-成功 0-失败 2-minio成功 3-档案系统成功 4-待处理
         // 上传到minio文件服务器

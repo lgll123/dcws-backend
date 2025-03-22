@@ -1,7 +1,6 @@
 package com.formssi.workflow.service.strategy;
 
 import cn.hutool.core.convert.Convert;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
@@ -18,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,17 +151,10 @@ public class DcwsServiceApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCr
 
             // 生成PDF
             byte[] pdfBytes = createApplyFilePDFService.generatePdf(templateName, data);
-            String documentTypeId=null;
-            String storagePathId=null;
-            String[] tags=null;
-            String objName=null;
-            String applyType = taskNodeDataVo.getApplyType();//19 IT 21 非IT
-            if("23".equals(applyType)){
-                documentTypeId="3";//TODO 需要维护
-                storagePathId="6";
-                tags=new String[]{"16"};
-                objName="服务申请-";
-            }
+            String documentTypeId = "3";//TODO 需要维护
+            String storagePathId = "6";
+            String[] tags = new String[]{"16"};//TODO 在档案系统新增
+            String objName = "服务申请-";
             Map<String, Object> documentServerParam = MapUtil.createMap(HashMap.class);
             documentServerParam.put(DOCUMENTTYPEID,documentTypeId);//档案系统文件类型
             documentServerParam.put(STORAGEPATHID,storagePathId);//档案系统文件路径

@@ -148,7 +148,7 @@ public class DcwsServiceApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCr
             // 生成PDF
             byte[] pdfBytes = createApplyFilePDFService.generatePdf(templateName, data);
             String documentTypeId = "3";//TODO 需要维护
-            String storagePathId = "6";
+            String storagePathId = "6";//TODO 需要维护
             String[] tags = new String[]{"16"};//TODO 在档案系统新增
             String objName = "服务申请-";
             Map<String, Object> documentServerParam = MapUtil.createMap(HashMap.class);

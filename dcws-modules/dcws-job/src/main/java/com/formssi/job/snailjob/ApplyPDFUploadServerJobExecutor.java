@@ -62,7 +62,7 @@ public class ApplyPDFUploadServerJobExecutor {
                 DcwsApplyFilePDFCreateStrategy dcwsApplyFilePDFCreateStrategy = SpringUtils.getBean(applyTypeEnum.getName());
 
                 // 转成PDF
-                Map<String, Object> pdfResultMap = dcwsApplyFilePDFCreateStrategy.process(of(taskNodeDataVo.getApplyType()).getName(), taskNodeDataVo);
+                Map<String, Object> pdfResultMap = dcwsApplyFilePDFCreateStrategy.process(applyTypeEnum.getName(), taskNodeDataVo);
                 byte[] pdfBytes = (byte[])pdfResultMap.get(PDFBYTES);
                 String fileName = (String)pdfResultMap.get(FILENAME);
                 Map<String, Object> documentServerParam = (Map<String, Object>)pdfResultMap.get(DOCUMENTSERVERPARAM);

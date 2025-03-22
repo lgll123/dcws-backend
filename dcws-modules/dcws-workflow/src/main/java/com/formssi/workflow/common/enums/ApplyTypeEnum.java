@@ -32,7 +32,12 @@ public enum ApplyTypeEnum {
     /**
      * 资料申请
      */
-    INFO_APPLY("24", "infoApply","资料申请");
+    INFO_APPLY("24", "infoApply","资料申请"),
+
+    /**
+     * 档案移交申请
+     */
+    INFO_CHANGE("28", "infoChange","档案移交申请");
 
     private final String code;
     private final String name;

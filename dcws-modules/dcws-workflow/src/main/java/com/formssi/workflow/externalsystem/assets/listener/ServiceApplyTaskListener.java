@@ -31,7 +31,8 @@ public class ServiceApplyTaskListener implements TaskListener {
         Map<String, Object> variables = delegateTask.getVariables();
         Map<String, Object> taskNodeData = null;
         Map<String,Object> map;
-        Map<String, Object> purchaseDetail;
+        Map<String, Object> purchaseDetail = null;
+        Map<String, Object> ITDept = null;
         String materialInfoJson = null;
         try {
             Object entity = variables.get("entity");
@@ -39,15 +40,16 @@ public class ServiceApplyTaskListener implements TaskListener {
                 try {
                     ObjectMapper objectMapper = new ObjectMapper();
                     taskNodeData = ((Map<String, Object>)objectMapper.readValue(JSON.toJSONString(entity), Map.class));
-//                    map = objectMapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
-//                    purchaseDetail = (Map<String, Object>) map.get("purchaseDetail");
+                    map = objectMapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
+                    ITDept = (Map<String, Object>) map.get("ITDept");
+//                    purchaseDetail = objectMapper.readValue(Convert.toStr(ITDept.get("purchaseDetail")), Map.class);
 //                    materialInfoJson = JSON.toJSONString(purchaseDetail.get("materialInfo"));
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);
                 }
             }
             DcwsProjectBo projectBo =new DcwsProjectBo();
-            projectBo.setProjectName(StringUtils.blankToDefault(Convert.toStr(taskNodeData.get("projectName")),"服务申请-采购项目"));
+            projectBo.setProjectName(StringUtils.blankToDefault(Convert.toStr(ITDept.get("projectName")),"服务申请-采购项目"));
             projectBo.setProjectType("2");
             Map<String, Object> finalTaskNodeData = taskNodeData;
             TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {

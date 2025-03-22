@@ -16,23 +16,23 @@ public enum StorageFileStatusEnum {
     /**
      * 失败
      */
-    STORAGEFILESTATUS_0("0", "失败"),
+    STORAGE_FILE_STATUS_0("0", "失败"),
     /**
      * 成功
      */
-    STORAGEFILESTATUS_1("1", "成功"),
+    STORAGE_FILE_STATUS_1("1", "成功"),
     /**
      * minio成功
      */
-    STORAGEFILESTATUS_2("2", "minio成功"),
+    STORAGE_FILE_STATUS_2("2", "minio成功"),
     /**
      * 档案系统成功
      */
-    STORAGEFILESTATUS_3("3", "档案系统成功"),
+    STORAGE_FILE_STATUS_3("3", "档案系统成功"),
     /**
      * 待处理
      */
-    STORAGEFILESTATUS_4("4", "待处理");
+    STORAGE_FILE_STATUS_4("4", "待处理");
 
     private final String code;
     private final String desc;

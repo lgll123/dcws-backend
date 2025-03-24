@@ -145,7 +145,7 @@ public class SealInfoServiceImpl implements ISealInfoService {
         lqw.like(ObjectUtil.isNotNull(bo.getSealName()), SealInfo::getSealName, bo.getSealName());
         lqw.between(params.get("beginTime") != null && params.get("endTime") != null,
                 SealInfo::getCreateTime, params.get("beginTime"), params.get("endTime"));
-        lqw.orderByAsc(SealInfo::getSealSort);
+        lqw.orderByAsc(SealInfo::getCreateTime);
         return lqw;
     }
 

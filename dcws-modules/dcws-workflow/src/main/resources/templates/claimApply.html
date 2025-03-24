@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="image/svg+xml" href="/vite.svg" /> -->
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+</head>
+<style>
+    @page {
+      size: A4;          /* 固定为A4尺寸 */
+      margin: 20mm;      /* 设置页边距（可选） */
+    }
+
+    html,
+    body {
+      font-family: SourceHanSansCN, Microsoft YaHei, Helvetica Neue, Helvetica, PingFang SC, Arial, "sans-serif";
+      color: #000;
+      width: 595px;
+      margin: 0 auto;
+    }
+    .basic-info table {
+      width: 100%;
+      padding-left: 43px;
+      margin-top: 10px;
+      border-collapse: collapse;
+      border: none;
+    }
+    .basic-info table th,
+    .basic-info table td {
+      text-align: left;
+    }
+    .basic-info .light-text td {
+      padding: 5px 0 10px 0;
+    }
+    .title-divider th {
+      padding-bottom: 7px;
+      border-bottom: 1px solid #000;
+    }
+    .table-apply-info {
+      font-size: 11px;
+      font-weight: 400;
+    }
+    .table-apply-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    .apply-info .light-text td,
+    .clear-info .light-text td {
+      padding-top: 8px;
+    }
+    .flow-chat .process-line .process-line__item {
+      position: relative;
+      padding-bottom: 25px;
+      padding-left: 15px;
+      border-left: 2px solid #666;
+      z-index: 1;
+    }
+    .flow-chat .circle-container {
+      position: absolute;
+      top: 7px;
+      left: -1px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      z-index: 1;
+      line-height: 1;
+      transform: translate(-50%, -50%);
+      background-color: #666;
+    }
+    .flow-chat .status-tag {
+      color: #333;
+      background-color: #e9e9e9;
+      padding: 2px;
+    }
+    .flow-chat .process-line .process-line__item:last-child {
+      border: none;
+    }
+    .flow-chat .process-line .process-line__item:not(:first-child) {
+      margin-top: -5px;
+    }
+    .flow-chat .process-line .process-line__item:last-child .circle-container {
+        left: 1px;
+    }
+</style>
+<body>
+<!-- pdf头部 -->
+<div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
+    <div class="left" style="float: left">
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">费用报销清单</span>
+        <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
+    </div>
+    <img src="./seal.png" alt="" width="80" style="float: right">
+    <!--<img th:src="@{/templates/seal.png}" alt="" width="80">-->
+</div>
+<!-- 基础信息 -->
+<div class="basic-info">
+    <div style="font-size: 14px;font-weight: 700;">基础信息</div>
+    <div style="padding-left: 43px">
+        <table>
+            <tr style="font-size: 13px;font-weight: 700;">
+                <th>申请部门</th>
+                <th>申请人</th>
+                <th>申请日期</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.applyDept}"></td>
+                <td th:text="${data.applicant}"></td>
+                <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
+            </tr>
+            <tr style="font-size: 13px;font-weight: 700;">
+                <th>公司</th>
+                <th>报销部门</th>
+                <th>报销人</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.company}"></td>
+                <td th:text="${data.department}"></td>
+                <td th:text="${data.reimbursement}"></td>
+            </tr>
+            <tr style="font-size: 13px;font-weight: 700;">
+                <th>立项编码</th>
+                <th>领款人</th>
+                <th>归属客户</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.projectCode}"></td>
+                <td th:text="${data.payee}"></td>
+                <td th:text="${data.customer}"></td>
+            </tr>
+        </table>
+        <div>
+            <div style="margin-top: 10px;overflow: hidden;">
+                <div style="float: left; margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</div>
+                <div class="light-text" th:text="${data.remark}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 申请明细 -->
+<div class="basic-info clear-info" style="margin-top: 20px;">
+    <div style="font-size: 14px;font-weight: 700;">申请明细</div>
+    <div>
+        <!-- 费用明细 -->
+        <div class="table-apply-title" style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px;">费用明细</div>
+        <div style="padding-left: 43px; font-size: 8px;">
+            <table class="table-apply-info">
+                <thead class="title-divider">
+                    <tr>
+                        <th>归属期间</th>
+                        <th style="text-align: right;">用途</th>
+                        <th style="text-align: right;">费用类别</th>
+                        <th style="text-align: right;">金额</th>
+                    </tr>
+                </thead>
+                <tbody class="light-text">
+                    <tr th:each="item : ${data.costDetail}">
+                        <td th:text="${item.belongingDate}" style="white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></td>
+                        <td th:text="${item.purpose}" style="text-align: right;"></td>
+                        <td th:text="${item.purposeType}" style="text-align: right;"></td>
+                        <td th:text="${item.amount}" style="text-align: right;"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- 费用明细总计 -->
+        <div style="padding-left: 43px; font-size: 11px;font-weight: 400;">
+            <div style="overflow: hidden;padding-right: 43px;">
+                <span style="float: left">总计</span>
+                <span  style="float: right;font-weight: 900;" class="light-text" th:text="${data.costDetailCount}"></span>
+            </div>
+            <div style="overflow: hidden; margin-top: 10px;padding-right: 43px;">
+                <span style="float: left">金额大写</span>
+                <span style="float: right;font-weight: 900; "  th:text="${data.costDetailCountCapital}"></span>
+            </div>
+        </div>
+        <!-- 发票明细 -->
+        <div class="table-apply-title" style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px;">发票明细</div>
+        <div style="padding-left: 43px; font-size: 8px;">
+            <table class="table-apply-info">
+                <thead class="title-divider">
+                    <tr>
+                        <th>发票名称</th>
+                        <th style="text-align: right;">校验</th>
+                        <th style="text-align: right;">金额</th>
+                    </tr>
+                </thead>
+                <tbody class="light-text">
+                    <tr th:each="item : ${data.invoiceDetail}">
+                        <td th:text="${item.invoiceName}" style="white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></td>
+                        <td th:text="${item.verify}" style="text-align: right;"></td>
+                        <td th:text="${item.amount}" style="text-align: right;"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- 发票明细总计 -->
+        <div style="padding-left: 43px; font-size: 11px;font-weight: 400;">
+            <div style="overflow: hidden; margin-top: 10px;padding-right: 43px;">
+                <span style="float: left">金额大写</span>
+                <span style="float: right;font-weight: 900; "  th:text="${data.invoiceDetailCountCapital}"></span>
+            </div>
+        </div>
+        <!-- 附件明细 -->
+        <div class="table-apply-title" style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px;">附件明细</div>
+        <div style="padding-left: 43px; font-size: 8px;">
+            <table class="table-apply-info">
+                <thead class="title-divider">
+                    <tr>
+                        <th>附件名称</th>
+                        <th style="text-align: right;">备注</th>
+                    </tr>
+                </thead>
+                <tbody class="light-text">
+                    <tr th:each="item : ${data.attachment}">
+                        <td th:text="${item.fileName}" style="white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></td>
+                        <td th:text="${item.remark}" style="text-align: right;"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="flow-chat" style="margin-top: 20px;">
+        <div style="font-size: 14px;font-weight: 700; margin-bottom: 12px">审批记录</div>
+        <div class="process-line" style="padding-left: 58px;"  >
+
+            <div class="process-line__item" th:each="record : ${data.historyRecords}" >
+                <div class="title">
+                    <div class="info" style="font-size: 11px;font-weight: 400;">
+                        <div>
+                            <span style="margin-right: 12px;" th:text="${#dates.format(record.endTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                            <span class="status-tag" style="margin-right: 12px;" th:text="${record.name}"></span>
+                            <span class="status-tag" th:text="${record.statusName}"></span>
+                        </div>
+                        <div style="margin-top: 7px;">
+                            <span class="label">处理人：</span>
+                            <span class="value" th:text="${record.nickName}"></span>
+                        </div>
+                        <div class="comment" style="margin-top: 7px;">
+                            <span class="label">审批意见：</span>
+                            <span class="value" th:text="${record.comment}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="circle-container"></div>
+                <div class="line"> </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+</html>

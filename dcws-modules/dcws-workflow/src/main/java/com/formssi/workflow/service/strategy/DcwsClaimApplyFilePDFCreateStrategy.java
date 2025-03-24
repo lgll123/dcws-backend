@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
 
@@ -63,13 +60,24 @@ public class DcwsClaimApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCrea
             data.put("invoiceDetailCount",applyDetails.get("invoiceDetailCount"));
             data.put("invoiceDetailCountCapital",applyDetails.get("invoiceDetailCountCapital"));
             //费用明细-costDetail、发票明细-invoiceDetail、附件明细-attachment
-            ArrayList<Map<String, Object>> costDetail = (ArrayList<Map<String, Object>>) applyDetails.get("costDetail");
-            ArrayList<Map<String, Object>> invoiceDetail = (ArrayList<Map<String, Object>>) applyDetails.get("invoiceDetail");
-            ArrayList<Map<String, Object>> attachment = (ArrayList<Map<String, Object>>) applyDetails.get("attachment");
-            data.put("costDetail", costDetail);
-            data.put("invoiceDetail", invoiceDetail);
-            data.put("attachment", attachment);
-
+            if(!Objects.isNull(applyDetails.get("costDetail"))){
+                List<Map<String,Object>> costDetail = objectMapper.readValue(JSONUtil.toJsonStr(applyDetails.get("costDetail")), List.class);
+                for (Map<String, Object> costDetailMap : costDetail){
+                    costDetailMap.put("purposeType",Objects.isNull(costDetailMap.get("purposeType")) ? "": costDetailMap.get("purposeType"));
+                }
+                data.put("costDetail", costDetail);
+            }
+            if(!Objects.isNull(applyDetails.get("invoiceDetail"))){
+                List<Map<String,Object>> invoiceDetail = objectMapper.readValue(JSONUtil.toJsonStr(applyDetails.get("invoiceDetail")), List.class);
+                for (Map<String, Object> invoiceMap : invoiceDetail){
+                    invoiceMap.put("verify","Y".equals(invoiceMap.get("verify")) ? "通过":"不通过");
+                }
+                data.put("invoiceDetail", invoiceDetail);
+            }
+            if(!Objects.isNull(applyDetails.get("attachment"))){
+                List<Map<String,Object>> attachment = objectMapper.readValue(JSONUtil.toJsonStr(applyDetails.get("attachment")), List.class);
+                data.put("attachment", attachment);
+            }
             // 设置动态租户ID,默认000000（审批记录查询接口用到了租户ID）
             TenantHelper.setDynamic(StringUtils.blankToDefault(taskNodeDataVo.getTenantId(),"000000"));
             // 审批记录

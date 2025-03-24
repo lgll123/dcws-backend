@@ -18,6 +18,11 @@ public class DcwsInvoiceVo {
      */
     private String fileId;
 
+    /**
+     * 发票文件url
+     */
+    private String fileUrl;
+
     /** 
      * 发票名称
      */

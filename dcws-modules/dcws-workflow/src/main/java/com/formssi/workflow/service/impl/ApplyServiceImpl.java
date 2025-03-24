@@ -375,8 +375,10 @@ public class ApplyServiceImpl implements IApplyService {
                 associationFileIds.add(sysFileVo.getAssociationFileId());
                 SysFileVo sysFileVoJpg = sysFileService.listByFileIds(associationFileIds).get(0);
                 file = minioUtil.download("dcws-assets",sysFileVoJpg.getFileName());
+                dcwsInvoiceVo.setFileUrl(minioUtil.getPermanentTimePreviewUrl("dcws-assets",sysFileVoJpg.getFileName()));
             }else{
                 file = minioUtil.download("dcws-assets",sysFileVo.getFileName());
+                dcwsInvoiceVo.setFileUrl(minioUtil.getPermanentTimePreviewUrl("dcws-assets",sysFileVo.getFileName()));
             }
             //获取发票信息
             String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,"请识别图中的购买方名称,购买方纳税人识别号，价税合计小写(不带币种)，并输出购买方名称重命名为:companyname,购买方纳税人识别号重命名为:taxnum,价税合计小写(不带币种)重命名为:amount的标准json字符串");

@@ -45,8 +45,8 @@ public class ReimbursementApplyTaskExeListener implements ExecutionListener {
                 delegateTask.setVariable("needDeptApproval","Y");
             };
             if(!Objects.isNull(dcwsFinanceApprovalVo)){
-                delegateTask.setVariable("accountantFirst", Objects.isNull(dcwsFinanceApprovalVo.getAccountantFirst())?0:dcwsFinanceApprovalVo.getAccountantFirst());
-                delegateTask.setVariable("accountantSecond",Objects.isNull(dcwsFinanceApprovalVo.getAccountantSecond())?0:dcwsFinanceApprovalVo.getAccountantSecond());
+                delegateTask.setVariable("accountantFirst", dcwsFinanceApprovalVo.getAccountantFirst());
+                delegateTask.setVariable("accountantSecond",dcwsFinanceApprovalVo.getAccountantSecond());
                 delegateTask.setVariable("generalLedger",dcwsFinanceApprovalVo.getGeneralLedger());
                 delegateTask.setVariable("taxCommissioner",dcwsFinanceApprovalVo.getTaxCommissioner());
                 delegateTask.setVariable("financialManager",dcwsFinanceApprovalVo.getFinancialManager());

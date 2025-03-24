@@ -398,7 +398,7 @@ ureport:
 #公司信息
 companyInfo:
   #公司名称
-  name: "深圳市四方精创资讯股份有限公司"
+  name: "深圳四方精创资讯股份有限公司"
   #纳税人识别号
   taxpayerIdentificationNumber: "91440300754269153R"
   #VL图片识别模型token

@@ -51,6 +51,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,6 +83,12 @@ public class ApplyServiceImpl implements IApplyService {
 
     @Autowired
     private MinioUtil minioUtil;
+
+    @Value("${companyInfo.name}")
+    private String name;//公司名称
+
+    @Value("${companyInfo.taxpayerIdentificationNumber}")
+    private String taxpayerIdentificationNumber;//纳税人识别号
 
     /**
      * 查询申请
@@ -372,7 +379,7 @@ public class ApplyServiceImpl implements IApplyService {
                 file = minioUtil.download("dcws-assets",sysFileVo.getFileName());
             }
             //获取发票信息
-            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,"请识别图中的纳税人识别号，价税合计小写(不带币种)，并输出为纳税人识别号重命名为:taxnum,价税合计小写重命名为:amount的标准json字符串");
+            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,"请识别图中的购买方名称,购买方纳税人识别号，价税合计小写(不带币种)，并输出购买方名称重命名为:companyname,购买方纳税人识别号重命名为:taxnum,价税合计小写(不带币种)重命名为:amount的标准json字符串");
             if (StringUtils.isEmpty(invoiceInfo)){
                 throw new ServiceException("发票识别错误");
             }
@@ -380,9 +387,9 @@ public class ApplyServiceImpl implements IApplyService {
             if(Objects.isNull(invoice.get("taxnum")) || Objects.isNull(invoice.get("amount"))){
                 throw new ServiceException("发票识别错误");
             }
-            dcwsInvoiceVo.setVerify("91440300754269153R".equals(invoice.get("taxnum")) ? "Y":"N");
+            log.info("发票名称:" + sysFileVo.getFileName() + "\n" + "识别信息:" +invoiceInfo);
+            dcwsInvoiceVo.setVerify(name.equals(invoice.get("companyname")) && taxpayerIdentificationNumber.equals(invoice.get("taxnum")) ? "Y":"N");
             dcwsInvoiceVo.setAmount(new BigDecimal(String.valueOf(invoice.get("amount"))));
-            //dcwsInvoiceVo.setInvoiceType((String) invoice.get("invoiceType"));
             list.add(dcwsInvoiceVo);
         }
         return list;

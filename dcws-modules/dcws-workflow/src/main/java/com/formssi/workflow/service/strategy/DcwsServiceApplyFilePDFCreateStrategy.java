@@ -69,19 +69,11 @@ public class DcwsServiceApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCr
             data.put("purchase",ITDept.get("purchase"));//1:采购
             data.put("projectName",ITDept.get("projectName"));//1:采购项目名称
             data.put("purchaseDetail", ITDept.get("purchaseDetail"));
-            data.put("hardware", ITDept.get("hardware"));//资产信息
+//            data.put("hardware", ITDept.get("hardware"));//资产信息
             Map<String, Object> extMaint = (Map<String, Object>) ITDept.get("extMaint");
             List<Map<String, Object>> processMethod = ObjectUtil.isEmpty(extMaint)?null:(List<Map<String, Object>>) extMaint.get("processMethod");
             if(!ObjectUtil.isEmpty(processMethod)){
-                StringBuilder process = new StringBuilder();
-                for (int i = 0; i < processMethod.size(); i++) {
-                    if(i==processMethod.size()-1){
-                        process.append(processMethod.get(i).get("name"));
-                    }else {
-                        process.append(processMethod.get(i).get("name")).append(",");
-                    }
-                }
-                extMaint.put("processMethod",process.toString());
+                extMaint.put("processMethod",StringUtils.join(processMethod.stream().map(p -> Convert.toStr(p.get("name"))).toList(),","));
             }else {
                 extMaint.put("processMethod","");
             }
@@ -92,30 +84,14 @@ public class DcwsServiceApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCr
                 if(ObjectUtil.isEmpty(categories)){
                     handelContent.put("categories","");
                 }else {
-                    StringBuilder category = new StringBuilder();
-                    for (int i = 0; i < categories.size(); i++) {
-                        if(i==categories.size()-1){
-                            category.append(categories.get(i).get("name"));
-                        }else {
-                            category.append(categories.get(i).get("name")).append(",");
-                        }
-                    }
-                    handelContent.put("categories",category.toString());
+                    handelContent.put("categories",StringUtils.join(categories.stream().map(p -> Convert.toStr(p.get("name"))).toList(),","));
                 }
 
                 List<Map<String, Object>> handelMethods = (List<Map<String, Object>>) handelContent.get("handelMethod");
-                if(ObjectUtil.isEmpty(categories)){
-                    handelContent.put("categories","");
+                if(ObjectUtil.isEmpty(handelMethods)){
+                    handelContent.put("handelMethod","");
                 }else {
-                    StringBuilder handelMethod = new StringBuilder();
-                    for (int i = 0; i < handelMethods.size(); i++) {
-                        if (i == handelMethods.size() - 1) {
-                            handelMethod.append(handelMethods.get(i).get("name")).append(",");
-                        } else {
-                            handelMethod.append(handelMethods.get(i).get("name"));
-                        }
-                    }
-                    handelContent.put("handelMethod", handelMethod.toString());
+                    handelContent.put("handelMethod",StringUtils.join(handelMethods.stream().map(p -> Convert.toStr(p.get("name"))).toList(),","));
                 }
             }else {
                 handelContent.put("categories","");

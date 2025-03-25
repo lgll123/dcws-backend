@@ -167,33 +167,35 @@
     </div>
 </div>
 <!-- 资产信息 -->
-<div class="basic-info apply-info" style="margin-top: 20px;" th:if="${data.hardware != null and not #lists.isEmpty(data.hardware)}">
-    <div  style="font-size: 14px;font-weight: 700;">资产信息</div>
+<div class="basic-info apply-info" style="margin-top: 20px;" th:if="${data.extMaint != null and not #lists.isEmpty(data.extMaint)}">
+    <div  style="font-size: 14px;font-weight: 700;">资产维修信息</div>
     <div style="padding-left: 43px">
         <table class="table-apply-info">
             <thead class="title-divider">
             <tr>
                 <th>资产名称</th>
-                <th style="text-align: right;">资产标签</th>
-                <th style="text-align: right;">序列号</th>
-                <th style="text-align: right;">型号</th>
-                <th style="text-align: right;">类别</th>
+                <th style="text-align: right;">供应商</th>
+                <th style="text-align: right;">处理人</th>
+                <th style="text-align: right;">联系电话</th>
+                <th style="text-align: right;">接单日期</th>
+                <th style="text-align: right;">维修金额</th>
             </tr>
             </thead>
             <tbody class="light-text">
-            <tr th:each="item : ${data.hardware}">
+            <tr th:each="item : ${data.extMaint}">
                 <td th:text="${item.name}"></td>
-                <td th:text="${item.assetTag}" style="text-align: right;"></td>
-                <td th:text="${item.serial}" style="text-align: right;"></td>
-                <td th:text="${item.modelNo}" style="text-align: right;"></td>
-                <td th:text="${item.categoryName}" style="text-align: right;"></td>
+                <td th:text="${item.supplierName}" style="text-align: right;"></td>
+                <td th:text="${item.handler}" style="text-align: right;"></td>
+                <td th:text="${item.telephone}" style="text-align: right;"></td>
+                <td th:text="${item.orderDate}" style="text-align: right;"></td>
+                <td th:text="${item.maintAmount}" style="text-align: right;"></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
 <!-- 外部维修 -->
-<div class="basic-info" style="margin-top: 20px;"  th:if="${data.extMaint != null}">
+<!--<div class="basic-info" style="margin-top: 20px;"  th:if="${data.extMaint != null}">
     <div style="font-size: 14px;font-weight: 700;">外部维修</div>
     <div style="padding-left: 43px">
         <table>
@@ -219,7 +221,7 @@
             </tr>
         </table>
     </div>
-</div>
+</div>-->
 <!-- 采购详情 -->
 <div class="basic-info clear-info" style="margin-top: 20px;" th:if="${data.purchase == '1' }">
     <div  style="font-size: 14px;font-weight: 700;">采购详情</div>

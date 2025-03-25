@@ -14,13 +14,11 @@ import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.service.IAssetsCheckOutRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.TaskListener;
+import org.flowable.engine.impl.el.FixedValue;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.ASSETS_STATUS_12;
 
@@ -29,6 +27,7 @@ import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant
 public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
     private static final IAssetsCheckOutRecordService assetsCheckOutRecordService = SpringUtils.getBean(IAssetsCheckOutRecordService.class);
     private static final IExternalSystemAPIStrategy instance = SpringUtils.getBean("assets" + IExternalSystemAPIStrategy.BASE_NAME);
+    private FixedValue ITClear;
 
     @Override
     public void notify(DelegateTask delegateTask) {
@@ -40,16 +39,18 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             Map<String, Object> taskNodeData = (Map<String, Object>)mapper.readValue(JSONUtil.toJsonStr(entity), Map.class);
             if (ObjectUtil.isEmpty(taskNodeData)) return;
             Map<String ,Object> map = mapper.readValue(Convert.toStr(taskNodeData.get("applyDetail")), Map.class);
-            //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
-            ArrayList<Map<String, Object>> hardware = (ArrayList<Map<String, Object>>) map.get("hardware");
-            ArrayList<Map<String, Object>> licenses = (ArrayList<Map<String, Object>>) map.get("licenses");
-            ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) map.get("accessories");
-            ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) map.get("components");
-            ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) map.get("consumables");
-            Long assetUserId = Convert.toLong(taskNodeData.get("assetUserId"));
+            // 统一处理checkout 集合数据,根据isIT 是否IT资产（0否1是），ITClear （0否1是）在流程里的监听器（IT澄清节点和行政澄清节点）配置参数值和isIT对应
+            // IT澄清节点 checkout IT资产,行政澄清节点checkout 非IT资产
+            List<Map<String, Object>> hardware = selectByIsIT(map.get("hardware"));//资产-hardware
+            List<Map<String, Object>> licenses = selectByIsIT(map.get("licenses"));//许可证-licenses
+            List<Map<String, Object>> accessories = selectByIsIT(map.get("accessories"));//附属品-accessories
+            List<Map<String, Object>> components = selectByIsIT(map.get("components"));//组件-components
+            List<Map<String, Object>> consumables = selectByIsIT(map.get("consumables"));//消耗品-consumables
+            Long assetUserId = Convert.toLong(taskNodeData.get("assetUserId"));// 资产系统用户ID
             String taskNodeDataId = Convert.toStr(taskNodeData.get("id"));
+
             // 资产-hardware 借出
-            if (!CollectionUtil.isEmpty(hardware)) {
+            if(!ObjectUtil.isEmpty(hardware)) {
                 Map<String, String> requestBodyMap = new HashMap<>();
                 requestBodyMap.put("checkout_to_type", "user");
                 requestBodyMap.put("assigned_user", Convert.toStr(assetUserId));
@@ -95,18 +96,17 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
 }
 
     //附属品-accessories、组件-components、消耗品-consumables、资产-hardware 借出
-    private void checkOutByCategoryType(ArrayList<Map<String, Object>> assets,Long applicantId,String taskNodeDataId,Map<String, String> requestBodyMap,String categoryType){
+    private void checkOutByCategoryType(List<Map<String, Object>> assets,Long applicantId,String taskNodeDataId,Map<String, String> requestBodyMap,String categoryType){
+        DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
+        bo.setAssetsType(categoryType);
+        bo.setTaskNodeDataId(taskNodeDataId);
+        bo.setCheckOutUser(applicantId.toString());
+        bo.setAutoHandleNum(0);
+        bo.setStatus("1");//成功
+        bo.setCheckOutIn("1");
+        bo.setCheckType("1");
         for (int i = 0; i < assets.size(); i++) {
-            DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
-            bo.setAssetsType(categoryType);
             bo.setAssetsDetail(JSONUtil.toJsonStr(assets.get(i)));
-            bo.setTaskNodeDataId(taskNodeDataId);
-            bo.setCheckOutUser(applicantId.toString());
-            bo.setAutoHandleNum(0);
-            bo.setStatus("1");//成功
-            bo.setCheckOutIn("1");
-            bo.setCheckType("1");
-
             Integer id = (Integer) assets.get(i).get("id");
             String url = categoryType+"/"+id+"/checkout";
             try {
@@ -158,18 +158,18 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
     }
 
     //许可证-licenses 借出
-    private void checkOutLicenses(ArrayList<Map<String, Object>> licenses,Long applicantId,String taskNodeDataId){
+    private void checkOutLicenses(List<Map<String, Object>> licenses,Long applicantId,String taskNodeDataId){
+        DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
+        bo.setAssetsType("licenses");
+        bo.setTaskNodeDataId(taskNodeDataId);
+        bo.setCheckOutUser(applicantId.toString());
+        bo.setAutoHandleNum(0);
+        bo.setStatus("1");//成功
+        bo.setCheckType("1");
+        bo.setCheckOutIn("1");
+        bo.setMessage("许可证借出成功");
         for (int i = 0; i < licenses.size(); i++) {
-            DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
-            bo.setAssetsType("licenses");
             bo.setAssetsDetail(JSONUtil.toJsonStr(licenses.get(i)));
-            bo.setTaskNodeDataId(taskNodeDataId);
-            bo.setCheckOutUser(applicantId.toString());
-            bo.setAutoHandleNum(0);
-            bo.setStatus("1");//成功
-            bo.setCheckType("1");
-            bo.setCheckOutIn("1");
-            bo.setMessage("许可证借出成功");
             Integer id = (Integer) licenses.get(i).get("id");
             try {
                 Map<String, Object> responseMap = instance.process(null,"licenses/"+id+"/seats","get");
@@ -184,44 +184,79 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                     continue;
                 }
                 List<Map<String,Object>> maps = (List<Map<String,Object>>)responseMap.get("rows");
-                Integer seatId = maps.stream().filter(l -> l.get("assigned_user") == null && l.get("location") == null)
-                        .map(seat ->(Integer) seat.get("id"))
-                        .findFirst().orElse(0);
-                if(seatId==0){
-                    bo.setMessage("licenses可用库存不足 seatId = "+seatId);
+                List<Integer> seatIds = maps.stream().filter(l -> l.get("assigned_user") == null && l.get("location") == null)
+                        .map(seat -> (Integer) seat.get("id")).toList();
+                if(ObjectUtil.isEmpty(seatIds)){
+                    bo.setMessage("licenses可用库存不足，seatIds is null ");
                     bo.setStatus("0");//失败
                     bo.setCheckType("4");
                     // 记录物料checkOut 记录
                     saveCheckOutRecord(bo);
                     continue;
                 }
-                Map<String, String> requestBodyMap = new HashMap<>();
-                requestBodyMap.put("seat_id", Convert.toStr(seatId));
-                requestBodyMap.put("assigned_to", Convert.toStr(applicantId));
-                Map<String, Object> asset = (Map<String, Object>) licenses.get(i).get("asset");
-                if(CollectionUtil.isEmpty(asset)|| asset.get("id")==null){
-                    throw new ServiceException("licenses借出的资产id为空");
+                List<Map<String, Object>> assets = (List<Map<String, Object>>) licenses.get(i).get("asset");
+                if(CollectionUtil.isEmpty(assets)){
+                    log.info("licenses借出绑定资产列表为空,taskNodeDataId：{}", taskNodeDataId);
                 }
-                requestBodyMap.put("asset_id", Convert.toStr(asset.get("id")));
-                Map<String, Object> responseMap1 = instance.process(requestBodyMap,"licenses/"+id+"/seats/"+seatId,"put");
-                if("error".equals(responseMap1.get("status"))){
-                    log.info("资产系统API接口返回错误：" + responseMap1.get("messages"));
-                    bo.setMessage(responseMap1.get("messages").toString());
-                    bo.setCode(responseMap1.get("status").toString());
+                Integer applyNum = (Integer) licenses.get(i).get("applyNum");
+                if(ObjectUtil.isEmpty(applyNum)){
+                    bo.setMessage("applyNum is null");
                     bo.setStatus("0");//失败
-                    bo.setCheckType("1");
+                    bo.setCheckType("4");
+                    // 记录物料checkOut 记录
+                    saveCheckOutRecord(bo);
+                    continue;
                 }
-            } catch (ApiCallException e) {
+                if(applyNum ==0 || applyNum > seatIds.size()){
+                    log.info("taskNodeDataId：{} licenses借出数量applyNum:{} 剩余席位数量seatIds:{}",taskNodeDataId, applyNum, seatIds.size());
+                }
+                for (int j = 0; j < applyNum; j++) {
+                    try {
+                        if(j >= seatIds.size()) break;
+                        Map<String, String> requestBodyMap = new HashMap<>();
+                        requestBodyMap.put("seat_id", Convert.toStr(seatIds.get(j)));
+                        requestBodyMap.put("assigned_to", Convert.toStr(applicantId));
+                        if(!ObjectUtil.isEmpty(assets) && j < assets.size()){
+                            requestBodyMap.put("asset_id", Convert.toStr(assets.get(j).get("id")));
+                        }
+                        Map<String, Object> responseMap1 = instance.process(requestBodyMap,"licenses/"+id+"/seats/"+seatIds.get(j),"put");
+                        if("error".equals(responseMap1.get("status"))){
+                            log.info("资产系统API接口返回错误：" + responseMap1.get("messages"));
+                            bo.setMessage(responseMap1.get("messages").toString());
+                            bo.setCode(responseMap1.get("status").toString());
+                            bo.setStatus("0");//失败
+                            bo.setCheckType("1");
+                        }
+                    } catch (ApiCallException e) {
+                        bo.setStatus("0");//失败
+                        if(e.getCode()>0 && e.getCode()!=HttpStatus.SUCCESS){
+                            bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
+                        }
+                        bo.setCode(String.valueOf(e.getCode()));
+                        bo.setMessage(e.getMessage());
+                    }
+                    // 记录物料checkOut 记录
+                    saveCheckOutRecord(bo);
+                }
+
+            } catch (Exception e) {
                 bo.setStatus("0");//失败
-                if(e.getCode()>0 && e.getCode()!=HttpStatus.SUCCESS){
-                    bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
-                }
-                bo.setCode(String.valueOf(e.getCode()));
                 bo.setMessage(e.getMessage());
+                // 记录物料checkOut 记录
+                saveCheckOutRecord(bo);
             }
-            // 记录物料checkOut 记录
-            saveCheckOutRecord(bo);
+
         }
+    }
+
+    // 统一处理checkout 集合数据,根据isIT 是否IT资产（0否1是），ITClear （0否1是）在流程里的监听器（IT澄清节点和行政澄清节点）配置参数值和isIT对应
+    // IT澄清节点 checkout IT资产,行政澄清节点checkout 非IT资产
+    private List<Map<String,Object>> selectByIsIT(Object dataList) {
+        return  Optional.ofNullable(dataList)
+            .map(obj -> (List<Map<String, Object>>) obj)
+            .orElse(Collections.emptyList())
+                .stream()
+                .filter(m -> ITClear.getExpressionText().equals(Convert.toStr(m.get("isIT")))).toList();
     }
 
     // 统一保存记录
@@ -236,5 +271,10 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
             log.error("物料申请借出记录新增失败", e);
         }
     }
-
+    public FixedValue getITClear() {
+        return ITClear;
+    }
+    public void setITClear(FixedValue ITClear) {
+        this.ITClear = ITClear;
+    }
 }

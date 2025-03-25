@@ -3,6 +3,7 @@ package com.formssi.workflow.service.strategy;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.service.UserService;
@@ -16,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +50,6 @@ public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFC
             data.put("applyDept",taskNodeDataVo.getApplyDept());//申请部门
             data.put("applicant",taskNodeDataVo.getApplicant());//申请人
             data.put("applyDate",taskNodeDataVo.getApplyDate());//申请日期
-            data.put("status","已完成");//当前环节 TODO
             String requiredDateType = taskNodeDataVo.getRequiredDateType();
             String requiredDate = switch (StringUtils.blankToDefault(requiredDateType,"4")) {
                 case "1" -> "截止日期  " + DateUtil.format(taskNodeDataVo.getCompleteDate(), "yyyy-MM-dd");
@@ -65,12 +64,13 @@ public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFC
 
             String applyDetail = taskNodeDataVo.getApplyDetail();
             Map<String,Object> applyDetails = objectMapper.readValue(JSONUtil.toJsonStr(applyDetail), Map.class);
-            //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware
-            ArrayList<Map<String, Object>> hardware = (ArrayList<Map<String, Object>>) applyDetails.get("hardware");
-            ArrayList<Map<String, Object>> licenses = (ArrayList<Map<String, Object>>) applyDetails.get("licenses");
-            ArrayList<Map<String, Object>> accessories = (ArrayList<Map<String, Object>>) applyDetails.get("accessories");
-            ArrayList<Map<String, Object>> components = (ArrayList<Map<String, Object>>) applyDetails.get("components");
-            ArrayList<Map<String, Object>> consumables = (ArrayList<Map<String, Object>>) applyDetails.get("consumables");
+            //附属品-accessories、组件-components、许可证-licenses、消耗品-consumables、资产-hardware、其他-others
+            List<Map<String, Object>> hardware = (List<Map<String, Object>>) applyDetails.get("hardware");
+            List<Map<String, Object>> licenses = (List<Map<String, Object>>) applyDetails.get("licenses");
+            List<Map<String, Object>> accessories = (List<Map<String, Object>>) applyDetails.get("accessories");
+            List<Map<String, Object>> components = (List<Map<String, Object>>) applyDetails.get("components");
+            List<Map<String, Object>> consumables = (List<Map<String, Object>>) applyDetails.get("consumables");
+            List<Map<String, Object>> others = (List<Map<String, Object>>) applyDetails.get("others");
             Map<String, Object> purchaseDetail = (Map<String, Object>) applyDetails.get("purchaseDetail");
             String purchase = StringUtils.blankToDefault(Convert.toStr(applyDetails.get("purchase")),"3");
             String purchaseTrans = switch (purchase) {
@@ -80,12 +80,24 @@ public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFC
             };
             data.put("purchaseTrans",purchaseTrans);//2:部分采购
             data.put("purchase",purchase);//2:部分采购
+            data.put("needIT","0".equals(Convert.toStr(applyDetails.get("needIT")))?"否":"是");//是否需要IT部澄清0 否 1 是
             data.put(CATEGORIES_HARDWARE, hardware);
+            licenses = licenses.stream().map(l->{
+                List<Map<String, Object>> assets = (List<Map<String, Object>>) l.get("asset");
+                if(!ObjectUtil.isEmpty(assets)){
+                    List<String> assetNames = assets.stream().map(a -> Convert.toStr(a.get("name"))).toList();
+                    l.put("assetName",StringUtils.join(assetNames,","));
+                }else {
+                    l.put("assetName","");
+                }
+                return l;
+            }).toList();
             data.put(CATEGORIES_LICENSES, licenses);
             data.put(CATEGORIES_ACCESSORIES, accessories);
             data.put(CATEGORIES_COMPONENTS, components);
             data.put(CATEGORIES_CONSUMABLES, consumables);
             data.put("purchaseDetail", purchaseDetail);
+            data.put("others", others);
             String customApplyDetail1 = taskNodeDataVo.getCustomApplyDetail();
             List<Map<String,Object>> customApplyDetails = objectMapper.readValue(JSONUtil.toJsonStr(customApplyDetail1), List.class);
             data.put("customApplyDetails", customApplyDetails);
@@ -122,7 +134,7 @@ public class DcwsMaterialApplyFilePDFCreateStrategy implements DcwsApplyFilePDFC
                 documentTypeId="3";//TODO 需要维护
                 storagePathId="2";
                 tags=new String[]{"6"};
-                objName="IT物料申请-";
+                objName="物料申请-";
             }
             if("21".equals(applyType)){
                 documentTypeId="3";

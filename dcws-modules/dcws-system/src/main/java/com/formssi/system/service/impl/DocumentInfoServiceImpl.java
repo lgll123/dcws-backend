@@ -91,6 +91,22 @@ public class DocumentInfoServiceImpl implements IDocumentInfoService {
     }
 
     /**
+     * 校验是否默认部门
+     *
+     * @param info 资料-部门
+     * @return 结果
+     */
+    @Override
+    public boolean checkIsDeaultDept(DocumentInfoBo info) {
+        boolean exist = baseMapper.exists(new LambdaQueryWrapper<DocumentInfo>()
+                .eq(DocumentInfo::getIsDeaultDept, info.getIsDeaultDept())
+                .ne(ObjectUtil.isNotNull(info.getId()), DocumentInfo::getId, info.getId()));
+        return !exist;
+    }
+
+
+
+    /**
      * 新增保存资料-部门信息
      *
      * @param info 资料-部门信息

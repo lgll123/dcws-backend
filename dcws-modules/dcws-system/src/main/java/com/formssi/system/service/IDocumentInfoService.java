@@ -39,6 +39,14 @@ public interface IDocumentInfoService {
     boolean checkSealNameUnique(DocumentInfoBo info);
 
     /**
+     * 校验是否默认部门
+     *
+     * @param info 资料-部门
+     * @return 结果
+     */
+    boolean checkIsDeaultDept(DocumentInfoBo info);
+
+    /**
      * 新增保存资料-部门信息
      *
      * @param info 资料-部门信息

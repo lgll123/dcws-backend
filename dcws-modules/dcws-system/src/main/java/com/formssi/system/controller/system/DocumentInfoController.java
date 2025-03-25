@@ -58,6 +58,9 @@ public class DocumentInfoController extends BaseController {
         if (!documentInfoService.checkSealNameUnique(info)) {
             return R.fail("新增资料-部门" + info.getDeptName() + "'失败，部门名称已存在");
         }
+        if (!documentInfoService.checkIsDeaultDept(info)) {
+            return R.fail("新增资料-部门" + info.getDeptName() + "'失败，只能有一个默认部门（发展部）");
+        }
         documentInfoService.insertDocument(info);
         return R.ok();
     }
@@ -71,6 +74,9 @@ public class DocumentInfoController extends BaseController {
     public R<Void> edit(@Validated @RequestBody DocumentInfoBo info) {
         if (!documentInfoService.checkSealNameUnique(info)) {
             return R.fail("修改资料-部门" + info.getDeptName() + "'失败，部门名称已存在");
+        }
+        if (!documentInfoService.checkIsDeaultDept(info)) {
+            return R.fail("新增资料-部门" + info.getDeptName() + "'失败，只能有一个默认部门（发展部）");
         }
         documentInfoService.updateDocument(info);
         return R.ok();

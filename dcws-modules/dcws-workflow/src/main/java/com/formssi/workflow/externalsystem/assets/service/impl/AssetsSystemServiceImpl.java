@@ -150,11 +150,11 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         return new TableDataInfo<>(assetsBos, total.longValue());
     }
 
-
     /**
-     * 查询组件可checkout的资产列表
+     * 查询资产的供应商列表
      */
-    public Map<String, Object> selectAssetslist(Integer page,String pathUrl) {
+    @Override
+    public Map<String, Object> selectSuppliers(Integer page, String pathUrl) {
         Map<String, String> params = new HashMap<>();
         params.put("page", String.valueOf(page));
         IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);

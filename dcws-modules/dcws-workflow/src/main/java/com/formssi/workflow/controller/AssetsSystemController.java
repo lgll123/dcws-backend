@@ -59,11 +59,11 @@ public class AssetsSystemController  extends BaseController {
     }
 
     /**
-     * 查询组件可checkout的资产列表
+     * 查询资产的供应商列表
      */
-    @GetMapping("/hardware/selectlist")
-    public Map<String, Object> selectlist(@NotNull(message = "page不能为空") Integer page) {
-        return assetsSystemService.selectAssetslist(page,"hardware/selectlist");
+    @GetMapping("/suppliers/selectlist")
+    public Map<String, Object> selectSuppliers(Integer page) {
+        return assetsSystemService.selectSuppliers(ObjectUtil.isEmpty(page)?1:page,"suppliers/selectlist");
     }
 
     /**

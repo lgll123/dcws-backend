@@ -5,6 +5,7 @@ import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.service.UserService;
 import com.formssi.common.core.utils.StringUtils;
+import com.formssi.common.tenant.helper.TenantHelper;
 import com.formssi.workflow.domain.vo.DcwsActHistoryInfoVo;
 import com.formssi.workflow.domain.vo.TaskNodeDataVo;
 import com.formssi.workflow.service.DcwsIActProcessInstanceService;
@@ -52,7 +53,8 @@ public class DcwsInfoChangeApplyFilePDFCreateStrategy implements DcwsApplyFilePD
             String applyDetail = taskNodeDataVo.getApplyDetail();
             Map<String,Object> applyDetails = objectMapper.readValue(JSONUtil.toJsonStr(applyDetail), Map.class);
             data.put("applyDetails", applyDetails);
-
+            // 设置动态租户ID,默认000000（审批记录查询接口用到了租户ID）
+            TenantHelper.setDynamic(StringUtils.blankToDefault(taskNodeDataVo.getTenantId(),"000000"));
             // 审批记录
             List<DcwsActHistoryInfoVo> historyRecords = dcwsIActProcessInstanceService.getHistoryRecord(taskNodeDataVo.getId());
             // 查询审批人昵称名称
@@ -96,6 +98,9 @@ public class DcwsInfoChangeApplyFilePDFCreateStrategy implements DcwsApplyFilePD
             resultMap.put(DOCUMENTSERVERPARAM,documentServerParam);
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }finally {
+            // 清除动态租户ID
+            TenantHelper.clearDynamic();
         }
         return resultMap;
     }

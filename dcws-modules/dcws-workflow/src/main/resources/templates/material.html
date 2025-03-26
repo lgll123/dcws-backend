@@ -46,7 +46,7 @@
     }
     .table-apply-title {
       font-size: 14px;
-      font-weight: 900;
+      font-weight: 700;
       margin-top: 10px;
     }
     .apply-info .light-text td,
@@ -55,34 +55,21 @@
     }
     .flow-chat .process-line .process-line__item {
       position: relative;
-      display: block;
-      padding-bottom: 20px;
+	  page-break-inside: avoid;  /*防止分页切断 */
+      padding-bottom: 25px;
+      padding-left: 15px;
+      border-left: 2px solid #666;
+      z-index: 1;
     }
 
-    /* 时间轴容器
-    .flow-chat {
-        list-style: none;
-        padding-left: 0;
-    }*/
-
-    .flow-chat .line {
-      position: absolute;
-      top: 5px;
-      left: -15px;
-      width: 2px;
-      height: 80px;
-      background-color: #666;
-    }
     .flow-chat .circle-container {
       position: absolute;
-      top: 5px;
-      left: -14px;
-      width: 5px;
-      height: 5px;
+      top: 0px;
+      left: -4px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      z-index: 1;
-      line-height: 1;
-      transform: translate(-50%, -50%);
+      z-index: 2;
       background-color: #666;
     }
     .flow-chat .status-tag {
@@ -90,15 +77,36 @@
       background-color: #e9e9e9;
       padding: 2px;
     }
-    .flow-chat .process-line .process-line__item:last-child .line {
-      height: 0;
+    .flow-chat .process-line .process-line__item:last-child {
+      border: none;
+    }
+
+    .flow-chat .process-line .process-line__item:not(:first-child) {
+      margin-top: -5px;
+    }
+
+    .flow-chat .process-line .process-line__item:first-child {
+        padding-bottom: 80px;
+    }
+
+    .flow-chat .process-line .process-line__item:first-child .title {
+      position: absolute;
+      top: -5px;
+      left: 15px
+    }
+
+    .flow-chat .process-line .process-line__item:not(:first-child) .circle-container {
+      top: 29px;
+    }
+    .flow-chat .process-line .process-line__item:last-child .circle-container {
+        left: -2px;
     }
 </style>
 <body>
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 25px; margin-right: 16px;font-weight: 900;">物料申请清单</span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">物料申请清单</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
@@ -106,10 +114,10 @@
 </div>
 <!-- 基础信息 -->
 <div class="basic-info">
-    <div style="font-size: 14px;font-weight: 900;">基础信息</div>
+    <div style="font-size: 14px;font-weight: 700;">基础信息</div>
     <div style="padding-left: 43px">
         <table>
-            <tr style="font-size: 13px;font-weight: 900;">
+            <tr style="font-size: 13px;font-weight: 700;">
                 <th>申请部门</th>
                 <th>申请人</th>
                 <th>申请日期</th>
@@ -119,7 +127,7 @@
                 <td th:text="${data.applicant}"></td>
                 <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
             </tr>
-            <tr style="font-size: 13px;font-weight: 900;">
+            <tr style="font-size: 13px;font-weight: 700;">
                 <th>需求日期</th>
                 <th>预计使用人</th>
             </tr>
@@ -140,7 +148,7 @@
 </div>
 <!-- 申请物料清单 -->
 <div class="basic-info apply-info" style="margin-top: 20px;" th:if="${data.customApplyDetails != null and not #lists.isEmpty(data.customApplyDetails)}">
-    <div  style="font-size: 14px;font-weight: 900;">物料申请清单</div>
+    <div  style="font-size: 14px;font-weight: 700;">物料申请清单</div>
     <div style="padding-left: 43px">
         <table class="table-apply-info">
             <thead class="title-divider">
@@ -164,8 +172,8 @@
 </div>
 <!-- 澄清物料清单 -->
 <div class="basic-info clear-info" style="margin-top: 20px;">
-    <div  style="font-size: 14px;font-weight: 900;">澄清物料清单</div>
-    <div style="padding-left: 23px; margin-top: 10px; font-size: 14px;font-weight: 900;">已有物料</div>
+    <div  style="font-size: 14px;font-weight: 700;">澄清物料清单</div>
+    <div style="padding-left: 23px; margin-top: 10px; font-size: 14px;font-weight: 700;">已有物料</div>
     <!-- IT资产清单 -->
     <div style="padding-left: 43px"  th:if="${data.hardware != null and not #lists.isEmpty(data.hardware)}">
         <div class="table-apply-title">IT资产清单</div>
@@ -209,7 +217,7 @@
                 <td th:text="${item.productKey}" style="text-align: right;"></td>
                 <td th:text="${item.expirationDate}" style="text-align: right;"></td>
                 <td th:text="${item.manufacturerName}" style="text-align: right;"></td>
-                <td th:text="${item.asset.name}" style="text-align: right;"></td>
+                <td th:text="${item.assetName}" style="text-align: right;"></td>
             </tr>
             </tbody>
         </table>
@@ -290,15 +298,15 @@
     </div>
     <!-- 是否需采购 -->
     <div  th:if="${data.purchase == '1' or data.purchase == '2'}">
-        <div style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px; font-size: 14px;font-weight: 900;">采购详情</div>
+        <div style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px; font-size: 14px;font-weight: 700;">采购详情</div>
         <div style="padding-left: 43px; font-size: 11px;font-weight: 400;">
             <div style="overflow: hidden;padding-right: 43px;">
                 <span style="float: left">是否需采购</span>
-                <span  style="float: right;font-weight: 900;" class="light-text" th:text="${data.purchaseTrans}"></span>
+                <span  style="float: right;font-weight: 700;" class="light-text" th:text="${data.purchaseTrans}"></span>
             </div>
             <div style="overflow: hidden; margin-top: 10px;padding-right: 43px;">
                 <span style="float: left">采购金额</span>
-                <span style="float: right;font-weight: 900; "  th:text="${data.purchaseDetail.purchaseAmount}"></span>
+                <span style="float: right;font-weight: 700; "  th:text="${data.purchaseDetail.purchaseAmount}"></span>
             </div>
         </div>
         <!-- 待采购物料 -->
@@ -325,8 +333,8 @@
         </div>
     </div>
     <div class="flow-chat" style="margin-top: 20px;">
-        <div style="font-size: 14px;font-weight: 900; margin-bottom: 12px">审批记录</div>
-        <div class="process-line" style="padding-left: 58px;"  >
+        <div style="font-size: 14px;font-weight: 700; margin-bottom: 22px">审批记录</div>
+        <div class="process-line" style="padding-left: 30px;"  >
 
             <div class="process-line__item" th:each="record : ${data.historyRecords}" >
                 <div class="title">

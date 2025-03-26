@@ -2,9 +2,11 @@ package com.formssi.workflow.service.strategy;
 
 import com.itextpdf.html2pdf.ConverterProperties;
 import com.itextpdf.html2pdf.HtmlConverter;
+import com.itextpdf.html2pdf.css.apply.impl.DefaultCssApplierFactory;
 import com.itextpdf.html2pdf.resolver.font.DefaultFontProvider;
 import com.itextpdf.io.font.FontProgram;
 import com.itextpdf.io.font.FontProgramFactory;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +32,7 @@ public class CreateApplyFilePDFService {
     public byte[] generatePdf(String templateName, Map<String, Object> data) throws Exception {
         // 渲染HTML模板
         Context context = new Context();
-        context.setVariable("data",data);
+        context.setVariable("data", data);
         String htmlContent = templateEngine.process(templateName, context);
 
         // 配置中文字体
@@ -42,6 +44,7 @@ public class CreateApplyFilePDFService {
             byte[] fontData = IOUtils.toByteArray(fontStream);  // 将字体转换为字节数组
             fontProgram = FontProgramFactory.createFont(fontData);  // 使用字节数组方式加载
         } catch (Exception e) {
+            log.error("字体加载失败:{}",e.getMessage());
             throw new RuntimeException("字体加载失败", e);
         }
         // 2. 资源基准路径（本地图片必须配置）
@@ -53,18 +56,23 @@ public class CreateApplyFilePDFService {
 //        FontProgram fontProgram = FontProgramFactory.createFont("STSong-Light" );
         DefaultFontProvider fontProvider = new DefaultFontProvider();
         fontProvider.addFont(fontProgram);
-        // 转换HTML为PDF
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        // 初始化 PDF 文档并设置 A4 尺寸
-        PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputStream));
-//        pdfDoc.setDefaultPageSize(PageSize.A4);
-        HtmlConverter.convertToPdf(
-                htmlContent,
-                pdfDoc,
-                new ConverterProperties().setFontProvider(fontProvider).setBaseUri(new ClassPathResource("templates/").getURI().toString())
-        );
 
-        return outputStream.toByteArray();
+        try (
+             // 转换HTML为PDF
+             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+             // 初始化 PDF 文档并设置 A4 尺寸
+             PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputStream))) {
+             pdfDoc.setDefaultPageSize(PageSize.A4);
+             HtmlConverter.convertToPdf(
+                    htmlContent,
+                    pdfDoc,
+                    new ConverterProperties().setFontProvider(fontProvider).setCssApplierFactory(new DefaultCssApplierFactory()).setBaseUri(new ClassPathResource("templates/").getURI().toString())
+            );
+            return outputStream.toByteArray();
+        } catch (Exception e){
+            log.error("转换HTML为PDF失败:{}",e.getMessage());
+            throw new RuntimeException("转换HTML为PDF失败", e);
+        }
     }
 
 }

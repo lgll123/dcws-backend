@@ -78,18 +78,23 @@ public class PdfGeneratorService {
 //        FontProgram fontProgram = FontProgramFactory.createFont("STSong-Light" );
         DefaultFontProvider fontProvider = new DefaultFontProvider();
         fontProvider.addFont(fontProgram);
-        // 转换HTML为PDF
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        // 初始化 PDF 文档并设置 A4 尺寸
-        PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputStream));
-//        pdfDoc.setDefaultPageSize(PageSize.A4);
-        HtmlConverter.convertToPdf(
-                htmlContent,
-                pdfDoc,
-                new ConverterProperties().setFontProvider(fontProvider).setBaseUri(new ClassPathResource("templates/").getURI().toString())
-        );
 
-        return outputStream.toByteArray();
+        try (
+            // 转换HTML为PDF
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            // 初始化 PDF 文档并设置 A4 尺寸
+            PdfDocument pdfDoc = new PdfDocument(new PdfWriter(outputStream))) {
+//          pdfDoc.setDefaultPageSize(PageSize.A4);
+            HtmlConverter.convertToPdf(
+                    htmlContent,
+                    pdfDoc,
+                    new ConverterProperties().setFontProvider(fontProvider).setBaseUri(new ClassPathResource("templates/").getURI().toString())
+            );
+
+            return outputStream.toByteArray();
+        } catch (Exception e){
+            throw new RuntimeException("转换HTML为PDF失败", e);
+        }
     }
 
     /**

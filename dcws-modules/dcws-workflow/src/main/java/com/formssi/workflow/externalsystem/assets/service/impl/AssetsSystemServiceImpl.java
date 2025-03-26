@@ -1,5 +1,6 @@
 package com.formssi.workflow.externalsystem.assets.service.impl;
 
+import cn.hutool.core.convert.Convert;
 import com.formssi.common.core.exception.ServiceException;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.common.mybatis.core.page.PageQuery;
@@ -18,12 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.formssi.workflow.common.enums.ApplyTypeEnum.MATERIAL_NOT_IT;
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
 
 @Slf4j
@@ -88,23 +87,24 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         }
         IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
         Map<String, Object> responseMap = instance.process(params, pathUrl,REQUEST_TYPE_GET);
-        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get(ROWS);
+        List<Map<String, Object>> rows = Optional.ofNullable(responseMap.get(ROWS))
+                .map(obj -> (List<Map<String, Object>>) obj)
+                .orElse(Collections.emptyList());
         Integer total = TypeSafeUtils.safeGetInteger(responseMap, TOTAL);
 
-        List<CategoryBo> categoryBos = new ArrayList<>();
-        rows.forEach(row -> {
+        List<CategoryBo> categoryBos = rows.stream().map(r -> {
             CategoryBo categoryBo = new CategoryBo();
-            categoryBo.setId(TypeSafeUtils.safeGetInteger(row, ID));
-            categoryBo.setCategoryType(TypeSafeUtils.safeGetString(row, CATEGORY_TYPE));
-            categoryBo.setName(TypeSafeUtils.safeGetString(row, NAME));
-            categoryBos.add(categoryBo);
-        });
-        if ("21".equals(applyType)) {//非IT物料申请
-            List<CategoryBo> categoryBos1 = categoryBos.stream().filter(t -> t.getName().startsWith("非IT_")).collect(Collectors.toList());
-            return new TableDataInfo<>(categoryBos1, total.longValue());
+            categoryBo.setId(TypeSafeUtils.safeGetInteger(r, ID));
+            categoryBo.setCategoryType(TypeSafeUtils.safeGetString(r, CATEGORY_TYPE));
+            categoryBo.setName(TypeSafeUtils.safeGetString(r, NAME));
+            return categoryBo;
+        }).toList();
+        if (MATERIAL_NOT_IT.getCode().equals(applyType)) {//非IT物料申请
+            List<CategoryBo> categoryBos1 = categoryBos.stream().filter(t -> t.getName().startsWith("非IT_")).toList();
+            return new TableDataInfo<>(categoryBos1, Convert.toLong(total));
         }else {
-            List<CategoryBo> categoryBos1 = categoryBos.stream().filter(t -> !t.getName().startsWith("非IT_")).collect(Collectors.toList());
-            return new TableDataInfo<>(categoryBos1, total.longValue());
+            List<CategoryBo> categoryBos1 = categoryBos.stream().filter(t -> !t.getName().startsWith("非IT_")).toList();
+            return new TableDataInfo<>(categoryBos1, Convert.toLong(total));
         }
     }
 
@@ -132,11 +132,11 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
         }
         IExternalSystemAPIStrategy instance = SpringUtils.getBean(beanName);
         Map<String, Object> responseMap = instance.process(params, categories,REQUEST_TYPE_GET);
-        List<Map<String, Object>> rows = (List<Map<String, Object>>) responseMap.get(ROWS);
+        List<Map<String, Object>> rows = Optional.ofNullable(responseMap.get(ROWS))
+                .map(obj -> (List<Map<String, Object>>) obj)
+                .orElse(Collections.emptyList());
         Integer total = TypeSafeUtils.safeGetInteger(responseMap, TOTAL);
-
-        List<AssetsSystemBo> assetsBos = new ArrayList<>();
-        rows.forEach(row -> {
+        List<AssetsSystemBo> assetsBos = rows.stream().map(row->{
             AssetsSystemBo bo = new AssetsSystemBo();
             bo.setId(TypeSafeUtils.safeGetInteger(row, ID));
             bo.setName(TypeSafeUtils.safeGetString(row, NAME));
@@ -145,9 +145,9 @@ public class AssetsSystemServiceImpl implements IAssetsSystemService {
             if (processor != null) {
                 processor.process(row, bo);
             }
-            assetsBos.add(bo);
-        });
-        return new TableDataInfo<>(assetsBos, total.longValue());
+            return bo;
+        }).toList();
+        return new TableDataInfo<>(assetsBos, Convert.toLong(total));
     }
 
     /**

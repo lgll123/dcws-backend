@@ -17,9 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.formssi.workflow.common.enums.ApplyContentTypeEnum.*;
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
@@ -70,13 +68,18 @@ public class DcwsServiceApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCr
             data.put("projectName",ITDept.get("projectName"));//1:采购项目名称
             data.put("purchaseDetail", ITDept.get("purchaseDetail"));
 //            data.put("hardware", ITDept.get("hardware"));//资产信息
-            Map<String, Object> extMaint = (Map<String, Object>) ITDept.get("extMaint");
-            List<Map<String, Object>> processMethod = ObjectUtil.isEmpty(extMaint)?null:(List<Map<String, Object>>) extMaint.get("processMethod");
-            if(!ObjectUtil.isEmpty(processMethod)){
-                extMaint.put("processMethod",StringUtils.join(processMethod.stream().map(p -> Convert.toStr(p.get("name"))).toList(),","));
-            }else {
-                extMaint.put("processMethod","");
-            }
+            List<Map<String, Object>> extMaint = Optional.ofNullable(ITDept.get("extMaint"))
+                    .map(obj -> (List<Map<String, Object>>) obj)
+                    .orElse(Collections.emptyList())
+                    .stream().map(e->{
+                        List<Map<String, Object>> processMethod = (List<Map<String, Object>>) e.get("processMethod");
+                        if(!ObjectUtil.isEmpty(processMethod)){
+                            e.put("processMethod",StringUtils.join(processMethod.stream().map(p -> Convert.toStr(p.get("name"))).toList(),","));
+                        }else {
+                            e.put("processMethod","");
+                        }
+                        return e;
+                    }).toList();
             data.put("extMaint", extMaint);//外部维修
             Map<String, Object> handelContent = (Map<String, Object>) ITDept.get("handelContent");
             if(!ObjectUtil.isEmpty(handelContent)){

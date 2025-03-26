@@ -371,9 +371,7 @@ public class ApplyServiceImpl implements IApplyService {
             dcwsInvoiceVo.setInvoiceName(sysFileVo.getFileName());
             InputStream file = null;
             if (".pdf".equals(sysFileVo.getFileSuffix())){
-                List<Long> associationFileIds = new ArrayList<>();
-                associationFileIds.add(sysFileVo.getAssociationFileId());
-                SysFileVo sysFileVoJpg = sysFileService.listByFileIds(associationFileIds).get(0);
+                SysFileVo sysFileVoJpg = sysFileService.listByFileIds(Arrays.asList(sysFileVo.getAssociationFileId())).get(0);
                 file = minioUtil.download("dcws-assets",sysFileVoJpg.getFileName());
             }else{
                 file = minioUtil.download("dcws-assets",sysFileVo.getFileName());

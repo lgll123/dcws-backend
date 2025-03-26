@@ -126,6 +126,8 @@ public class DcwsActProcessInstanceServiceImpl implements DcwsIActProcessInstanc
         // 已办理
         recordList.addAll(StreamUtils.filter(actHistoryInfoVoList, e -> e.getEndTime() != null));
 
+        recordList = StreamUtils.filter(recordList, e -> !e.getName().contains("【抄送】-"));
+
         return recordList;
     }
 

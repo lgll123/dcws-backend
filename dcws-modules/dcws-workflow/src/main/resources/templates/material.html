@@ -334,7 +334,7 @@
     </div>
     <div class="flow-chat" style="margin-top: 20px;">
         <div style="font-size: 14px;font-weight: 700; margin-bottom: 22px">审批记录</div>
-        <div class="process-line" style="padding-left: 30px;"  >
+        <div class="process-line" style="padding-left: 30px;" >
 
             <div class="process-line__item" th:each="record : ${data.historyRecords}" >
                 <div class="title">
@@ -349,7 +349,7 @@
                             <span class="value" th:text="${record.nickName}"></span>
                         </div>
                         <div class="comment" style="margin-top: 7px;">
-                            <span class="label">审批意见：</span>
+                            <span class="label">备注：</span>
                             <span class="value" th:text="${record.comment}"></span>
                         </div>
                     </div>

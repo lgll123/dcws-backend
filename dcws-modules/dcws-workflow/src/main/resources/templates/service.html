@@ -55,6 +55,7 @@
     }
     .flow-chat .process-line .process-line__item {
       position: relative;
+	  page-break-inside: avoid;  /*防止分页切断 */
       padding-bottom: 25px;
       padding-left: 15px;
       border-left: 2px solid #666;
@@ -63,14 +64,12 @@
 
     .flow-chat .circle-container {
       position: absolute;
-      top: 7px;
-      left: -1px;
+      top: 0px;
+      left: -4px;
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      z-index: 1;
-      line-height: 1;
-      transform: translate(-50%, -50%);
+      z-index: 2;
       background-color: #666;
     }
     .flow-chat .status-tag {
@@ -81,11 +80,26 @@
     .flow-chat .process-line .process-line__item:last-child {
       border: none;
     }
+
     .flow-chat .process-line .process-line__item:not(:first-child) {
       margin-top: -5px;
     }
+
+    .flow-chat .process-line .process-line__item:first-child {
+        padding-bottom: 80px;
+    }
+
+    .flow-chat .process-line .process-line__item:first-child .title {
+      position: absolute;
+      top: -5px;
+      left: 15px
+    }
+
+    .flow-chat .process-line .process-line__item:not(:first-child) .circle-container {
+      top: 29px;
+    }
     .flow-chat .process-line .process-line__item:last-child .circle-container {
-        left: 1px;
+        left: -2px;
     }
 </style>
 <body>
@@ -264,8 +278,8 @@
         </div>
     </div>
     <div class="flow-chat" style="margin-top: 20px;">
-        <div style="font-size: 14px;font-weight: 700; margin-bottom: 12px">审批记录</div>
-        <div class="process-line" style="padding-left: 58px;"  >
+        <div style="font-size: 14px;font-weight: 700; margin-bottom: 22px">审批记录</div>
+        <div class="process-line" style="padding-left: 30px;"  >
 
             <div class="process-line__item" th:each="record : ${data.historyRecords}" >
                 <div class="title">
@@ -280,7 +294,7 @@
                             <span class="value" th:text="${record.nickName}"></span>
                         </div>
                         <div class="comment" style="margin-top: 7px;">
-                            <span class="label">审批意见：</span>
+                            <span class="label">备注：</span>
                             <span class="value" th:text="${record.comment}"></span>
                         </div>
                     </div>
@@ -288,6 +302,7 @@
                 <div class="circle-container"></div>
                 <div class="line"> </div>
             </div>
+
 
         </div>
     </div>

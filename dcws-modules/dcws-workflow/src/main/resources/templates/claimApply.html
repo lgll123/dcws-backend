@@ -91,7 +91,7 @@
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">费用报销清单</span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">费用报销申请</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
@@ -144,7 +144,7 @@
 
 <!-- 申请明细 -->
 <div class="basic-info clear-info" style="margin-top: 20px;">
-    <div style="font-size: 14px;font-weight: 700;">申请明细</div>
+    <div style="font-size: 14px;font-weight: 700;">费用信息</div>
     <div>
         <!-- 费用明细 -->
         <div class="table-apply-title" style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px;">费用明细</div>
@@ -242,7 +242,7 @@
                             <span class="value" th:text="${record.nickName}"></span>
                         </div>
                         <div class="comment" style="margin-top: 7px;">
-                            <span class="label">审批意见：</span>
+                            <span class="label">备注：</span>
                             <span class="value" th:text="${record.comment}"></span>
                         </div>
                     </div>

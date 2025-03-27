@@ -180,7 +180,7 @@
         </table>-->
     </div>
 </div>
-<!-- 资产信息 -->
+<!-- 维修信息 -->
 <div class="basic-info apply-info" style="margin-top: 20px;" th:if="${data.extMaint != null and not #lists.isEmpty(data.extMaint)}">
     <div  style="font-size: 14px;font-weight: 700;">资产维修信息</div>
     <div style="padding-left: 43px">
@@ -188,11 +188,13 @@
             <thead class="title-divider">
             <tr>
                 <th>资产名称</th>
-                <th style="text-align: right;">供应商</th>
+                <th style="text-align: right;">供应商名称</th>
                 <th style="text-align: right;">处理人</th>
                 <th style="text-align: right;">联系电话</th>
                 <th style="text-align: right;">接单日期</th>
                 <th style="text-align: right;">维修金额</th>
+                <th style="text-align: right;">预计维修时长</th>
+                <th style="text-align: right;">处理方案</th>
             </tr>
             </thead>
             <tbody class="light-text">
@@ -203,39 +205,13 @@
                 <td th:text="${item.telephone}" style="text-align: right;"></td>
                 <td th:text="${item.orderDate}" style="text-align: right;"></td>
                 <td th:text="${item.maintAmount}" style="text-align: right;"></td>
+                <td th:text="${item.maintDuration}" style="text-align: right;"></td>
+                <td th:text="${item.processMethod}" style="text-align: right;"></td>
             </tr>
             </tbody>
         </table>
     </div>
 </div>
-<!-- 外部维修 -->
-<!--<div class="basic-info" style="margin-top: 20px;"  th:if="${data.extMaint != null}">
-    <div style="font-size: 14px;font-weight: 700;">外部维修</div>
-    <div style="padding-left: 43px">
-        <table>
-            <tr style="font-size: 13px;font-weight: 700;">
-                <th style="width: 40%;">处理人</th>
-                <th style="width: 40%;">联系电话</th>
-                <th style="width: 20%;">接单日期</th>
-            </tr>
-            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
-                <td th:text="${data.extMaint.handler}" style="width: 40%;"></td>
-                <td th:text="${data.extMaint.telephone}" style="width: 40%;"></td>
-                <td th:text="${data.extMaint.orderDate}" style="width: 20%"></td>
-            </tr>
-            <tr style="font-size: 13px;font-weight: 700;">
-                <th style="width: 40%;">维修金额</th>
-                <th style="width: 40%;">预计维修时长</th>
-                <th style="width: 20%;">处理方案</th>
-            </tr>
-            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
-                <td th:text="${data.extMaint.maintAmount}" style="width: 40%;"></td>
-                <td th:text="${data.extMaint.maintDuration}" style="width: 40%;"></td>
-                <td th:text="${data.extMaint.processMethod}" style="width: 20%"></td>
-            </tr>
-        </table>
-    </div>
-</div>-->
 <!-- 采购详情 -->
 <div class="basic-info clear-info" style="margin-top: 20px;" th:if="${data.purchase == '1' }">
     <div  style="font-size: 14px;font-weight: 700;">采购详情</div>
@@ -277,35 +253,35 @@
             </table>
         </div>
     </div>
-    <div class="flow-chat" style="margin-top: 20px;">
-        <div style="font-size: 14px;font-weight: 700; margin-bottom: 22px">审批记录</div>
-        <div class="process-line" style="padding-left: 30px;"  >
+        </div>
+<div class="flow-chat" style="margin-top: 20px;">
+    <div style="font-size: 14px;font-weight: 700; margin-bottom: 22px">审批记录</div>
+    <div class="process-line" style="padding-left: 30px;"  >
 
-            <div class="process-line__item" th:each="record : ${data.historyRecords}" >
-                <div class="title">
-                    <div class="info" style="font-size: 11px;font-weight: 400;">
-                        <div>
-                            <span style="margin-right: 12px;" th:text="${#dates.format(record.endTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
-                            <span class="status-tag" style="margin-right: 12px;" th:text="${record.name}"></span>
-                            <span class="status-tag" th:text="${record.statusName}"></span>
-                        </div>
-                        <div style="margin-top: 7px;">
-                            <span class="label">处理人：</span>
-                            <span class="value" th:text="${record.nickName}"></span>
-                        </div>
-                        <div class="comment" style="margin-top: 7px;">
-                            <span class="label">备注：</span>
-                            <span class="value" th:text="${record.comment}"></span>
-                        </div>
+        <div class="process-line__item" th:each="record : ${data.historyRecords}" >
+            <div class="title">
+                <div class="info" style="font-size: 11px;font-weight: 400;">
+                    <div>
+                        <span style="margin-right: 12px;" th:text="${#dates.format(record.endTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+                        <span class="status-tag" style="margin-right: 12px;" th:text="${record.name}"></span>
+                        <span class="status-tag" th:text="${record.statusName}"></span>
+                    </div>
+                    <div style="margin-top: 7px;">
+                        <span class="label">处理人：</span>
+                        <span class="value" th:text="${record.nickName}"></span>
+                    </div>
+                    <div class="comment" style="margin-top: 7px;">
+                        <span class="label">备注：</span>
+                        <span class="value" th:text="${record.comment}"></span>
                     </div>
                 </div>
-                <div class="circle-container"></div>
-                <div class="line"> </div>
             </div>
-
-
+            <div class="circle-container"></div>
+            <div class="line"> </div>
         </div>
+
+
     </div>
-    </div>
+</div>
 </body>
 </html>

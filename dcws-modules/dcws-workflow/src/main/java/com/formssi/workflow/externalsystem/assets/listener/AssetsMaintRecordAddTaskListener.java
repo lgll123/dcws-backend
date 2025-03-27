@@ -35,7 +35,7 @@ public class AssetsMaintRecordAddTaskListener implements TaskListener {
                     .map(obj -> (List<Map<String, Object>>) obj)
                     .orElse(Collections.emptyList());
             extMaints.stream()
-                    .filter(extMaint->!ObjectUtil.isEmpty(extMaint.get("id")))
+                    .filter(extMaint->!ObjectUtil.isEmpty(extMaint.get("id")) && !ObjectUtil.isEmpty(extMaint.get("supplierId")))
                     .forEach(e->{
                     Map<String, String> requestBodyMap = new HashMap<>();
                     requestBodyMap.put("title",e.get("name")+"-维修");

@@ -32,6 +32,7 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.mybatis.helper.DataBaseHelper;
 import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.system.service.ISysUserService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 用户 业务层处理
@@ -64,18 +66,34 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     @Override
     //查询所有用户信息
     public List<HrUserVo> selectAllUserList() {
-        List<HrUserVo> userList = baseMapper.selectAllUserList();
-        return userList;
+        List<SysUserVo> userList = baseMapper.selectAllUserList();
+        List<HrUserVo> collect = userList.stream().map(e -> {
+            HrUserVo hrUserVo = new HrUserVo();
+            BeanUtils.copyProperties(e, hrUserVo);
+            hrUserVo.setUserId(e.getUserId() == null ? null : Long.toString(e.getUserId()));
+            hrUserVo.setLeader(e.getLeader() == null ? null : Long.toString(e.getLeader()));
+            hrUserVo.setHrUserId(e.getHrUserId() == null ? null : Long.toString(e.getHrUserId()));
+            hrUserVo.setAssetUserId(e.getAssetUserId() == null ? null : Long.toString(e.getAssetUserId()));
+            return hrUserVo;
+        }).collect(Collectors.toList());
+        return collect;
     }
 
     @Override
     //查询一级部门下的用户信息
     public List<HrUserVo> selectUserDeptList() {
-        List<HrUserVo> userList = baseMapper.selectUserDeptList();
-        return userList;
+        List<SysUserVo> userList = baseMapper.selectUserDeptList();
+        List<HrUserVo> collect = userList.stream().map(e -> {
+            HrUserVo hrUserVo = new HrUserVo();
+            BeanUtils.copyProperties(e, hrUserVo);
+            hrUserVo.setUserId(e.getUserId() == null ? null : Long.toString(e.getUserId()));
+            hrUserVo.setLeader(e.getLeader() == null ? null : Long.toString(e.getLeader()));
+            hrUserVo.setHrUserId(e.getHrUserId() == null ? null : Long.toString(e.getHrUserId()));
+            hrUserVo.setAssetUserId(e.getAssetUserId() == null ? null : Long.toString(e.getAssetUserId()));
+            return hrUserVo;
+        }).collect(Collectors.toList());
+        return collect;
     }
-
-    //逻辑删除人事系统不存在的用户
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int deleteUserByIdFromHr(List<String> userIdList) {
@@ -93,25 +111,31 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     //新增用户信息
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int insertUserFromHr(List<HrUserVo> userList,Long roleId) {
-        //默认初始密码 123456
-        String hashpw = BCrypt.hashpw("123456");
+    public void insertUserFromHr(List<HrUserVo> userList,Long roleId) {
+        //默认初始密码 666666
+        String hashpw = BCrypt.hashpw("666666");
         userList.forEach(u ->{
             u.setPassword(hashpw);
             u.setIsHruser("Y");
         });
         // 新增用户信息
-        int rows = baseMapper.insertUserFromHr(userList);
+        List<SysUser> collect = userList.stream().map(e -> {
+            SysUser sysUser = new SysUser();
+            BeanUtils.copyProperties(e, sysUser);
+            sysUser.setLeader(e.getLeader() == null ? null : Long.valueOf(e.getLeader()));
+            sysUser.setUserId(e.getUserId() == null ? null : Long.valueOf(e.getUserId()));
+            sysUser.setHrUserId(e.getHrUserId() == null ? null : Long.valueOf(e.getHrUserId()));
+            return sysUser;
+        }).collect(Collectors.toList());
+        baseMapper.insertBatch(collect,100);
         // 新增用户与角色关联信息
-        baseMapper.insertUserRoleFromHr(userList,roleId);
-        return rows;
+        baseMapper.insertUserRoleFromHr(collect,roleId);
     }
 
     //更新用户信息
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int updateUserFromHr(List<HrUserVo> userList) {
-        // 防止错误更新后导致的数据误删除
         int flag = baseMapper.updateUserFromHr(userList);
         if (flag < 1) {
             throw new ServiceException("删除用户失败");
@@ -126,6 +150,15 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         baseMapper.updateUserInfo(userList);
 
     }
+
+    //更新用户leader字段
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUserLeader(List<HrUserVo> userList) {
+        baseMapper.updateUserLeader(userList);
+
+    }
+
 
 
     @Override
@@ -387,9 +420,9 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     @Transactional(rollbackFor = Exception.class)
     public int insertUser(SysUserBo user) {
         SysUser sysUser = MapstructUtils.convert(user, SysUser.class);
-        //生成userId 16位主键
-        Long userId = getUserId();
-        sysUser.setUserId(userId);
+//        //生成userId 16位主键
+//        Long userId = getUserId();
+//        sysUser.setUserId(userId);
         // 新增用户信息
         int rows = baseMapper.insert(sysUser);
         user.setUserId(sysUser.getUserId());
@@ -756,18 +789,18 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         return BeanUtil.copyToList(list, UserDTO.class);
     }
 
-    public Long getUserId() {
-        // 获取当前日期和时间
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String datePart = sdf.format(new  Date());
-        // 生成随机数部分
-        int randomNum = (int) (Math.random()  * 100); // 保证2位
-        String randomPart = String.format("%02d",  randomNum); // 补零处理
-        // 拼接
-        String userIdStr = datePart + randomPart;
-        // 转换为Long类型
-        return Long.parseLong(userIdStr);
-    }
+//    public Long getUserId() {
+//        // 获取当前日期和时间
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+//        String datePart = sdf.format(new  Date());
+//        // 生成随机数部分
+//        int randomNum = (int) (Math.random()  * 100); // 保证2位
+//        String randomPart = String.format("%02d",  randomNum); // 补零处理
+//        // 拼接
+//        String userIdStr = datePart + randomPart;
+//        // 转换为Long类型
+//        return Long.parseLong(userIdStr);
+//    }
     @Override
     public List<SysUserVo> getUserLeader(Long userId) {
         List<SysUserVo> leaders = new ArrayList<>();

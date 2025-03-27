@@ -83,7 +83,18 @@ public class SysDeptServiceImpl implements ISysDeptService, DeptService {
         // 防止错误更新后导致的数据误删除
         int flag = baseMapper.updateDeptFromHr(deptList);
         if (flag < 1) {
-            throw new ServiceException("删除部门失败");
+            throw new ServiceException("更新部门失败");
+        }
+        return deptList.size();
+    }
+
+    //更新部门leader信息
+    @Override
+    public int updateDeptLeader(List<HrDeptVo> deptList) {
+        // 防止错误更新后导致的数据误删除
+        int flag = baseMapper.updateDeptLeader(deptList);
+        if (flag < 1) {
+            throw new ServiceException("更新部门失败");
         }
         return deptList.size();
     }

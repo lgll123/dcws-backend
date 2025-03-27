@@ -46,6 +46,8 @@ public interface SysDeptMapper extends BaseMapperPlus<SysDept, SysDeptVo> {
     int deleteByIdFromHr(@Param("list") List<String> deptIdList);
     //更新部门
     int updateDeptFromHr(@Param("list")List<HrDeptVo> hrDeptList);
+    //更新部门leader
+    int updateDeptLeader(@Param("list")List<HrDeptVo> hrDeptList);
 
     /**
      * 根据角色ID查询部门树信息

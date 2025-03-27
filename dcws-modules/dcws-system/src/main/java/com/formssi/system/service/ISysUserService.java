@@ -23,11 +23,13 @@ public interface ISysUserService {
     //逻辑删除人事系统不存在的用户
     int deleteUserByIdFromHr(List<String> userIdList);
     //新增用户信息
-    int insertUserFromHr(List<HrUserVo> userList,Long roleId);
+    void insertUserFromHr(List<HrUserVo> userList,Long roleId);
     //更新用户信息
     int updateUserFromHr(List<HrUserVo> userList);
     //更新用户assetUserId字段
     void updateUserInfo(List<HrUserVo> userList);
+    //更新用户leader字段
+    void updateUserLeader(List<HrUserVo> userList);
 
 
     TableDataInfo<SysUserVo> selectPageUserList(SysUserBo user, PageQuery pageQuery);

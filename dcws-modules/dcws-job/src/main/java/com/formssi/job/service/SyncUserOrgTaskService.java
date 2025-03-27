@@ -12,11 +12,14 @@ import com.formssi.system.service.ISysDeptService;
 import com.formssi.system.service.ISysHrService;
 import com.formssi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -59,10 +62,10 @@ public class SyncUserOrgTaskService {
         if (hrResultVo.getCode() == 200 && !CollectionUtils.isEmpty(hrResultVo.getData())) {
             //人事系统用户信息
             List<HrUserVo> hrUserList = hrResultVo.getData();
-            List<String> hrUserIdList = hrUserList.stream().map(HrUserVo::getUserId).collect(Collectors.toList());
+            List<String> hrUserIdList = hrUserList.stream().map(HrUserVo::getHrUserId).collect(Collectors.toList());
             //OA系统用户信息（要排除掉系統本身的用戶）
-            List<HrUserVo> oaUserList = userService.selectAllUserList();
-            List<String> oaUserIdList = oaUserList.stream().map(HrUserVo::getUserId).collect(Collectors.toList());
+             List<HrUserVo> oaUserList = userService.selectAllUserList();
+            List<String> oaUserIdList = oaUserList.stream().map(HrUserVo::getHrUserId).collect(Collectors.toList());
 
             int insertNum = 0;
             int deletetNum = 0;
@@ -71,22 +74,15 @@ public class SyncUserOrgTaskService {
 
             if(CollectionUtils.isEmpty(oaUserList)){
                 //如果为空则全量同步人事系统数据到OA系统
-                // 每 500 条数据执行一次
-                int batchSize = 500;
-                for (int i = 0; i < hrUserList.size(); i += batchSize) {
-                    // 获取当前批次的数据
-                    List<HrUserVo> batch = hrUserList.subList(i, Math.min(i + batchSize, hrUserList.size()));
-                    // 调用更新方法
-                    int num = userService.insertUserFromHr(batch,roleId);
-                    insertNum += num;
-                }
+                userService.insertUserFromHr(hrUserList,roleId);
+                insertNum = hrUserList.size();
             }else {
                 //如果非空，筛选出OA系统存在，人事系统不存在的用户，标记为删除
                 List<String> userIdList = oaUserIdList.stream()
                     .filter(user -> !hrUserIdList.contains(user))
                     .collect(Collectors.toList());
                 List<String> userIdList1 = oaUserList.stream()
-                    .filter(u -> userIdList.contains(u.getUserId()))
+                    .filter(u -> userIdList.contains(u.getHrUserId()))
                     .filter(u -> !"1".equals(u.getDelFlag()))//排除已经删除的用户，无需重复删除
                     .map(HrUserVo::getUserId)
                     .collect(Collectors.toList());
@@ -99,18 +95,11 @@ public class SyncUserOrgTaskService {
                     .filter(user -> !oaUserIdList.contains(user))
                     .collect(Collectors.toList());
                 List<HrUserVo> userList = hrUserList.stream()
-                    .filter(u -> userIdList2.contains(u.getUserId()))
+                    .filter(u -> userIdList2.contains(u.getHrUserId()))
                     .collect(Collectors.toList());
                 if(!CollectionUtils.isEmpty(userList)){
-                    // 每 500 条数据执行一次
-                    int batchSize = 500;
-                    for (int i = 0; i < userList.size(); i += batchSize) {
-                        // 获取当前批次的数据
-                        List<HrUserVo> batch = userList.subList(i, Math.min(i + batchSize, userList.size()));
-                        // 调用更新方法
-                        int num = userService.insertUserFromHr(batch,roleId);
-                        insertNum += num;
-                    }
+                    userService.insertUserFromHr(userList,roleId);
+                    insertNum = userList.size();
                 }
 
                 //筛选出两边系统都存在的用户，进行更新
@@ -118,7 +107,7 @@ public class SyncUserOrgTaskService {
                     .filter(user -> hrUserIdList.contains(user))
                     .collect(Collectors.toList());
                 List<HrUserVo> userList2 = hrUserList.stream()
-                    .filter(u -> userIdList3.contains(u.getUserId()))
+                    .filter(u -> userIdList3.contains(u.getHrUserId()))
                     .collect(Collectors.toList());
                 if(!CollectionUtils.isEmpty(userList2)){
                     // 每 500 条数据执行一次
@@ -132,6 +121,17 @@ public class SyncUserOrgTaskService {
                     }
                 }
             }
+            //同步完成后将leader字段要改成存user_id
+            List<HrUserVo> userList = userService.selectAllUserList();
+            userList.forEach(e ->{
+                String userId = userList.stream()
+                        .filter(i -> i.getHrUserId().equals(e.getLeader()))
+                        .map(HrUserVo::getUserId)
+                        .findFirst().orElse(null);
+                e.setLeader(userId);
+            });
+            userService.updateUserLeader(userList);
+
             log.info("人事系统用户信息同步完成->新增用户:" + insertNum + "个,删除用户：" + deletetNum + "个,更新用户：" + updatetNum + "个");
         } else {
             log.error("人事系统用户信息返回空数据");
@@ -199,6 +199,20 @@ public class SyncUserOrgTaskService {
                     updatetNum = deptService.updateDeptFromHr(deptList2);
                 }
             }
+            //同步完成后将leader字段要改成存user_id
+            List<HrUserVo> userList = userService.selectAllUserList();
+            List<HrDeptVo> deptInfoList = deptService.selectAllDeptList();
+            List<HrDeptVo> collect = deptInfoList.stream()
+                    .filter(e -> !StringUtils.isEmpty(e.getLeader()))
+                    .collect(Collectors.toList());
+            collect.forEach(e ->{
+                String userId = userList.stream()
+                        .filter(i -> i.getHrUserId().equals(e.getLeader()))
+                        .map(HrUserVo::getUserId)
+                        .findFirst().orElse(null);
+                e.setLeader(userId);
+            });
+            deptService.updateDeptLeader(deptInfoList);
             log.info("人事系统组织信息同步完成->新增组织:" + insertNum + "个,删除组织：" + deletetNum + "个,更新组织：" + updatetNum + "个");
         } else {
             log.error("人事系统组织信息返回空数据");

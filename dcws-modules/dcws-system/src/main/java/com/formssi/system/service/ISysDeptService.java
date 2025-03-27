@@ -25,6 +25,8 @@ public interface ISysDeptService {
     int deleteDeptByIdFromHr(List<String> deptIdList);
     //更新部门信息
     int updateDeptFromHr(List<HrDeptVo> deptList);
+    //更新部门leader信息
+    int updateDeptLeader(List<HrDeptVo> deptList);
 
 
 

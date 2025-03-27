@@ -28,6 +28,11 @@ public class SysUser extends TenantEntity {
     private Long userId;
 
     /**
+     * 人事系统user_id
+     */
+    private Long hrUserId;
+
+    /**
      * 上级领导用户ID
      */
     private Long leader;
@@ -117,6 +122,11 @@ public class SysUser extends TenantEntity {
      * 备注
      */
     private String remark;
+
+    /**
+     * 是否人事系统用户
+     */
+    private String isHruser;
 
 
     public SysUser(Long userId) {

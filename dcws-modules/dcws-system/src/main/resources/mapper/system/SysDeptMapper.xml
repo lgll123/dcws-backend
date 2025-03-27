@@ -81,13 +81,19 @@
         <foreach collection="list" item="item" separator=";">
             UPDATE sys_dept
             SET
-            dept_name = #{item.deptName},
-            parent_id = #{item.parentId},
-            leader = #{item.leader},
-            order_num = #{item.orderNum},
-            ancestors = #{item.ancestors},
-            del_flag = '0'
+                dept_name = #{item.deptName},
+                parent_id = #{item.parentId},
+                leader = #{item.leader},
+                order_num = #{item.orderNum},
+                ancestors = #{item.ancestors},
+                del_flag = '0'
             WHERE dept_id = #{item.deptId}
+        </foreach>
+    </update>
+
+    <update id="updateDeptLeader" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE sys_dept SET leader = #{item.leader} WHERE dept_id = #{item.deptId}
         </foreach>
     </update>
 

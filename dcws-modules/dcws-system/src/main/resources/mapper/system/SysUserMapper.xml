@@ -26,9 +26,11 @@
     </select>
 
 
-    <select id="selectAllUserList" resultType="com.formssi.system.domain.vo.HrUserVo">
+    <select id="selectAllUserList" resultType="com.formssi.system.domain.vo.SysUserVo">
         select
             u.user_id,
+            u.hr_user_id,
+            u.leader,
             u.emp_no,
             u.dept_id,
             u.nick_name,
@@ -42,10 +44,12 @@
         where u.is_hruser = 'Y'
     </select>
 
-    <select id="selectUserDeptList" resultType="com.formssi.system.domain.vo.HrUserVo">
+    <select id="selectUserDeptList" resultType="com.formssi.system.domain.vo.SysUserVo">
         select a.*,b.dept_name from (
             select
                 u.user_id,
+                u.hr_user_id,
+                u.leader,
                 u.emp_no,
                 u.nick_name,
                 u.user_name,
@@ -87,7 +91,7 @@
                 nick_name = #{item.nickName},
                 email = #{item.email},
                 del_flag = '0'
-            WHERE user_id = #{item.userId}
+            WHERE hr_user_id = #{item.hrUserId}
         </foreach>
     </update>
 
@@ -95,6 +99,14 @@
         <foreach collection="list" item="item" separator=";">
             UPDATE sys_user
             SET asset_user_id = #{item.assetUserId}
+            WHERE user_id = #{item.userId}
+        </foreach>
+    </update>
+
+    <update id="updateUserLeader" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE sys_user
+            SET leader = #{item.leader}
             WHERE user_id = #{item.userId}
         </foreach>
     </update>

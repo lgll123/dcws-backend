@@ -30,6 +30,11 @@ public class SysUserBo extends BaseEntity {
     private Long userId;
 
     /**
+     * 人事系统user_id
+     */
+    private Long hrUserId;
+
+    /**
      * 上级领导用户ID
      */
     private Long leader;
@@ -101,6 +106,11 @@ public class SysUserBo extends BaseEntity {
      * 备注
      */
     private String remark;
+
+    /**
+     * 是否人事系统用户
+     */
+    private String isHruser;
 
     /**
      * 角色组

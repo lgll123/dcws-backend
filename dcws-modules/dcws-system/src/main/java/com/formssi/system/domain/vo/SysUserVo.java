@@ -34,6 +34,11 @@ public class SysUserVo implements Serializable {
     private Long userId;
 
     /**
+     * 人事系统user_id
+     */
+    private Long hrUserId;
+
+    /**
      * 上级领导用户ID
      */
     private Long leader;
@@ -122,6 +127,11 @@ public class SysUserVo implements Serializable {
      * 备注
      */
     private String remark;
+
+    /**
+     * 是否人事系统用户
+     */
+    private String isHruser;
 
     /**
      * 创建时间

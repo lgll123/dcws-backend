@@ -35,7 +35,7 @@ public class AssetsMaintRecordAddTaskListener implements TaskListener {
                     .map(obj -> (List<Map<String, Object>>) obj)
                     .orElse(Collections.emptyList());
             extMaints.stream()
-                    .filter(extMaint->!ObjectUtil.isEmpty(extMaint.get("id")))
+                    .filter(extMaint->!ObjectUtil.isEmpty(extMaint.get("id")) && !ObjectUtil.isEmpty(extMaint.get("supplierId")))
                     .forEach(e->{
                     Map<String, String> requestBodyMap = new HashMap<>();
                     requestBodyMap.put("title",e.get("name")+"-维修");
@@ -43,6 +43,7 @@ public class AssetsMaintRecordAddTaskListener implements TaskListener {
                     requestBodyMap.put("supplier_id",Convert.toStr(e.get("supplierId")));// 供应商
                     requestBodyMap.put("asset_maintenance_type","维修");//资产维护类型
                     requestBodyMap.put("start_date",Convert.toStr(e.get("orderDate")));
+                    //TODO  添加失败记录，后续处理
                     Map<String, Object> responseMap = instance.process(requestBodyMap,"maintenances","post");
                 });
         } catch (Exception e) {

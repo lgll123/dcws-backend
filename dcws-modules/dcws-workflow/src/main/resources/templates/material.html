@@ -106,7 +106,7 @@
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">物料申请清单</span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">物料申请</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
@@ -174,9 +174,9 @@
 <div class="basic-info clear-info" style="margin-top: 20px;">
     <div  style="font-size: 14px;font-weight: 700;">澄清物料清单</div>
     <div style="padding-left: 23px; margin-top: 10px; font-size: 14px;font-weight: 700;">已有物料</div>
-    <!-- IT资产清单 -->
+    <!-- 资产清单 -->
     <div style="padding-left: 43px"  th:if="${data.hardware != null and not #lists.isEmpty(data.hardware)}">
-        <div class="table-apply-title">IT资产清单</div>
+        <div class="table-apply-title">资产清单</div>
         <table class="table-apply-info">
             <thead class="title-divider">
             <tr>

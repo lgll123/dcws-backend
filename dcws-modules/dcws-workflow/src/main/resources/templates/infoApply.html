@@ -106,7 +106,7 @@
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">资料申请清单</span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">资料申请</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
@@ -154,14 +154,14 @@
         </div>
     </div>
 </div>
-<!-- 指派信息 -->
+<!-- 转发信息 -->
 <div class="basic-info" style="margin-top: 20px;">
-    <div style="font-size: 14px;font-weight: 700;">指派信息</div>
+    <div style="font-size: 14px;font-weight: 700;">转发信息</div>
     <div style="padding-left: 43px">
         <table>
             <tr style="font-size: 13px;font-weight: 700;">
-                <th>是否指派部门</th>
-                <th>指派部门</th>
+                <th>是否转发部门</th>
+                <th>转发部门</th>
             </tr>
             <tr class="light-text" style="font-size: 11px;font-weight: 400;">
                 <td th:text="${data.applyDetails.isNeedAssign == 1 ? '是' : '否'}"></td>

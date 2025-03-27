@@ -43,6 +43,7 @@ public class AssetsMaintRecordAddTaskListener implements TaskListener {
                     requestBodyMap.put("supplier_id",Convert.toStr(e.get("supplierId")));// 供应商
                     requestBodyMap.put("asset_maintenance_type","维修");//资产维护类型
                     requestBodyMap.put("start_date",Convert.toStr(e.get("orderDate")));
+                    //TODO  添加失败记录，后续处理
                     Map<String, Object> responseMap = instance.process(requestBodyMap,"maintenances","post");
                 });
         } catch (Exception e) {

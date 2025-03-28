@@ -12,7 +12,7 @@ spring.thymeleaf.prefix: classpath:/templates/
 spring.thymeleaf.suffix: .html
 
 captcha:
-  enable: true
+  enable: false
   # 页面 <参数设置> 可开启关闭 验证码校验
   # 验证码类型 math 数组计算 char 字符验证
   type: MATH

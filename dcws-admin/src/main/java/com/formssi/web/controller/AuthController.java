@@ -5,14 +5,12 @@ import cn.dev33.satoken.exception.NotLoginException;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.formssi.common.core.constant.UserConstants;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.domain.model.LoginBody;
 import com.formssi.common.core.domain.model.PasswordLoginBody;
 import com.formssi.common.core.domain.model.RegisterBody;
 import com.formssi.common.core.domain.model.SocialLoginBody;
-import com.formssi.common.core.exception.user.UserException;
 import com.formssi.common.core.utils.*;
 import com.formssi.common.encrypt.annotation.ApiEncrypt;
 import com.formssi.common.json.utils.JsonUtils;
@@ -23,7 +21,6 @@ import com.formssi.common.social.utils.SocialUtils;
 import com.formssi.common.sse.dto.SseMessageDto;
 import com.formssi.common.sse.utils.SseMessageUtils;
 import com.formssi.common.tenant.helper.TenantHelper;
-import com.formssi.system.domain.SysUser;
 import com.formssi.system.domain.bo.SysTenantBo;
 import com.formssi.system.domain.vo.SysClientVo;
 import com.formssi.system.domain.vo.SysTenantVo;
@@ -38,7 +35,6 @@ import com.formssi.web.domain.vo.*;
 import com.formssi.web.service.IAuthStrategy;
 import com.formssi.web.service.SysLoginService;
 import com.formssi.web.service.SysRegisterService;
-import com.mysql.cj.x.protobuf.MysqlxDatatypes;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -158,45 +154,38 @@ public class AuthController {
         String sign = loginTokenBo.getSign();
         //数据验签
         PublicKey publicKey = SecurityUtil.getPublicKeyFromString(llPublicKey);
-        if (SecurityUtil.verify(data,sign,publicKey)){
-            PrivateKey privateKey = SecurityUtil.getPrivateKeyFromString(dcwsPrivateKey);
-            //数据解密
-            String dataBase = SecurityUtil.decrypt(data,privateKey);
-            LoginUserBo loginToken = JsonUtils.parseObject(dataBase, LoginUserBo.class);
-            SysClientVo client = clientService.queryByClientId("428a8310cd442757ae699df5d894f051");
-            PasswordLoginBody loginBody = new PasswordLoginBody();
-            loginBody.setUsername(loginToken.getEmpNo());
-            loginBody.setTenantId("000000");
-            String body = JsonUtils.toJsonString(loginBody);
-            LoginVo loginVo = null;
-            LoginTokenVo loginTokenVo = new LoginTokenVo();
-            LoginTokenResVo loginTokenRes = new LoginTokenResVo();
-            try {
-                loginVo = IAuthStrategy.login(body, client, "password");
+        PrivateKey privateKey = SecurityUtil.getPrivateKeyFromString(dcwsPrivateKey);
+        LoginTokenVo loginTokenVo = new LoginTokenVo();
+        LoginTokenResVo loginTokenRes = new LoginTokenResVo();
+        String dataRes;
+        try {
+            if (SecurityUtil.verify(data, sign, publicKey)) {
+                String dataBase = SecurityUtil.decrypt(data, privateKey);
+                LoginUserBo loginToken = JsonUtils.parseObject(dataBase, LoginUserBo.class);
+                SysClientVo client = clientService.queryByClientId("428a8310cd442757ae699df5d894f051");
+                PasswordLoginBody loginBody = new PasswordLoginBody();
+                loginBody.setUsername(loginToken.getEmpNo());
+                loginBody.setTenantId("000000");
+                String body = JsonUtils.toJsonString(loginBody);
+                LoginVo loginVo = IAuthStrategy.login(body, client, "password");
                 LoginUserVo loginUserVo = new LoginUserVo();
                 loginUserVo.setToken(loginVo.getAccessToken());
-
-                String dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.ok(loginUserVo)),publicKey);
-                loginTokenVo.setData(dataRes);
-                loginTokenVo.setSign(SecurityUtil.sign(dataRes,privateKey));
-
+                dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.ok(loginUserVo)), publicKey);
                 loginTokenRes.setSucc("0");
-                loginTokenRes.setData(loginTokenVo);
-            } catch (Exception e) {
-                String dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.fail(e.getMessage().toString())),publicKey);
-
-                loginTokenVo.setData(dataRes);
-                loginTokenVo.setSign(SecurityUtil.sign(dataRes,privateKey));
-
+            } else {
+                dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.fail("验签失败")), publicKey);
                 loginTokenRes.setSucc("1");
-                loginTokenRes.setData(loginTokenVo);
-
-                log.error("乐联获取token异常 => {}", e.getMessage());
+                log.error("乐联获取token异常 => {}", "验签失败");
             }
-            return loginTokenRes;
-        }else {
-            return null;
+        } catch (Exception e) {
+            dataRes = SecurityUtil.encrypt(JsonUtils.toJsonString(R.fail(e.getMessage().toString())), publicKey);
+            loginTokenRes.setSucc("1");
+            log.error("乐联获取token异常 => {}", e.getMessage());
         }
+        loginTokenVo.setData(dataRes);
+        loginTokenVo.setSign(SecurityUtil.sign(dataRes, privateKey));
+        loginTokenRes.setData(loginTokenVo);
+        return loginTokenRes;
     }
 
 

@@ -13,6 +13,7 @@ import com.formssi.common.log.enums.BusinessType;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
+import com.formssi.system.domain.vo.InfoChangeImportVo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
@@ -29,6 +30,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -156,6 +158,14 @@ public class TaskNodeDataController extends BaseController {
     @GetMapping("/uploadInvoice")
     public R<List<DcwsInvoiceVo>> uploadInvoice(@RequestParam(value = "fileIds") String fileIds) throws Exception {
         return R.ok(applyService.uploadInvoice(fileIds));
+    }
+
+    /**
+     * 获取导入模板
+     */
+    @PostMapping("/importTemplate")
+    public void importTemplate(HttpServletResponse response) {
+        ExcelUtil.exportExcel(new ArrayList<>(), "档案信息", InfoChangeImportVo.class, response);
     }
 
 }

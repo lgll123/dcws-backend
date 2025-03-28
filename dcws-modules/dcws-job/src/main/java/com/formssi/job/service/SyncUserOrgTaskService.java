@@ -4,7 +4,6 @@ package com.formssi.job.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.formssi.job.snailjob.SyncUserOrgTask;
 import com.formssi.system.domain.vo.*;
 import com.formssi.system.mapper.SysRoleMapper;
 import com.formssi.system.service.ISysAssetService;
@@ -12,6 +11,7 @@ import com.formssi.system.service.ISysDeptService;
 import com.formssi.system.service.ISysHrService;
 import com.formssi.system.service.ISysUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
  *
  * @author Lion Li
  */
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class SyncUserOrgTaskService {
@@ -42,8 +42,6 @@ public class SyncUserOrgTaskService {
     private final ISysDeptService deptService;
 
     private final SysRoleMapper roleMapper;
-
-    private static final Logger log = LoggerFactory.getLogger(SyncUserOrgTask.class);
 
 
     /**

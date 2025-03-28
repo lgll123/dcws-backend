@@ -283,12 +283,6 @@ hr-system:
   api-url-user: http://10.101.136.104:8099/thirdPlatformForeign/call/v2/getUserList
   api-url-org: http://10.101.136.104:8099/thirdPlatformForeign/call/v2/getOrgList
 
-#定时任务配置
-schedule:
-  syncUserCron: "0 10 1 * * *"
-  syncOrgCron: "0 20 1 * * *"
-  syncAssetUserCron: "0 30 1 * * *"
-  syncAssetOrgCron: "0 40 1 * * *"
 
 #RSA加密密钥
 securityKey:

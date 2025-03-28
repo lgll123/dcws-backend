@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  * @author Lion Li
  */
 @Slf4j
-@EnableScheduling
 @SpringBootApplication
 public class DcwsApplication {
 

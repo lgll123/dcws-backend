@@ -160,11 +160,9 @@
     <div style="padding-left: 43px">
         <table>
             <tr style="font-size: 13px;font-weight: 700;">
-                <th>是否转发部门</th>
                 <th>转发部门</th>
             </tr>
             <tr class="light-text" style="font-size: 11px;font-weight: 400;">
-                <td th:text="${data.applyDetails.isNeedAssign == 1 ? '是' : '否'}"></td>
                 <td th:text="${data.applyDetails.isNeedAssign == 1 ? data.applyDetails.deptName : '无'}"></td>
             </tr>
 
@@ -176,6 +174,28 @@
                 <td th:text="${data.applyDetails.isProviderOriginal == true ? '是' : '否'}"></td>
                 <td th:text="${data.applyDetails.isReturnOriginal == true ? '是' : '否'}"></td>
             </tr>
+        </table>
+    </div>
+</div>
+<!-- 附件信息 -->
+<div class="basic-info" style="margin-top: 20px;">
+    <div style="font-size: 14px;font-weight: 700;">附件信息</div>
+    <div style="padding-left: 43px">
+        <table class="table-apply-info">
+            <thead class="title-divider">
+            <tr>
+                <th>序号</th>
+                <th style="text-align: right;">附件名称</th>
+                <th style="text-align: right;">备注</th>
+            </tr>
+            </thead>
+            <tbody class="light-text">
+            <tr th:each="item : ${data.applyDetails.applyFile}">
+                <td style="text-align: right;" th:text="${item.num}"></td>
+                <td style="text-align: right;" th:text="${item.fileName}"></td>
+                <td style="text-align: right;" th:text="${item.remark}"></td>
+            </tr>
+            </tbody>
         </table>
     </div>
 </div>

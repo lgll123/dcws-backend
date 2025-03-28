@@ -90,7 +90,7 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
             queryWrapper.lt("t.CREATE_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
-            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
+            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from dcws_task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
         }
         queryWrapper.orderByDesc("t.CREATE_TIME_");
         Page<DcwsTaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
@@ -135,7 +135,7 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
             queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
         }
         if (!Objects.isNull(taskBo.getWfType())) {
-            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
+            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from dcws_task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
         }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<DcwsTaskVo> page = actTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);

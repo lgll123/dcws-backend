@@ -11,7 +11,7 @@ import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName("task_node_data")
+@TableName("dcws_task_node_data")
 public class TaskNodeData extends BaseEntity {
 
     @Serial

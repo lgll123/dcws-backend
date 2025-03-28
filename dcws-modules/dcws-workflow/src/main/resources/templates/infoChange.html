@@ -106,7 +106,7 @@
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">档案移交清单</span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">档案移交申请单</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
@@ -127,12 +127,14 @@
                 <td th:text="${data.applicant}"></td>
                 <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
             </tr>
+            <tr style="font-size: 13px;font-weight: 700;">
+                <th>接收人</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.checkTo}"></td>
+            </tr>
         </table>
         <div>
-            <div style="overflow: hidden;">
-                <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">移交事由</span>
-                <span class="light-text" th:text="${data.applyReson}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
-            </div>
             <div style="margin-top: 10px;overflow: hidden;">
                 <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</span><span class="light-text" th:text="${data.applyRemarks}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
             </div>
@@ -143,10 +145,6 @@
 <div class="basic-info apply-info" style="margin-top: 20px;">
     <div style="font-size: 14px;font-weight: 700;">档案信息</div>
     <div style="padding-left: 43px;margin-top: 20px; ">
-        <div style="overflow: hidden;">
-            <span style="float: left;margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">表单编号</span>
-            <span class="light-text" th:text="${data.applyDetails.formId}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></span>
-        </div>
         <table class="table-apply-info">
             <thead class="title-divider">
                 <tr>

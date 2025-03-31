@@ -79,17 +79,17 @@ public class DcwsProject extends BaseEntity {
     private Long taskCount;
 
     /**
-     * 待分配总数
+     * 待分配数
      */
     private Long draftCount;
 
     /**
-     * 进行中总数
+     * 进行中数
      */
     private Long inprogressCount;
 
     /**
-     * 已完成总数
+     * 已完成数
      */
     private Long finishCount;
 

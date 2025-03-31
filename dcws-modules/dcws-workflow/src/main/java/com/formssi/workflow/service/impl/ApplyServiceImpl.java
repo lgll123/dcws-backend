@@ -82,7 +82,7 @@ public class ApplyServiceImpl implements IApplyService {
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
     private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','material','seal_apply','claim_apply'" +
-            ",'data_apply','server_apply','info_apply','info_change'}.contains(#event.key)";
+            ",'data_apply','server_apply','info_apply','info_change','general_apply'}.contains(#event.key)";
     private final ISysFileService sysFileService;
 
     @Autowired

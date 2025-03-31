@@ -41,9 +41,14 @@ public interface ProjectManagementService {
     DcwsProjectTaskVo updateByTaskBo(DcwsProjectTaskBo bo);
 
     /**
-     * 修改任务
+     * 判断任务是否在自己名下
      */
     DcwsTaskVo querytaskbelonging(DcwsProjectTaskBo bo);
+
+    /**
+     * 修改项目下待办统计数据
+     */
+    void updateProjectTaskCount(DcwsProjectTaskBo bo);
 
 
 

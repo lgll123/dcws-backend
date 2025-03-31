@@ -14,9 +14,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public enum ApplyTypeEnum {
     /**
-     * IT物料申请
+     * 物料申请
      */
-    MATERIAL_IT("19","material", "IT物料申请"),
+    MATERIAL_IT("19","material", "物料申请"),
     /**
      * 非IT物料申请
      */

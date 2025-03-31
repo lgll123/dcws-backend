@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.workflow.domain.bo.DcwsProjectTaskBo;
+import com.formssi.workflow.service.ProjectManagementService;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.common.core.utils.MapstructUtils;
 import com.formssi.common.core.utils.StringUtils;
@@ -43,6 +45,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     private final DcwsProjectTaskMapper dcwsProjectTaskMapper;
     private final TaskSerialService taskSerialService;
     private final WfCategoryMapper wfCategoryMapper;
+    private final ProjectManagementService projectService;
 
 
     /**
@@ -165,6 +168,11 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                  dcwsProjectTask.setCreateBy(LoginHelper.getUserId());
                  dcwsProjectTask.setCreateEmpName(LoginHelper.getUsername());
                  dcwsProjectTaskMapper.insert(dcwsProjectTask);
+
+                 DcwsProjectTaskBo dcwsProjectTaskBo = new DcwsProjectTaskBo();
+                 dcwsProjectTaskBo.setProjectId(add.getProjectId());
+                 dcwsProjectTaskBo.setTaskStatus("inprogress");
+                 projectService.updateProjectTaskCount(dcwsProjectTaskBo);
              }
             //通用审批处理历史表
             DcwsNormalTaskHandleHis dcwsHis = new DcwsNormalTaskHandleHis();

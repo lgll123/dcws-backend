@@ -3,6 +3,7 @@ package com.formssi.workflow.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.core.domain.dto.RoleDTO;
@@ -108,6 +109,10 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
                     dcwsProjectTask.setCreateEmpName(LoginHelper.getUsername());
                     dcwsProjectTaskMapper.insert(dcwsProjectTask);
                 }
+                dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                        .set(DcwsProject::getTaskCount, list.size())
+                        .set(DcwsProject::getDraftCount, list.size())
+                        .eq(DcwsProject::getProjectId, dcwsProject.getProjectId()));
             }
         }
         return MapstructUtils.convert(dcwsProject, DcwsProjectVo.class);
@@ -141,8 +146,60 @@ public class ProjectManagementServiceImpl implements ProjectManagementService {
         if (StringUtils.isNotEmpty(update.getBusinessKey())){
             update.setTaskId(null);
         }
+        //原状态数据-1
+        DcwsProjectTaskVo oldDcwsProjectVo = dcwsProjectTaskMapper.selectVoById(bo.getProjectTaskId());
+        DcwsProjectVo dcwsProjectVo = dcwsProjectMapper.selectVoById(oldDcwsProjectVo.getProjectId());
+        if (BusinessStatusEnum.DRAFT.getStatus().equals(oldDcwsProjectVo.getTaskStatus()) && dcwsProjectVo.getDraftCount() >0 ){
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getDraftCount, dcwsProjectVo.getDraftCount() - 1)
+                    .eq(DcwsProject::getProjectId, dcwsProjectVo.getProjectId()));
+        }else if (BusinessStatusEnum.FINISH.getStatus().equals(oldDcwsProjectVo.getTaskStatus())  && dcwsProjectVo.getFinishCount() >0 ) {
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getFinishCount, dcwsProjectVo.getFinishCount() - 1)
+                    .eq(DcwsProject::getProjectId, dcwsProjectVo.getProjectId()));
+        }else if ("inprogress".equals(oldDcwsProjectVo.getTaskStatus())  && dcwsProjectVo.getInprogressCount() >0 ){
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getInprogressCount, dcwsProjectVo.getInprogressCount() - 1)
+                    .eq(DcwsProject::getProjectId, dcwsProjectVo.getProjectId()));
+        }
+        //新状态数据+1
+        if (BusinessStatusEnum.DRAFT.getStatus().equals(bo.getTaskStatus())){
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getDraftCount, dcwsProjectVo.getDraftCount() + 1)
+                    .eq(DcwsProject::getProjectId, dcwsProjectVo.getProjectId()));
+        }else if (BusinessStatusEnum.FINISH.getStatus().equals(bo.getTaskStatus())) {
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getFinishCount, dcwsProjectVo.getFinishCount() + 1)
+                    .eq(DcwsProject::getProjectId, dcwsProjectVo.getProjectId()));
+        }else if ("inprogress".equals(bo.getTaskStatus())){
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getInprogressCount, dcwsProjectVo.getInprogressCount() + 1)
+                    .eq(DcwsProject::getProjectId, dcwsProjectVo.getProjectId()));
+        }
         dcwsProjectTaskMapper.updateById(update);
         return MapstructUtils.convert(update, DcwsProjectTaskVo.class);
+    }
+
+
+    @Override
+    public void updateProjectTaskCount(DcwsProjectTaskBo bo) {
+        DcwsProjectVo dcwsProjectVo = dcwsProjectMapper.selectVoById(bo.getProjectId());
+        if (BusinessStatusEnum.DRAFT.getStatus().equals(bo.getTaskStatus())){
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getTaskCount, dcwsProjectVo.getTaskCount() +1 )
+                    .set(DcwsProject::getDraftCount, dcwsProjectVo.getDraftCount() + 1)
+                    .eq(DcwsProject::getProjectId, bo.getProjectId()));
+        } else if (BusinessStatusEnum.FINISH.getStatus().equals(bo.getTaskStatus())) {
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getTaskCount, dcwsProjectVo.getTaskCount() +1 )
+                    .set(DcwsProject::getFinishCount, dcwsProjectVo.getFinishCount() + 1)
+                    .eq(DcwsProject::getProjectId, bo.getProjectId()));
+        }else if ("inprogress".equals(bo.getTaskStatus())){
+            dcwsProjectMapper.update(null, new LambdaUpdateWrapper<DcwsProject>()
+                    .set(DcwsProject::getTaskCount, dcwsProjectVo.getTaskCount() +1 )
+                    .set(DcwsProject::getInprogressCount, dcwsProjectVo.getInprogressCount() + 1)
+                    .eq(DcwsProject::getProjectId, bo.getProjectId()));
+        }
     }
 
     @Override

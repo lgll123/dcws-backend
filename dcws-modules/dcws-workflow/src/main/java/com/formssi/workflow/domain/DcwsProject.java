@@ -73,4 +73,26 @@ public class DcwsProject extends BaseEntity {
      */
     private String riskClassification;
 
+    /**
+     * 任务总数
+     */
+    private Long taskCount;
+
+    /**
+     * 待分配总数
+     */
+    private Long draftCount;
+
+    /**
+     * 进行中总数
+     */
+    private Long inprogressCount;
+
+    /**
+     * 已完成总数
+     */
+    private Long finishCount;
+
+
+
 }

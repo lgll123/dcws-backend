@@ -6,6 +6,7 @@ import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.workflow.domain.DcwsProjectTask;
 import com.formssi.workflow.domain.bo.CompleteTaskBo;
 import com.formssi.workflow.domain.bo.DcwsProjectBo;
+import com.formssi.workflow.domain.bo.DcwsProjectTaskBo;
 import com.formssi.workflow.domain.bo.StartProcessBo;
 import com.formssi.workflow.domain.vo.DcwsProjectVo;
 import com.formssi.workflow.mapper.DcwsProjectTaskMapper;
@@ -71,6 +72,12 @@ public class IActTaskServiceWrapper {
         return transactionTemplate.execute(status -> {
             try {
                 DcwsProjectVo dcwsProjectVo = projectManagementService.insertByBo(projectBo);// 调用原方法（已注解@Transactional）
+
+                DcwsProjectTaskBo dcwsProjectTaskBo = new DcwsProjectTaskBo();
+                dcwsProjectTaskBo.setProjectId(dcwsProjectVo.getProjectId());
+                dcwsProjectTaskBo.setTaskStatus("finish");
+                projectManagementService.updateProjectTaskCount(dcwsProjectTaskBo);
+
                 DcwsProjectTask dcwsProjectTask = new DcwsProjectTask();
                 dcwsProjectTask.setTaskType(Convert.toStr(taskNodeData.get("applyType")));
                 dcwsProjectTask.setProjectId(dcwsProjectVo.getProjectId());

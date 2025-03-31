@@ -90,19 +90,19 @@ public class DcwsProjectVo implements Serializable {
     private Long taskCount;
 
     /**
-     * 待分配总数
+     * 待分配数
      */
     @ExcelProperty(value = "待分配总数")
     private Long draftCount;
 
     /**
-     * 进行中总数
+     * 进行中数
      */
     @ExcelProperty(value = "进行中总数")
     private Long inprogressCount;
 
     /**
-     * 已完成总数
+     * 已完成数
      */
     @ExcelProperty(value = "已完成总数")
     private Long finishCount;

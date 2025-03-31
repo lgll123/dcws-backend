@@ -1,6 +1,7 @@
 package com.formssi.workflow.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import com.formssi.common.core.domain.R;
 import com.formssi.common.core.utils.StringUtils;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.ISysUserService;
@@ -131,5 +132,14 @@ public class DcwsActTaskController extends BaseController {
     @GetMapping("/getPageByTaskCopy")
     public TableDataInfo<DcwsTaskVo> getPageByTaskCopy(DcwsTaskBo taskBo, PageQuery pageQuery) {
         return actTaskService.getPageByTaskCopy(taskBo, pageQuery);
+    }
+
+    /**
+     * 查询当前用户的待办汇总数据
+     *
+     */
+    @GetMapping("/getUserTaskCount")
+    public R<DcwsTaskCountVo> getUserTaskCount() {
+        return R.ok(actTaskService.getUserTaskCount());
     }
 }

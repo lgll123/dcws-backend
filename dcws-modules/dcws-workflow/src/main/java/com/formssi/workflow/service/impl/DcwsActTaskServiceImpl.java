@@ -1,8 +1,13 @@
 package com.formssi.workflow.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.formssi.workflow.domain.DcwsNormalTask;
+import com.formssi.workflow.mapper.DcwsNormalTaskMapper;
 import com.formssi.workflow.utils.DcwsDateUtils;
 import com.formssi.workflow.mapper.DcwsActTaskMapper;
 import com.formssi.workflow.service.IWfNodeConfigService;
@@ -22,6 +27,8 @@ import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.workflow.domain.bo.*;
 import com.formssi.workflow.domain.vo.*;
 import com.formssi.workflow.service.DcwsIActTaskService;
+import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.history.HistoricProcessInstanceQuery;
 import org.flowable.task.api.Task;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -41,6 +48,8 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
     private final DcwsActTaskMapper actTaskMapper;
     private final IWfNodeConfigService wfNodeConfigService;
     private final UserService userService;
+    private final DcwsNormalTaskMapper dcwsNormalTaskMapper;
+
 
     /**
      * 发送消息
@@ -199,5 +208,55 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
             }
         }
         return TableDataInfo.build(page);
+    }
+
+    @Override
+    public DcwsTaskCountVo getUserTaskCount() {
+        PageQuery pageQuery = new PageQuery();
+        pageQuery.setPageSize(1);
+        pageQuery.setPageNum(1);
+        DcwsTaskCountVo dcwsTaskCountVo = new DcwsTaskCountVo();
+        QueryWrapper<DcwsTaskVo> taskQueryWrapper = new QueryWrapper<>();
+        List<RoleDTO> roles = LoginHelper.getLoginUser().getRoles();
+        List<String> roleIds = StreamUtils.toList(roles, e -> String.valueOf(e.getRoleId()));
+        String userId = String.valueOf(LoginHelper.getUserId());
+        taskQueryWrapper.eq("t.business_status_", BusinessStatusEnum.WAITING.getStatus());
+        taskQueryWrapper.eq(TenantHelper.isEnable(), "t.tenant_id_", TenantHelper.getTenantId());
+        String ids = StreamUtils.join(roleIds, x -> "'" + x + "'");
+        taskQueryWrapper.and(w1 -> w1.eq("t.assignee_", userId).or(w2 -> w2.isNull("t.assignee_").apply("exists ( select LINK.ID_ from ACT_RU_IDENTITYLINK LINK where LINK.TASK_ID_ = t.ID_ and LINK.TYPE_ = 'candidate' and (LINK.USER_ID_ = {0} or ( LINK.GROUP_ID_ IN (" + ids + ") ) ))", userId)));
+        Page<DcwsTaskVo> taskWaitPage = actTaskMapper.getTaskWaitByPage(pageQuery.build(), taskQueryWrapper);
+        QueryWrapper<DcwsNormalTaskVo> normalTaskqueryWrapper = new QueryWrapper<>();
+        normalTaskqueryWrapper.eq("t.status", BusinessStatusEnum.WAITING.getStatus());
+        normalTaskqueryWrapper.eq("t.user_Id", LoginHelper.getUserId());
+        Page<DcwsNormalTaskVo> normalTaskPage = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), normalTaskqueryWrapper);
+        //待办总数
+        dcwsTaskCountVo.setTaskWaitingCount(taskWaitPage.getTotal() + normalTaskPage.getTotal());
+
+        HistoricProcessInstanceQuery query = DcwsQueryUtils.hisInstanceQuery();
+        query.startedBy(String.valueOf(LoginHelper.getUserId()));
+        query.listPage(pageQuery.getFirstNum(), pageQuery.getPageSize());
+        LambdaQueryWrapper<DcwsNormalTask> lqw = Wrappers.lambdaQuery();
+        lqw.eq(DcwsNormalTask::getCreateBy, LoginHelper.getUserId());
+        Page<DcwsNormalTaskVo> result = dcwsNormalTaskMapper.selectVoPage(pageQuery.build(), lqw);
+        //发起总数
+        dcwsTaskCountVo.setMyDocumentCount(query.count() + result.getTotal());
+
+        taskQueryWrapper = new QueryWrapper<>();
+        taskQueryWrapper.eq("t.assignee_", String.valueOf(LoginHelper.getUserId()));
+        Page<DcwsTaskVo> taskFinishPage = actTaskMapper.getTaskFinishByPage(pageQuery.build(), taskQueryWrapper);
+        normalTaskqueryWrapper = new QueryWrapper<>();
+        normalTaskqueryWrapper.eq("t.user_Id", LoginHelper.getUserId());
+        normalTaskPage = dcwsNormalTaskMapper.getTaskFinishByPage(pageQuery.build(), normalTaskqueryWrapper);
+        //已办总数
+        dcwsTaskCountVo.setTaskFinishCount(taskFinishPage.getTotal() + normalTaskPage.getTotal());
+
+        taskQueryWrapper = new QueryWrapper<>();
+        taskQueryWrapper.eq("t.assignee_", String.valueOf(LoginHelper.getUserId()));
+        Page<DcwsTaskVo> taskCopyPage = actTaskMapper.getTaskCopyByPage(pageQuery.build(), taskQueryWrapper);
+        //抄送总数
+        dcwsTaskCountVo.setTaskCopyListCount(taskCopyPage.getTotal());
+
+        log.info("待办汇总:\n" + JSON.toJSONString(dcwsTaskCountVo) + "\n");
+        return dcwsTaskCountVo;
     }
 }

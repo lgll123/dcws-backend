@@ -17,11 +17,11 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 费用报销任务启动
+ * 差旅费报销任务启动
  */
 @Slf4j
-@Component("ReimbursementApplyTaskExeListener")
-public class ReimbursementApplyTaskExeListener implements ExecutionListener {
+@Component("BusinessTripCostApplyTaskExeListener")
+public class BusinessTripCostApplyTaskExeListener implements ExecutionListener {
     @Autowired
     private ISysDeptService sysDeptService;
     @Autowired
@@ -32,7 +32,7 @@ public class ReimbursementApplyTaskExeListener implements ExecutionListener {
     public void notify(DelegateExecution delegateTask) {
         try{
             Map<String, Object> variables = delegateTask.getVariables();
-            SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(variables.get("reimbursementId").toString()));
+            SysUserVo sysUserVo = iSysUserService.selectUserById(Long.valueOf(variables.get("businessTravelerId").toString()));
             SysDeptVo sysDeptVo = sysDeptService.selectDeptById(sysUserVo.getDeptId());
             DcwsFinanceApprovalVo dcwsFinanceApprovalVo = iFinanceApprovalService.selectFinanceApprovalByDeptId(sysUserVo.getDeptId());
             delegateTask.setVariable("leader", sysDeptVo.getLeader());

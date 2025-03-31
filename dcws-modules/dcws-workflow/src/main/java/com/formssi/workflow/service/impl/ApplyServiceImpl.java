@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -27,6 +28,7 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.system.domain.SealInfo;
+import com.formssi.system.domain.vo.InfoChangeImportVo;
 import com.formssi.system.domain.vo.SealJsonVo;
 import com.formssi.system.domain.vo.SysFileVo;
 import com.formssi.system.service.ISysFileService;
@@ -55,7 +57,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
@@ -408,5 +412,18 @@ public class ApplyServiceImpl implements IApplyService {
         lqw.in(TaskNodeData::getApplyType,Arrays.stream(values()).map(ApplyTypeEnum::getCode).toList());
         lqw.orderByDesc(BaseEntity::getCreateTime);
         return taskNodeDataMapper.selectVoPage(pageQuery.build(), lqw);
+    }
+
+    public List<InfoChangeImportVo> readExcel(MultipartFile file)  {
+        try {
+            List<InfoChangeImportVo> info = EasyExcel.read(file.getInputStream())
+                    .head(InfoChangeImportVo.class)
+                    .registerReadListener(new ValidationListener())
+                    .sheet()
+                    .doReadSync();// 同步读取
+            return info;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

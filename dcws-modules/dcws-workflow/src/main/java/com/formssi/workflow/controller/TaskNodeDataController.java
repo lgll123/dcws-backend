@@ -26,6 +26,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -161,11 +163,32 @@ public class TaskNodeDataController extends BaseController {
     }
 
     /**
-     * 获取导入模板
+     * 获取导入模板-档案信息
      */
     @PostMapping("/importTemplate")
     public void importTemplate(HttpServletResponse response) {
         ExcelUtil.exportExcel(new ArrayList<>(), "档案信息", InfoChangeImportVo.class, response);
+    }
+
+    /**
+     * 导入数据-档案信息
+     *
+     * @param file          导入文件
+     */
+    @PostMapping(value = "/importData", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<List<InfoChangeImportVo>> importData(@RequestPart("file") MultipartFile file) throws Exception {
+        List<InfoChangeImportVo> employees = applyService.readExcel(file);
+        return R.ok(employees);
+    }
+
+    /**
+     * 导出数据-档案信息
+     */
+    @PostMapping("/exportInfo")
+    public void exportInfo(@RequestBody() List<InfoChangeImportVo> list, HttpServletResponse response) {
+        if(!CollectionUtils.isEmpty(list)){
+           ExcelUtil.exportExcel(list,"档案信息", InfoChangeImportVo.class, response);
+       }
     }
 
 }

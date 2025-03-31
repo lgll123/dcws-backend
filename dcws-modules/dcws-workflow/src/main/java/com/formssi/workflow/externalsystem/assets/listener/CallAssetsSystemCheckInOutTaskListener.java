@@ -63,7 +63,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
             bo.setStatus("3");//部分或全部异常待处理
             bo.setCheckType("1");
             bo.setAssetsType("0");
-            bo.setCheckOutIn("2");
+            bo.setCheckOutIn("2");// 先归还再借出
             saveCheckOutRecord(bo);
             log.error("An error occurred while calling the external system", e);
         }
@@ -317,7 +317,7 @@ public class CallAssetsSystemCheckInOutTaskListener implements TaskListener {
         DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
         bo.setTaskNodeDataId(Convert.toStr(taskNode.get("id")));
         bo.setAssetsType(assetType);
-        bo.setCheckOutIn("2");
+        bo.setCheckOutIn("2");// 先归还再借出
         bo.setStatus("1");
         return bo;
     }

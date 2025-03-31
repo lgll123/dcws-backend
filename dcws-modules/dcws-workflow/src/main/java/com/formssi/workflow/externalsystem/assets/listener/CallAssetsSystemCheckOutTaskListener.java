@@ -20,6 +20,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static com.formssi.workflow.common.enums.AssetsCheckStatusEnum.*;
+import static com.formssi.workflow.common.enums.AssetsCheckTypeEnum.*;
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.ASSETS_STATUS_12;
 
 @Slf4j
@@ -86,8 +88,8 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
         bo.setMessage(e.getMessage());
         bo.setAssetsDetail(String.valueOf(Convert.toStr(entityMap.get("applyDetail"))));
         bo.setCheckOutUser(String.valueOf(entityMap.get("applicantId")));
-        bo.setStatus("3");//部分或全部异常待处理
-        bo.setCheckType("1");
+        bo.setStatus(CHECK_STATUS_3.getCode());//部分或全部异常待处理
+        bo.setCheckType(CHECK_TYPE_1.getCode());
         bo.setAssetsType("0");
         bo.setCheckOutIn("1");
         // 记录物料checkOut 记录
@@ -102,9 +104,9 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
         bo.setTaskNodeDataId(taskNodeDataId);
         bo.setCheckOutUser(applicantId.toString());
         bo.setAutoHandleNum(0);
-        bo.setStatus("1");//成功
+        bo.setStatus(CHECK_STATUS_1.getCode());//成功
         bo.setCheckOutIn("1");
-        bo.setCheckType("1");
+        bo.setCheckType(CHECK_TYPE_1.getCode());
         for (int i = 0; i < assets.size(); i++) {
             bo.setAssetsDetail(JSONUtil.toJsonStr(assets.get(i)));
             Integer id = (Integer) assets.get(i).get("id");
@@ -138,18 +140,18 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 bo.setCode(String.valueOf(responseMap.get("status")));
                 if("error".equals(responseMap.get("status"))){
                     log.info("资产系统API接口返回错误：" + responseMap.get("messages"));
-                    bo.setStatus("0");//失败
-                    bo.setCheckType("1");
+                    bo.setStatus(CHECK_STATUS_0.getCode());//失败
+                    bo.setCheckType(CHECK_TYPE_1.getCode());
                 }
             } catch (ApiCallException e) {
-                bo.setStatus("0");//失败
+                bo.setStatus(CHECK_STATUS_0.getCode());//失败
                 if(e.getCode()>0 && e.getCode()!=HttpStatus.SUCCESS){
-                    bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
+                    bo.setStatus(CHECK_STATUS_2.getCode());//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
                 }
                 bo.setCode(String.valueOf(e.getCode()));
                 bo.setMessage(e.getMessage());
             } catch (ServiceException e) {
-                bo.setStatus("0");//失败
+                bo.setStatus(CHECK_STATUS_0.getCode());//失败
                 bo.setMessage(e.getMessage());
             }
             // 记录物料checkOut 记录
@@ -164,32 +166,37 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
         bo.setTaskNodeDataId(taskNodeDataId);
         bo.setCheckOutUser(applicantId.toString());
         bo.setAutoHandleNum(0);
-        bo.setStatus("1");//成功
-        bo.setCheckType("1");
-        bo.setCheckOutIn("1");
+        bo.setStatus(CHECK_STATUS_1.getCode());//成功
+        bo.setCheckType(CHECK_TYPE_1.getCode());
+        bo.setCheckOutIn("1");// 借出
         bo.setMessage("许可证借出成功");
+        Map<String, String> params = new HashMap<>();
+        params.put("offset","0");
+        params.put("limit","999");
+        params.put("sort","name");
+        params.put("order","asc");
         for (int i = 0; i < licenses.size(); i++) {
             bo.setAssetsDetail(JSONUtil.toJsonStr(licenses.get(i)));
             Integer id = (Integer) licenses.get(i).get("id");
             try {
-                Map<String, Object> responseMap = instance.process(null,"licenses/"+id+"/seats","get");
+                Map<String, Object> responseMap = instance.process(params,"licenses/"+id+"/seats","get");
                 if("error".equals(responseMap.get("status"))){
                     log.info("后台API接口返回错误：" + responseMap.get("messages"));
                     bo.setMessage(responseMap.get("messages").toString());
                     bo.setCode(responseMap.get("status").toString());
-                    bo.setStatus("0");//失败
-                    bo.setCheckType("3");
+                    bo.setStatus(CHECK_STATUS_0.getCode());//失败
+                    bo.setCheckType(CHECK_TYPE_3.getCode());
                     // 记录物料checkOut 记录
                     saveCheckOutRecord(bo);
                     continue;
                 }
                 List<Map<String,Object>> maps = (List<Map<String,Object>>)responseMap.get("rows");
-                List<Integer> seatIds = maps.stream().filter(l -> l.get("assigned_user") == null && l.get("location") == null)
-                        .map(seat -> (Integer) seat.get("id")).toList();
+                List<String> seatIds = maps.stream().filter(l -> Convert.toBool(l.get("user_can_checkout")))
+                        .map(seat -> Convert.toStr(seat.get("id"))).toList();
                 if(ObjectUtil.isEmpty(seatIds)){
                     bo.setMessage("licenses可用库存不足，seatIds is null ");
-                    bo.setStatus("0");//失败
-                    bo.setCheckType("4");
+                    bo.setStatus(CHECK_STATUS_0.getCode());//失败
+                    bo.setCheckType(CHECK_TYPE_4.getCode());
                     // 记录物料checkOut 记录
                     saveCheckOutRecord(bo);
                     continue;
@@ -198,23 +205,24 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 if(CollectionUtil.isEmpty(assets)){
                     log.info("licenses借出绑定资产列表为空,taskNodeDataId：{}", taskNodeDataId);
                 }
-                Integer applyNum = (Integer) licenses.get(i).get("applyNum");
-                if(ObjectUtil.isEmpty(applyNum)){
+                int applyNum = Convert.toInt(licenses.get(i).get("applyNum"),0);
+                if(applyNum == 0 || applyNum > seatIds.size()){
+                    log.info("taskNodeDataId：{} licenses借出数量applyNum:{} 剩余席位数量seatIds:{}",taskNodeDataId, applyNum, seatIds.size());
+                }
+                if(applyNum == 0){
                     bo.setMessage("applyNum is null");
-                    bo.setStatus("0");//失败
-                    bo.setCheckType("4");
+                    bo.setStatus(CHECK_STATUS_0.getCode());//失败
+                    bo.setCheckType(CHECK_TYPE_4.getCode());
                     // 记录物料checkOut 记录
                     saveCheckOutRecord(bo);
                     continue;
                 }
-                if(applyNum ==0 || applyNum > seatIds.size()){
-                    log.info("taskNodeDataId：{} licenses借出数量applyNum:{} 剩余席位数量seatIds:{}",taskNodeDataId, applyNum, seatIds.size());
-                }
+
                 for (int j = 0; j < applyNum; j++) {
                     try {
                         if(j >= seatIds.size()) break;
                         Map<String, String> requestBodyMap = new HashMap<>();
-                        requestBodyMap.put("seat_id", Convert.toStr(seatIds.get(j)));
+                        requestBodyMap.put("seat_id", seatIds.get(j));
                         requestBodyMap.put("assigned_to", Convert.toStr(applicantId));
                         if(!ObjectUtil.isEmpty(assets) && j < assets.size()){
                             requestBodyMap.put("asset_id", Convert.toStr(assets.get(j).get("id")));
@@ -224,13 +232,13 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                             log.info("资产系统API接口返回错误：" + responseMap1.get("messages"));
                             bo.setMessage(responseMap1.get("messages").toString());
                             bo.setCode(responseMap1.get("status").toString());
-                            bo.setStatus("0");//失败
-                            bo.setCheckType("1");
+                            bo.setStatus(CHECK_STATUS_0.getCode());//失败
+                            bo.setCheckType(CHECK_TYPE_1.getCode());
                         }
                     } catch (ApiCallException e) {
-                        bo.setStatus("0");//失败
+                        bo.setStatus(CHECK_STATUS_0.getCode());//失败
                         if(e.getCode()>0 && e.getCode()!=HttpStatus.SUCCESS){
-                            bo.setStatus("2");//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
+                            bo.setStatus(CHECK_STATUS_2.getCode());//失败待处理:网络或者权限或者接口url原因导致失败的需要重新发请求处理
                         }
                         bo.setCode(String.valueOf(e.getCode()));
                         bo.setMessage(e.getMessage());
@@ -240,7 +248,8 @@ public class CallAssetsSystemCheckOutTaskListener implements TaskListener {
                 }
 
             } catch (Exception e) {
-                bo.setStatus("0");//失败
+                log.error("许可证checkout失败",e);
+                bo.setStatus(CHECK_STATUS_0.getCode());//失败
                 bo.setMessage(e.getMessage());
                 // 记录物料checkOut 记录
                 saveCheckOutRecord(bo);

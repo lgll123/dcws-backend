@@ -7,11 +7,7 @@ import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.system.domain.vo.InfoChangeImportVo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
-import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
-import com.formssi.workflow.domain.vo.DcwsSysFileVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataVo;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+import com.formssi.workflow.domain.vo.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
@@ -79,4 +75,8 @@ public interface IApplyService {
     Page<TaskNodeDataVo> queryPageApplyPDF();
 
     List<InfoChangeImportVo> readExcel(MultipartFile file);
+    /**
+     * 根据类型导入exec文件内容
+     */
+    <T> List<T> readExcelByType(MultipartFile file, Class<T> clazz);
 }

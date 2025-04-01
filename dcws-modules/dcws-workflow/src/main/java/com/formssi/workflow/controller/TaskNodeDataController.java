@@ -2,6 +2,7 @@ package com.formssi.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.ObjectUtil;
+import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.validate.AddGroup;
@@ -14,12 +15,11 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
 import com.formssi.system.domain.vo.InfoChangeImportVo;
+import com.formssi.workflow.common.enums.ImportTypeEnum;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
-import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
-import com.formssi.workflow.domain.vo.DcwsSysFileVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataVo;
+import com.formssi.workflow.domain.vo.*;
+import com.formssi.workflow.listener.ImportValidationListener;
 import com.formssi.workflow.service.IApplyService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
@@ -34,7 +34,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+
+import static com.formssi.workflow.common.enums.ImportTypeEnum.HARDWARE;
 
 /**
  * 申请
@@ -179,6 +182,60 @@ public class TaskNodeDataController extends BaseController {
     public R<List<InfoChangeImportVo>> importData(@RequestPart("file") MultipartFile file) throws Exception {
         List<InfoChangeImportVo> employees = applyService.readExcel(file);
         return R.ok(employees);
+    }
+    /**
+     * 根据类型获取导入模板
+     * hardware/licenses/accessories/components/consumables
+     */
+    @PostMapping("/getImportTemplateByType/{type}")
+    public void getImportTemplateByType(HttpServletResponse response,@PathVariable String type) {
+        ExcelUtil.exportExcel(new ArrayList<>(), ImportTypeEnum.fromType(type).getName(), ImportTypeEnum.fromType(type).getVoClass(), response);
+    }
+    /**
+     * 硬件资产导入
+     * @param file 包含硬件资产信息的Excel文件
+     * @apiNote 导入类型: hardware
+     */
+    @PostMapping(value = "/hardwareInfoImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<List<HardwareInfoImportVo>> hardwareInfoImport(@RequestPart("file") MultipartFile file) throws Exception {
+      return R.ok(applyService.readExcelByType(file, HardwareInfoImportVo.class));
+    }
+    /**
+     * 许可证信息导入
+     * @param file 包含许可证信息的Excel文件
+     * @apiNote 导入类型: licenses
+     */
+    @PostMapping(value = "/licensesInfoImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<List<LicensesInfoImportVo>> licensesInfoImport(@RequestPart("file") MultipartFile file) throws Exception {
+        return R.ok(applyService.readExcelByType(file, LicensesInfoImportVo.class));
+    }
+    /**
+     * 附属品信息导入
+     * @param file 包含附属品信息的Excel文件
+     * @apiNote 支持类型: accessories
+     */
+    @PostMapping(value = "/accessoriesInfoImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<List<AccessoriesInfoImportVo>> accessoriesInfoImport(@RequestPart("file") MultipartFile file) throws Exception {
+        return R.ok(applyService.readExcelByType(file, AccessoriesInfoImportVo.class));
+    }
+
+    /**
+     * 组件信息导入
+     * @param file 包含组件信息的Excel文件
+     * @apiNote 支持类型: components
+     */
+    @PostMapping(value = "/componentsInfoImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<List<ComponentsInfoImportVo>> componentsInfoImport(@RequestPart("file") MultipartFile file) throws Exception {
+        return R.ok(applyService.readExcelByType(file, ComponentsInfoImportVo.class));
+    }
+    /**
+     * 消耗品信息导入
+     * @param file 包含消耗品信息的Excel文件
+     * @apiNote 支持类型: consumables
+     */
+    @PostMapping(value = "/consumablesInfoImport", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<List<ConsumablesInfoImportVo>> consumablesInfoImport(@RequestPart("file") MultipartFile file) throws Exception {
+        return R.ok(applyService.readExcelByType(file, ConsumablesInfoImportVo.class));
     }
 
     /**

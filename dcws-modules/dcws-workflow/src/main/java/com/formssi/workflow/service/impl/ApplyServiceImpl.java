@@ -38,10 +38,8 @@ import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
-import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
-import com.formssi.workflow.domain.vo.DcwsSysFileVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataVo;
+import com.formssi.workflow.domain.vo.*;
+import com.formssi.workflow.listener.ImportValidationListener;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
@@ -418,12 +416,25 @@ public class ApplyServiceImpl implements IApplyService {
         try {
             List<InfoChangeImportVo> info = EasyExcel.read(file.getInputStream())
                     .head(InfoChangeImportVo.class)
-                    .registerReadListener(new ValidationListener())
+                    .registerReadListener(new ImportValidationListener<InfoChangeImportVo>())
                     .sheet()
                     .doReadSync();// 同步读取
             return info;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public <T> List<T> readExcelByType(MultipartFile file, Class<T> clazz) {
+        try {
+            return EasyExcel.read(file.getInputStream())
+                    .head(clazz)
+                    .registerReadListener(new ImportValidationListener<T>())
+                    .sheet()
+                    .doReadSync();
+        } catch (IOException e) {
+            log.error("读取Excel文件失败",e);
+            throw new ServiceException("读取Excel文件失败");
         }
     }
 }

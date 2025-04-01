@@ -62,4 +62,9 @@ public class DcwsNormalTask extends BaseEntity {
      */
     private String fileId;
 
+    /**
+     * 公司
+     */
+    private Long companyId;
+
 }

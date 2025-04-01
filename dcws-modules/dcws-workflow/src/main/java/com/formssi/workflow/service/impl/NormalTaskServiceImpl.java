@@ -154,6 +154,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         }
         String taskId = taskSerialService.getTaskSerial("20",DcwsDateUtils.dateTime());
         add.setTaskId(taskId);
+        add.setCompanyId(iSysUserService.getCompanyId());
         //新增通用审批表
         boolean flag = dcwsNormalTaskMapper.insert(add) > 0;
         if (flag) {

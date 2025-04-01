@@ -101,6 +101,9 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from dcws_task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
         }
+        if (!Objects.isNull(taskBo.getCompanyId())) {
+            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from dcws_task_node_data LINK where LINK.company_Id = {0})",taskBo.getCompanyId());
+        }
         queryWrapper.orderByDesc("t.CREATE_TIME_");
         Page<DcwsTaskVo> page = actTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
 
@@ -145,6 +148,9 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         }
         if (!Objects.isNull(taskBo.getWfType())) {
             queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from dcws_task_node_data LINK where LINK.apply_type = {0})",taskBo.getWfType());
+        }
+        if (!Objects.isNull(taskBo.getCompanyId())) {
+            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from dcws_task_node_data LINK where LINK.company_Id = {0})",taskBo.getCompanyId());
         }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<DcwsTaskVo> page = actTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);
@@ -191,6 +197,9 @@ public class DcwsActTaskServiceImpl implements DcwsIActTaskService {
         }
         if (!Objects.isNull(taskBo.getEndTime())) {
             queryWrapper.lt("t.START_TIME_", DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,taskBo.getEndTime()),1));
+        }
+        if (!Objects.isNull(taskBo.getCompanyId())) {
+            queryWrapper.apply("t.BUSINESS_KEY_ in (select LINK.id from dcws_task_node_data LINK where LINK.company_Id = {0})",taskBo.getCompanyId());
         }
         queryWrapper.orderByDesc("t.START_TIME_");
         Page<DcwsTaskVo> page = actTaskMapper.getTaskCopyByPage(pageQuery.build(), queryWrapper);

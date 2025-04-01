@@ -16,6 +16,7 @@ import com.formssi.system.domain.*;
 import com.formssi.system.domain.bo.SysUserBo;
 import com.formssi.system.domain.vo.*;
 import com.formssi.system.mapper.*;
+import com.formssi.system.service.ISysDeptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.formssi.common.core.constant.CacheNames;
@@ -39,10 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -61,6 +59,7 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
     private final SysPostMapper postMapper;
     private final SysUserRoleMapper userRoleMapper;
     private final SysUserPostMapper userPostMapper;
+    private final ISysDeptService deptService;
 
 
     @Override
@@ -847,5 +846,25 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
 //            }
 //        }
         return leaders;
+    }
+
+    public Long getCompanyId()  {
+        Long companyId = 1L;
+        if(!Objects.isNull(LoginHelper.getDeptId()) && LoginHelper.getDeptId() != 1L){
+            SysDeptVo deptOpt = deptService.selectDeptById(LoginHelper.getDeptId());
+            Long parentId = deptOpt.getParentId();
+            if(parentId == 1L){
+                companyId = deptOpt.getDeptId();
+            }
+            while (parentId != 1L) {
+                deptOpt = deptService.selectDeptById(parentId);
+                parentId = deptOpt.getParentId();
+                if (parentId == 1L) {
+                    companyId = deptOpt.getDeptId();
+                    break;
+                }
+            }
+        }
+        return companyId;
     }
 }

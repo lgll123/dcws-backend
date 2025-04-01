@@ -250,4 +250,10 @@ public interface ISysUserService {
      * @return
      */
     List<SysUserVo> getUserLeader(Long userId);
+
+    /**
+     * 获取公司id
+     * @return
+     */
+    Long getCompanyId();
 }

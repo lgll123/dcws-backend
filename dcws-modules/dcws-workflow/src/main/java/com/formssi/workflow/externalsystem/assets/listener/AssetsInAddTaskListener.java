@@ -63,6 +63,11 @@ public class AssetsInAddTaskListener implements TaskListener {
                     requestBodyMap.put("asset_tag", Convert.toStr(h.get("assetTag")));
                     requestBodyMap.put("status_id", "7");// TODO 默认7
                     requestBodyMap.put("model_id", Convert.toStr(h.get("modelId")));
+                    requestBodyMap.put("name", Convert.toStr(h.get("name")));
+                    requestBodyMap.put("serial", Convert.toStr(h.get("serialNumber")));
+                    requestBodyMap.put("rtd_location_id", Convert.toStr(h.get("locationId")));
+                    requestBodyMap.put("purchase_cost", Convert.toStr(h.get("purchaseCost")));
+                    requestBodyMap.put("supplier_id", Convert.toStr(h.get("supplierId")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"hardware","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
@@ -83,6 +88,11 @@ public class AssetsInAddTaskListener implements TaskListener {
                     requestBodyMap.put("name", Convert.toStr(a.get("name")));
                     requestBodyMap.put("qty", Convert.toStr(a.get("num")));
                     requestBodyMap.put("category_id", Convert.toStr(a.get("categoryId")));
+                    requestBodyMap.put("model_number", Convert.toStr(a.get("modelNumber")));
+                    requestBodyMap.put("location_id", Convert.toStr(a.get("locationId")));
+                    requestBodyMap.put("purchase_cost", Convert.toStr(a.get("purchaseCost")));
+                    requestBodyMap.put("purchase_date", Convert.toStr(a.get("purchaseDate")));
+                    requestBodyMap.put("supplier_id", Convert.toStr(a.get("supplierId")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"accessories","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
@@ -103,6 +113,10 @@ public class AssetsInAddTaskListener implements TaskListener {
                     requestBodyMap.put("name", Convert.toStr(c.get("name")));
                     requestBodyMap.put("qty", Convert.toStr(c.get("num")));
                     requestBodyMap.put("category_id", Convert.toStr(c.get("categoryId")));
+                    requestBodyMap.put("serial", Convert.toStr(c.get("serial")));
+                    requestBodyMap.put("location_id", Convert.toStr(c.get("locationId")));
+                    requestBodyMap.put("supplier_id", Convert.toStr(c.get("supplierId")));
+                    requestBodyMap.put("purchase_cost", Convert.toStr(c.get("purchaseCost")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"components","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
@@ -123,6 +137,10 @@ public class AssetsInAddTaskListener implements TaskListener {
                     requestBodyMap.put("name", Convert.toStr(c.get("name")));
                     requestBodyMap.put("qty", Convert.toStr(c.get("num")));
                     requestBodyMap.put("category_id", Convert.toStr(c.get("categoryId")));
+                    requestBodyMap.put("supplier_id", Convert.toStr(c.get("supplierId")));
+                    requestBodyMap.put("location_id", Convert.toStr(c.get("locationId")));
+                    requestBodyMap.put("model_number", Convert.toStr(c.get("modelNumber")));
+                    requestBodyMap.put("purchase_cost", Convert.toStr(c.get("purchaseCost")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"consumables","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
@@ -143,6 +161,11 @@ public class AssetsInAddTaskListener implements TaskListener {
                     requestBodyMap.put("name", Convert.toStr(c.get("name")));
                     requestBodyMap.put("seats", Convert.toStr(c.get("seats")));
                     requestBodyMap.put("category_id", Convert.toStr(c.get("categoryId")));
+                    requestBodyMap.put("serial", Convert.toStr(c.get("serial")));
+                    requestBodyMap.put("manufacturer_id", Convert.toStr(c.get("manufacturerId")));
+                    requestBodyMap.put("license_name", Convert.toStr(c.get("licenseName")));
+                    requestBodyMap.put("license_email", Convert.toStr(c.get("licenseEmail")));
+                    requestBodyMap.put("expiration_date", Convert.toStr(c.get("expirationDate")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"licenses","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));

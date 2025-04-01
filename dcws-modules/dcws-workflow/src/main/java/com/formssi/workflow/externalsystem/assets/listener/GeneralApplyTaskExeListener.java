@@ -28,7 +28,7 @@ public class GeneralApplyTaskExeListener implements ExecutionListener {
     public void notify(DelegateExecution delegateTask) {
         try{
             Map<String, Object> variables = delegateTask.getVariables();
-            SysUserVo sysUserVo = iSysUserService.selectUserById(LoginHelper.getDeptId());
+            SysUserVo sysUserVo = iSysUserService.selectUserById(LoginHelper.getUserId());
             SysDeptVo sysDeptVo = sysDeptService.selectDeptById(sysUserVo.getDeptId());
             delegateTask.setVariable("leader", sysDeptVo.getLeader());
             delegateTask.setVariable("respLeader", sysDeptVo.getRespLeader());

@@ -15,19 +15,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static com.formssi.workflow.externalsystem.assets.constant.AssetsConstant.*;
 
 /**
- * dcws 费用报销申请单生成PDF数据处理接口策略
+ * dcws 差旅费报销申请单生成PDF数据处理接口策略
  *
- * @author yqh
  */
 @Slf4j
-@Service("claimApply")
+@Service("travelcostApply")
 @RequiredArgsConstructor
-public class DcwsClaimApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCreateStrategy<TaskNodeDataVo> {
+public class DcwsTravelcostApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCreateStrategy<TaskNodeDataVo> {
     @Autowired
     private UserService userService;
     @Autowired
@@ -50,11 +52,16 @@ public class DcwsClaimApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCrea
             Map<String,Object> applyDetails = objectMapper.readValue(JSONUtil.toJsonStr(applyDetail), Map.class);
             data.put("company",applyDetails.get("company"));
             data.put("department",applyDetails.get("department"));
-            data.put("reimbursement",applyDetails.get("reimbursement"));
             data.put("projectCode",applyDetails.get("projectCode"));
-            data.put("payee",applyDetails.get("payee"));
             data.put("customer",applyDetails.get("customer"));
-            data.put("remark",applyDetails.get("remark"));
+            data.put("positionTitle",applyDetails.get("positionTitle"));
+            data.put("businessTraveler",applyDetails.get("businessTraveler"));
+            data.put("beginDate",applyDetails.get("beginDate"));
+            data.put("endDate",applyDetails.get("endDate"));
+            data.put("departurePoint",applyDetails.get("departurePoint"));
+            data.put("destination",applyDetails.get("destination"));
+            data.put("days",applyDetails.get("days"));
+            data.put("businessReason",applyDetails.get("businessReason"));
             data.put("costDetailCount",applyDetails.get("costDetailCount"));
             data.put("costDetailCountCapital",applyDetails.get("costDetailCountCapital"));
             data.put("invoiceDetailCount",applyDetails.get("invoiceDetailCount"));
@@ -106,12 +113,12 @@ public class DcwsClaimApplyFilePDFCreateStrategy implements DcwsApplyFilePDFCrea
             String storagePathId=null;
             String[] tags=null;
             String objName=null;
-            String applyType = taskNodeDataVo.getApplyType();//19 IT 21 非IT
-            if("26".equals(applyType)){
+            String applyType = taskNodeDataVo.getApplyType();
+            if("29".equals(applyType)){
                 documentTypeId="3";
-                storagePathId="9";
-                tags=new String[]{"19"};
-                objName="费用报销-";
+                storagePathId="11";
+                tags=new String[]{"20"};
+                objName="差旅费报销-";
             }
             Map<String, Object> documentServerParam = MapUtil.createMap(HashMap.class);
             documentServerParam.put(DOCUMENTTYPEID,documentTypeId);//档案系统文件类型

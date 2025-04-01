@@ -26,9 +26,9 @@ public interface IAssetsSystemService {
     TableDataInfo<AssetsSystemBo> queryAccessoriesById(Integer categoryId,String assetStatus, PageQuery pageQuery, String categories);
 
     /**
-     * 查询资产的供应商列表
+     * 查询资产的下拉列表，包括：供应商、位置、类别、型号
      */
-    Map<String, Object> selectSuppliers(Integer page,String pathUrl);
+    Map<String, Object> selectList(Integer page, String pathUrl);
 
 
     String uploadDocument(MultipartFile file,

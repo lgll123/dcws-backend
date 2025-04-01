@@ -38,10 +38,8 @@ import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
-import com.formssi.workflow.domain.vo.DcwsInvoiceVo;
-import com.formssi.workflow.domain.vo.DcwsSysFileVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataHisVo;
-import com.formssi.workflow.domain.vo.TaskNodeDataVo;
+import com.formssi.workflow.domain.vo.*;
+import com.formssi.workflow.listener.ImportValidationListener;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
@@ -82,7 +80,7 @@ public class ApplyServiceImpl implements IApplyService {
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
     private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','material','seal_apply','claim_apply'" +
-            ",'data_apply','server_apply','info_apply','info_change','general_apply'}.contains(#event.key)";
+            ",'data_apply','server_apply','info_apply','info_change','general_apply','travelCost_apply'}.contains(#event.key)";
     private final ISysFileService sysFileService;
 
     @Autowired
@@ -418,12 +416,25 @@ public class ApplyServiceImpl implements IApplyService {
         try {
             List<InfoChangeImportVo> info = EasyExcel.read(file.getInputStream())
                     .head(InfoChangeImportVo.class)
-                    .registerReadListener(new ValidationListener())
+                    .registerReadListener(new ImportValidationListener<InfoChangeImportVo>())
                     .sheet()
                     .doReadSync();// 同步读取
             return info;
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public <T> List<T> readExcelByType(MultipartFile file, Class<T> clazz) {
+        try {
+            return EasyExcel.read(file.getInputStream())
+                    .head(clazz)
+                    .registerReadListener(new ImportValidationListener<T>())
+                    .sheet()
+                    .doReadSync();
+        } catch (IOException e) {
+            log.error("读取Excel文件失败",e);
+            throw new ServiceException("读取Excel文件失败");
         }
     }
 }

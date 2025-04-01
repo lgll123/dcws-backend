@@ -55,21 +55,21 @@
     }
     .flow-chat .process-line .process-line__item {
       position: relative;
-	  page-break-inside: avoid;  /*防止分页切断 */
       padding-bottom: 25px;
       padding-left: 15px;
       border-left: 2px solid #666;
       z-index: 1;
     }
-
     .flow-chat .circle-container {
       position: absolute;
-      top: 0px;
-      left: -4px;
-      width: 6px;
-      height: 6px;
+      top: 7px;
+      left: -1px;
+      width: 5px;
+      height: 5px;
       border-radius: 50%;
-      z-index: 2;
+      z-index: 1;
+      line-height: 1;
+      transform: translate(-50%, -50%);
       background-color: #666;
     }
     .flow-chat .status-tag {
@@ -80,33 +80,18 @@
     .flow-chat .process-line .process-line__item:last-child {
       border: none;
     }
-
     .flow-chat .process-line .process-line__item:not(:first-child) {
       margin-top: -5px;
     }
-
-    .flow-chat .process-line .process-line__item:first-child {
-        padding-bottom: 80px;
-    }
-
-    .flow-chat .process-line .process-line__item:first-child .title {
-      position: absolute;
-      top: -5px;
-      left: 15px
-    }
-
-    .flow-chat .process-line .process-line__item:not(:first-child) .circle-container {
-      top: 29px;
-    }
     .flow-chat .process-line .process-line__item:last-child .circle-container {
-        left: -2px;
+        left: 1px;
     }
 </style>
 <body>
 <!-- pdf头部 -->
 <div class="pdf-header" style="overflow: hidden; line-height: 79px;padding-right: 43px;">
     <div class="left" style="float: left">
-        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">费用报销申请单</span>
+        <span style="font-size: 25px; margin-right: 16px;font-weight: 700;">差旅费报销申请单</span>
         <span style="font-size: 12px;font-weight: 200;" th:text="${data.id}"></span>
     </div>
     <img src="./seal.png" alt="" width="80" style="float: right">
@@ -118,9 +103,9 @@
     <div style="padding-left: 43px">
         <table>
             <tr style="font-size: 13px;font-weight: 700;">
-                <th>申请部门</th>
-                <th>申请人</th>
-                <th>申请日期</th>
+                <th style="width: 40%;">申请部门</th>
+                <th style="width: 40%;">申请人</th>
+                <th style="width: 20%;">申请日期</th>
             </tr>
             <tr class="light-text" style="font-size: 11px;font-weight: 400;">
                 <td th:text="${data.applyDept}"></td>
@@ -128,32 +113,46 @@
                 <td th:text="${#dates.format(data.applyDate, 'yyyy-MM-dd')}"></td>
             </tr>
             <tr style="font-size: 13px;font-weight: 700;">
-                <th>公司</th>
+                <th>主体</th>
                 <th>报销部门</th>
-                <th>报销人</th>
+                <th>立项编码</th>
             </tr>
             <tr class="light-text" style="font-size: 11px;font-weight: 400;">
                 <td th:text="${data.company}"></td>
                 <td th:text="${data.department}"></td>
-                <td th:text="${data.reimbursement}"></td>
+                <td th:text="${data.projectCode}"></td>
             </tr>
             <tr style="font-size: 13px;font-weight: 700;">
-                <th>立项编码</th>
-                <th>领款人</th>
                 <th>归属客户</th>
+                <th>出差人</th>
+                <th>职别</th>
             </tr>
             <tr class="light-text" style="font-size: 11px;font-weight: 400;">
-                <td th:text="${data.projectCode}"></td>
-                <td th:text="${data.payee}"></td>
                 <td th:text="${data.customer}"></td>
+                <td th:text="${data.businessTraveler}"></td>
+                <td th:text="${data.positionTitle}"></td>
+            </tr>
+            <tr style="font-size: 13px;font-weight: 700;">
+                <th>开始时间</th>
+                <th>结束时间</th>
+                <th>出发地点</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.beginDate}"></td>
+                <td th:text="${data.endDate}"></td>
+                <td th:text="${data.departurePoint}"></td>
+            </tr>
+            <tr style="font-size: 13px;font-weight: 700;">
+                <th>目的地</th>
+                <th>天数</th>
+                <th>出差事由</th>
+            </tr>
+            <tr class="light-text" style="font-size: 11px;font-weight: 400;">
+                <td th:text="${data.destination}"></td>
+                <td th:text="${data.days}"></td>
+                <td th:text="${data.businessReason}"></td>
             </tr>
         </table>
-        <div>
-            <div style="margin-top: 10px;overflow: hidden;">
-                <div style="float: left; margin-right: 15px; display: inline-block; width: 60px;font-size: 13px;font-weight: 700;">备注</div>
-                <div class="light-text" th:text="${data.remark}" style="float: left;font-size: 11px;font-weight: 400;white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></div>
-            </div>
-        </div>
     </div>
 </div>
 
@@ -162,13 +161,12 @@
     <div style="font-size: 14px;font-weight: 700;">费用信息</div>
     <div>
         <!-- 费用明细 -->
-        <div class="table-apply-title" style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px;">费用明细</div>
+        <div class="table-apply-title" style="padding-left: 23px; margin-top: 16px; margin-bottom: 10px;">差旅费明细</div>
         <div style="padding-left: 43px; font-size: 8px;">
             <table class="table-apply-info">
                 <thead class="title-divider">
                     <tr>
                         <th>归属期间</th>
-                        <th style="text-align: right;">用途</th>
                         <th style="text-align: right;">费用类别</th>
                         <th style="text-align: right;">金额</th>
                     </tr>
@@ -176,7 +174,6 @@
                 <tbody class="light-text">
                     <tr th:each="item : ${data.costDetail}">
                         <td th:text="${item.belongingDate}" style="white-space: pre-wrap; word-break: break-all; word-wrap: break-word;"></td>
-                        <td th:text="${item.purpose}" style="text-align: right;"></td>
                         <td th:text="${item.purposeTypeName}" style="text-align: right;"></td>
                         <td th:text="${item.amount}" style="text-align: right;"></td>
                     </tr>
@@ -245,8 +242,8 @@
         </div>
     </div>
     <div class="flow-chat" style="margin-top: 20px;">
-        <div style="font-size: 14px;font-weight: 700; margin-bottom: 22px">审批记录</div>
-        <div class="process-line" style="padding-left: 30px;"  >
+        <div style="font-size: 14px;font-weight: 700; margin-bottom: 12px">审批记录</div>
+        <div class="process-line" style="padding-left: 58px;"  >
 
             <div class="process-line__item" th:each="record : ${data.historyRecords}" >
                 <div class="title">
@@ -261,7 +258,7 @@
                             <span class="value" th:text="${record.nickName}"></span>
                         </div>
                         <div class="comment" style="margin-top: 7px;">
-                            <span class="label">备注：</span>
+                            <span class="label">审批意见：</span>
                             <span class="value" th:text="${record.comment}"></span>
                         </div>
                     </div>

@@ -135,6 +135,8 @@ tenant:
     - dcws_task_serial_number
     - dcws_sys_file
     - dcws_finance_approval
+    - project
+    - module
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

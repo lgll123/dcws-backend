@@ -59,11 +59,19 @@ public class AssetsSystemController  extends BaseController {
     }
 
     /**
-     * 查询资产的供应商列表
+     * 查询资产的 suppliers-供应商列表 models-型号列表 locations-位置列表 manufacturers-制造商列表
      */
-    @GetMapping("/suppliers/selectlist")
-    public Map<String, Object> selectSuppliers(Integer page) {
-        return assetsSystemService.selectSuppliers(ObjectUtil.isEmpty(page)?1:page,"suppliers/selectlist");
+    @GetMapping("/{listType}/selectList")
+    public Map<String, Object> selectList(Integer page, @NotNull(message = "listType不能为空") @PathVariable String listType) {
+        return assetsSystemService.selectList(ObjectUtil.isEmpty(page)?1:page,listType+"/selectlist");
+    }
+
+    /**
+     * 查询资产的类别列表 component-组件 consumable-消耗品 license-许可证 accessory-附属品
+     */
+    @GetMapping("/{type}/selectCategories")
+    public Map<String, Object> selectCategories(Integer page , @NotNull(message = "type不能为空") @PathVariable String type) {
+        return assetsSystemService.selectList(ObjectUtil.isEmpty(page)?1:page,"categories/"+type+"/selectlist");
     }
 
     /**

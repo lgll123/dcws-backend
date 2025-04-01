@@ -68,4 +68,9 @@ public class DcwsNormalTaskBo extends BaseEntity {
      */
     private String endTime;
 
+    /**
+     * 公司
+     */
+    private String companyId;
+
 }

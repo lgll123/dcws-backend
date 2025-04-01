@@ -50,6 +50,9 @@ public class DcwsActTaskController extends BaseController {
             if(StringUtils.isNotEmpty(taskBo.getBusinessKey())){
                 dcwsNormalTaskBo.setTaskId(taskBo.getBusinessKey());
             }
+            if(StringUtils.isNotEmpty(taskBo.getCompanyId())){
+                dcwsNormalTaskBo.setCompanyId(taskBo.getCompanyId());
+            }
             TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskWait(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<DcwsTaskVo> listTemp = new ArrayList<>();
@@ -95,6 +98,9 @@ public class DcwsActTaskController extends BaseController {
             dcwsNormalTaskBo.setTaskName(taskBo.getName());
             if(StringUtils.isNotEmpty(taskBo.getBusinessKey())){
                 dcwsNormalTaskBo.setTaskId(taskBo.getBusinessKey());
+            }
+            if(StringUtils.isNotEmpty(taskBo.getCompanyId())){
+                dcwsNormalTaskBo.setCompanyId(taskBo.getCompanyId());
             }
             TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskFinish(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();

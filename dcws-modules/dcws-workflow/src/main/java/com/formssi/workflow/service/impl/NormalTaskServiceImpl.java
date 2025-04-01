@@ -99,6 +99,9 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
             queryWrapper.lt("t.create_time",DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
         }
+        if (dcwsNormalTaskBo.getCompanyId() != null){
+            queryWrapper.eq("t.company_Id", dcwsNormalTaskBo.getCompanyId());
+        }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskWaitByPage(pageQuery.build(), queryWrapper);
         return TableDataInfo.build(page);
@@ -119,6 +122,9 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         }
         if (!Objects.isNull(dcwsNormalTaskBo.getEndTime())) {
             queryWrapper.lt("t.create_time",DcwsDateUtils.plusDays(DcwsDateUtils.dateTime(DcwsDateUtils.YYYY_MM_DD,dcwsNormalTaskBo.getEndTime()),1));
+        }
+        if (dcwsNormalTaskBo.getCompanyId() != null){
+            queryWrapper.eq("t.company_Id", dcwsNormalTaskBo.getCompanyId());
         }
         queryWrapper.orderByDesc("t.create_time");
         Page<DcwsNormalTaskVo> page = dcwsNormalTaskMapper.getTaskFinishByPage(pageQuery.build(), queryWrapper);

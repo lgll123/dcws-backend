@@ -6,7 +6,9 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.utils.SpringUtils;
+import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
+import com.formssi.workflow.service.IAssetsCheckOutRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
@@ -14,12 +16,18 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static com.formssi.workflow.common.enums.AssetsCheckStatusEnum.CHECK_STATUS_0;
+import static com.formssi.workflow.common.enums.AssetsCheckStatusEnum.CHECK_STATUS_1;
+import static com.formssi.workflow.common.enums.AssetsCheckTypeEnum.CHECK_TYPE_1;
+import static com.formssi.workflow.common.enums.AssetsCheckTypeEnum.CHECK_TYPE_5;
+
 /**
  * 资产导入，向资产系统新增一条资产
  */
 @Slf4j
 @Component("AssetsInAddTaskListener")
 public class AssetsInAddTaskListener implements TaskListener {
+    private static final IAssetsCheckOutRecordService assetsCheckOutRecordService = SpringUtils.getBean(IAssetsCheckOutRecordService.class);
     private static final IExternalSystemAPIStrategy instance = SpringUtils.getBean("assets" + IExternalSystemAPIStrategy.BASE_NAME);
     @Override
     public void notify(DelegateTask delegateTask) {
@@ -37,75 +45,114 @@ public class AssetsInAddTaskListener implements TaskListener {
             List<Map<String, Object>> accessories = selectByOptional(map.get("accessories"));//附属品-accessories
             List<Map<String, Object>> components = selectByOptional(map.get("components"));//组件-components
             List<Map<String, Object>> consumables = selectByOptional(map.get("consumables"));//消耗品-consumables
-
+            String taskNodeDataId = Convert.toStr(taskNodeData.get("id"));
+            Long assetUserId = Convert.toLong(taskNodeData.get("assetUserId"));// 资产系统用户ID
+            DcwsAssetsCheckOutBo bo = new DcwsAssetsCheckOutBo();
+            bo.setTaskNodeDataId(taskNodeDataId);
+            bo.setCheckOutUser(assetUserId.toString());
+            bo.setAutoHandleNum(0);
+            bo.setStatus(CHECK_STATUS_1.getCode());//成功
+            bo.setCheckOutIn("3");
+            bo.setCheckType(CHECK_TYPE_5.getCode());
             // 资产-hardware 新增
             if(!ObjectUtil.isEmpty(hardware)) {
+                bo.setAssetsType("hardware");
                 Map<String, String> requestBodyMap = new HashMap<>();
                 hardware.forEach(h->{
+                    bo.setAssetsDetail(JSONUtil.toJsonStr(h));
                     requestBodyMap.put("asset_tag", Convert.toStr(h.get("assetTag")));
                     requestBodyMap.put("status_id", "7");// TODO 默认7
                     requestBodyMap.put("model_id", Convert.toStr(h.get("modelId")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"hardware","post");
+                        bo.setMessage(Convert.toStr(responseMap.get("messages")));
+                        bo.setCode(Convert.toStr(responseMap.get("status")));
                     } catch (Exception e) {
+                        bo.setStatus(CHECK_STATUS_0.getCode());
+                        bo.setMessage(e.getMessage());
                         log.error("资产-hardware 新增失败", e);
                     }
+                    saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
             // 附属品-accessories 新增
             if (!CollectionUtil.isEmpty(accessories)) {
                 Map<String, String> requestBodyMap = new HashMap<>();
                 accessories.forEach(a->{
+                    bo.setAssetsDetail(JSONUtil.toJsonStr(a));
                     requestBodyMap.put("name", Convert.toStr(a.get("name")));
                     requestBodyMap.put("qty", Convert.toStr(a.get("num")));
                     requestBodyMap.put("category_id", Convert.toStr(a.get("categoryId")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"accessories","post");
+                        bo.setMessage(Convert.toStr(responseMap.get("messages")));
+                        bo.setCode(Convert.toStr(responseMap.get("status")));
                     } catch (Exception e) {
+                        bo.setStatus(CHECK_STATUS_0.getCode());
+                        bo.setMessage(e.getMessage());
                         log.error("附属品-hardware 新增失败", e);
                     }
+                    saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
             // 组件-components 新增
             if (!CollectionUtil.isEmpty(components)) {
                 Map<String, String> requestBodyMap = new HashMap<>();
                 components.forEach(c->{
+                    bo.setAssetsDetail(JSONUtil.toJsonStr(c));
                     requestBodyMap.put("name", Convert.toStr(c.get("name")));
                     requestBodyMap.put("qty", Convert.toStr(c.get("num")));
                     requestBodyMap.put("category_id", Convert.toStr(c.get("categoryId")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"components","post");
+                        bo.setMessage(Convert.toStr(responseMap.get("messages")));
+                        bo.setCode(Convert.toStr(responseMap.get("status")));
                     } catch (Exception e) {
+                        bo.setStatus(CHECK_STATUS_0.getCode());
+                        bo.setMessage(e.getMessage());
                         log.error("组件-hardware 新增失败", e);
                     }
+                    saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
             // 消耗品-consumables 新增
             if (!CollectionUtil.isEmpty(consumables)) {
                 Map<String, String> requestBodyMap = new HashMap<>();
                 consumables.forEach(c->{
+                    bo.setAssetsDetail(JSONUtil.toJsonStr(c));
                     requestBodyMap.put("name", Convert.toStr(c.get("name")));
                     requestBodyMap.put("qty", Convert.toStr(c.get("num")));
                     requestBodyMap.put("category_id", Convert.toStr(c.get("categoryId")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"consumables","post");
+                        bo.setMessage(Convert.toStr(responseMap.get("messages")));
+                        bo.setCode(Convert.toStr(responseMap.get("status")));
                     } catch (Exception e) {
+                        bo.setStatus(CHECK_STATUS_0.getCode());
+                        bo.setMessage(e.getMessage());
                         log.error("消耗品-hardware 新增失败", e);
                     }
+                    saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
             //许可证-licenses 新增
             if (!CollectionUtil.isEmpty(licenses)) {
                 Map<String, String> requestBodyMap = new HashMap<>();
                 licenses.forEach(c->{
+                    bo.setAssetsDetail(JSONUtil.toJsonStr(c));
                     requestBodyMap.put("name", Convert.toStr(c.get("name")));
                     requestBodyMap.put("seats", Convert.toStr(c.get("seats")));
                     requestBodyMap.put("category_id", Convert.toStr(c.get("categoryId")));
                     try {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"licenses","post");
+                        bo.setMessage(Convert.toStr(responseMap.get("messages")));
+                        bo.setCode(Convert.toStr(responseMap.get("status")));
                     } catch (Exception e) {
+                        bo.setStatus(CHECK_STATUS_0.getCode());
+                        bo.setMessage(e.getMessage());
                         log.error("许可证-hardware 新增失败", e);
                     }
+                    saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
         } catch(Exception e) {
@@ -119,6 +166,17 @@ public class AssetsInAddTaskListener implements TaskListener {
                 .orElse(Collections.emptyList());
     }
 
-
+    // 统一保存记录
+    private void saveCheckOutRecord(DcwsAssetsCheckOutBo bo) {
+        try {
+            assetsCheckOutRecordService.insertByBo(bo);
+            if(bo.getId()==null){
+                log.info("资产入库记录新增失败：id == null");
+            }
+            bo.setId(null);
+        } catch (Exception e) {
+            log.error("资产入库记录新增失败", e);
+        }
+    }
 
 }

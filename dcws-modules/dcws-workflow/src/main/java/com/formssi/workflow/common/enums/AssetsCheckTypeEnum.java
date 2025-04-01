@@ -28,7 +28,11 @@ public enum AssetsCheckTypeEnum {
     /**
      * 其他
      */
-    CHECK_TYPE_4("4", "其他");
+    CHECK_TYPE_4("4", "其他"),
+    /**
+     * 其他
+     */
+    CHECK_TYPE_5("5", "资产入库");
 
 
     private final String code;

@@ -3,6 +3,7 @@ package com.formssi.workflow.service;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.workflow.domain.bo.*;
+import com.formssi.workflow.domain.vo.DcwsTaskCountVo;
 import com.formssi.workflow.domain.vo.DcwsTaskVo;
 
 /**
@@ -38,5 +39,13 @@ public interface DcwsIActTaskService {
      * @return 结果
      */
     TableDataInfo<DcwsTaskVo> getPageByTaskCopy(DcwsTaskBo taskBo, PageQuery pageQuery);
+
+    /**
+     * 查询当前用户的任务统计
+     *
+     * @return 结果
+     */
+    DcwsTaskCountVo getUserTaskCount();
+
 
 }

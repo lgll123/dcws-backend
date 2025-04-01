@@ -50,4 +50,9 @@ public class DcwsTaskBo implements Serializable {
      * 结束时间
      */
     private String endTime;
+
+    /**
+     * 公司
+     */
+    private String companyId;
 }

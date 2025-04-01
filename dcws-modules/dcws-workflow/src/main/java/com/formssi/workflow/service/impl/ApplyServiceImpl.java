@@ -32,6 +32,7 @@ import com.formssi.system.domain.vo.InfoChangeImportVo;
 import com.formssi.system.domain.vo.SealJsonVo;
 import com.formssi.system.domain.vo.SysFileVo;
 import com.formssi.system.service.ISysFileService;
+import com.formssi.system.service.ISysUserService;
 import com.formssi.workflow.common.enums.ApplyTypeEnum;
 import com.formssi.workflow.domain.DcwsSysFile;
 import com.formssi.workflow.domain.TaskNodeData;
@@ -82,6 +83,8 @@ public class ApplyServiceImpl implements IApplyService {
     private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','material','seal_apply','claim_apply'" +
             ",'data_apply','server_apply','info_apply','info_change','general_apply','travelCost_apply'}.contains(#event.key)";
     private final ISysFileService sysFileService;
+
+    private final ISysUserService iSysUserService;
 
     @Autowired
     private MinioUtil minioUtil;
@@ -240,6 +243,7 @@ public class ApplyServiceImpl implements IApplyService {
         }
         String id = taskSerialService.getTaskSerial(bo.getApplyType(), DcwsDateUtils.dateTime());
         add.setId(id);
+        add.setCompanyId(iSysUserService.getCompanyId());
         boolean flag = taskNodeDataMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());

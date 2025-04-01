@@ -176,7 +176,7 @@ public class SyncUserOrgTaskService {
                 if(!CollectionUtils.isEmpty(deptIdList1)){
                     deletetNum = deptService.deleteDeptByIdFromHr(deptIdList);
                 }
-                //筛选出OA系统不存在，人事系统存在的用户，进行新增
+                //筛选出OA系统不存在，人事系统存在的部门，进行新增
                 List<String> deptIdList2 = hrDeptIdList.stream()
                     .filter(dept -> !oaDeptIdList.contains(dept))
                     .collect(Collectors.toList());

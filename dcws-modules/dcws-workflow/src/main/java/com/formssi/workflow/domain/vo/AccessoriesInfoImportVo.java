@@ -1,5 +1,6 @@
 package com.formssi.workflow.domain.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -37,6 +38,7 @@ public class AccessoriesInfoImportVo implements Serializable {
     /**
      * 	配件类别ID
      */
+    @ExcelIgnore
     private String categoryId;
 
     /**
@@ -54,6 +56,7 @@ public class AccessoriesInfoImportVo implements Serializable {
     /**
      * 	位置ID
      */
+    @ExcelIgnore
     private String locationId;
 
     /**
@@ -84,6 +87,7 @@ public class AccessoriesInfoImportVo implements Serializable {
     /**
      * 	供应商Id
      */
+    @ExcelIgnore
     private String supplierId;
 
 

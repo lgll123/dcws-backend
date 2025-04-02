@@ -31,6 +31,8 @@ logging:
     com.formssi: @logging.level@
     org.springframework: warn
     org.mybatis.spring.mapper: error
+    cn.kstry.framework.core: error
+    com.baomidou.mybatisplus.core: error
   config: classpath:logback-plus.xml
 
 # 用户配置

@@ -187,5 +187,10 @@ public class DcwsTaskVo implements Serializable {
      */
     private String applyReason;
 
+    /**
+     * 公司名称
+     */
+    private String companyName;
+
 
 }

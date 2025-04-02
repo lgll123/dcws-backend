@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 任务管理 控制层
@@ -50,6 +51,9 @@ public class DcwsActTaskController extends BaseController {
             if(StringUtils.isNotEmpty(taskBo.getBusinessKey())){
                 dcwsNormalTaskBo.setTaskId(taskBo.getBusinessKey());
             }
+            if(!Objects.isNull(taskBo.getCompanyId())){
+                dcwsNormalTaskBo.setCompanyId(taskBo.getCompanyId());
+            }
             TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskWait(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<DcwsTaskVo> listTemp = new ArrayList<>();
@@ -71,6 +75,7 @@ public class DcwsActTaskController extends BaseController {
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setApplyReason(dcwsNormalTaskVo.getRemark());
+                    taskVo.setCompanyName(dcwsNormalTaskVo.getCompanyName());
                     listTemp.add(taskVo);
                 }
             }
@@ -96,6 +101,9 @@ public class DcwsActTaskController extends BaseController {
             if(StringUtils.isNotEmpty(taskBo.getBusinessKey())){
                 dcwsNormalTaskBo.setTaskId(taskBo.getBusinessKey());
             }
+            if(!Objects.isNull(taskBo.getCompanyId())){
+                dcwsNormalTaskBo.setCompanyId(taskBo.getCompanyId());
+            }
             TableDataInfo<DcwsNormalTaskVo> dcwsList = normalTaskService.getPageByTaskFinish(dcwsNormalTaskBo, pageQuery);
             List<DcwsNormalTaskVo> list = dcwsList.getRows();
             List<DcwsTaskVo> listTemp = new ArrayList<>();
@@ -114,6 +122,7 @@ public class DcwsActTaskController extends BaseController {
                     taskVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     taskVo.setApplyReason(dcwsNormalTaskVo.getRemark());
+                    taskVo.setCompanyName(dcwsNormalTaskVo.getCompanyName());
                     taskVo.setWfType("20");
                     listTemp.add(taskVo);
                 }

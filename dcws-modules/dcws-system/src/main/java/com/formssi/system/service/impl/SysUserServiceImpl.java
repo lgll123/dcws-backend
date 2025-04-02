@@ -848,23 +848,25 @@ public class SysUserServiceImpl implements ISysUserService, UserService {
         return leaders;
     }
 
-    public Long getCompanyId()  {
-        Long companyId = 1L;
-        if(!Objects.isNull(LoginHelper.getDeptId()) && LoginHelper.getDeptId() != 1L){
-            SysDeptVo deptOpt = deptService.selectDeptById(LoginHelper.getDeptId());
-            Long parentId = deptOpt.getParentId();
-            if(parentId == 1L){
-                companyId = deptOpt.getDeptId();
-            }
-            while (parentId != 1L) {
-                deptOpt = deptService.selectDeptById(parentId);
-                parentId = deptOpt.getParentId();
-                if (parentId == 1L) {
-                    companyId = deptOpt.getDeptId();
-                    break;
+    public SysDeptVo getCompany()  {
+        SysDeptVo company = null;
+        if(!Objects.isNull(LoginHelper.getDeptId())){
+            if(LoginHelper.getDeptId() != 1L){
+                SysDeptVo deptOpt = deptService.selectDeptById(LoginHelper.getDeptId());
+                Long parentId = deptOpt.getParentId();
+                while (parentId != 1L) {
+                    deptOpt = deptService.selectDeptById(parentId);
+                    parentId = deptOpt.getParentId();
+                    if (parentId == 1L) {
+                        break;
+                    }
                 }
+                company = deptOpt;
+            }else{
+                SysDeptVo deptOpt = deptService.selectDeptById(1L);
+                company = deptOpt;
             }
         }
-        return companyId;
+        return company;
     }
 }

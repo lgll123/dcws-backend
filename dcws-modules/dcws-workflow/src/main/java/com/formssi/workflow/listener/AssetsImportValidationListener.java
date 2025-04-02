@@ -119,7 +119,7 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
             List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
             if (CollectionUtil.isNotEmpty(results)) {
                 return results.stream()
-                        .filter(r ->value.equals(Convert.toStr(r.get("text"))))
+                        .filter(r ->value.equals(Convert.toStr(r.get("text")).trim()))
                         .map(l->Convert.toStr(l.get("id")))
                         .toList();
             }

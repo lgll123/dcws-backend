@@ -215,7 +215,7 @@ public class ApplyServiceImpl implements IApplyService {
         lqw.like(StringUtils.isNotBlank(bo.getApplyDept()), TaskNodeData::getApplyDept, bo.getApplyDept());
         lqw.like(StringUtils.isNotBlank(bo.getApplicant()), TaskNodeData::getApplicant, bo.getApplicant());
         lqw.eq(StringUtils.isNotBlank(bo.getApplyType()), TaskNodeData::getApplyType, bo.getApplyType());
-        lqw.in(TaskNodeData::getStatus, Arrays.asList("back","draft"));
+        lqw.in(StringUtils.isNotBlank(bo.getStatus()),TaskNodeData::getStatus, Arrays.stream(bo.getStatus().split(",")).map(String::trim).toList());
         lqw.eq(TaskNodeData::getCreateBy, LoginHelper.getUserId());
         lqw.orderByDesc(BaseEntity::getCreateTime);
         return lqw;

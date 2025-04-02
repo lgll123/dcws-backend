@@ -35,6 +35,11 @@ public class LicensesInfoImportVo implements Serializable {
     private String category;
 
     /**
+     * 	分类ID
+     */
+    private String categoryId;
+
+    /**
      * 允许使用次数
      */
     @NotBlank(message = "允许使用次数不能为空")
@@ -52,6 +57,10 @@ public class LicensesInfoImportVo implements Serializable {
      */
     @ExcelProperty(value = "制造商")
     private String manufacturer;
+    /**
+     * 	制造商ID
+     */
+    private String manufacturerId;
     /**
      * 	许可人名字
      */

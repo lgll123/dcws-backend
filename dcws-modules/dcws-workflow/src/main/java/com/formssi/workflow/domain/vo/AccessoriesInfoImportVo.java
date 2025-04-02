@@ -35,6 +35,11 @@ public class AccessoriesInfoImportVo implements Serializable {
     private String category;
 
     /**
+     * 	配件类别ID
+     */
+    private String categoryId;
+
+    /**
      * 	型号
      */
     @ExcelProperty(value = "型号")
@@ -45,6 +50,11 @@ public class AccessoriesInfoImportVo implements Serializable {
      */
     @ExcelProperty(value = "位置")
     private String location;
+
+    /**
+     * 	位置ID
+     */
+    private String locationId;
 
     /**
      * 	数量
@@ -70,6 +80,11 @@ public class AccessoriesInfoImportVo implements Serializable {
      */
     @ExcelProperty(value = "供应商")
     private String supplier;
+
+    /**
+     * 	供应商Id
+     */
+    private String supplierId;
 
 
 }

@@ -33,6 +33,11 @@ public class ComponentsInfoImportVo implements Serializable {
     @NotBlank(message = "类别不能为空")
     @ExcelProperty(value = "类别")
     private String category;
+    /**
+     * 	类别ID
+     */
+    private String categoryId;
+
 
     /**
      * 数量
@@ -52,11 +57,20 @@ public class ComponentsInfoImportVo implements Serializable {
      */
     @ExcelProperty(value = "位置")
     private String location;
+
+    /**
+     * 	位置Id
+     */
+    private String locationId;
     /**
      * 	供应商
      */
     @ExcelProperty(value = "供应商")
     private String supplier;
+    /**
+     * 	供应商Id
+     */
+    private String supplierId;
     /**
      * 	采购价格
      */

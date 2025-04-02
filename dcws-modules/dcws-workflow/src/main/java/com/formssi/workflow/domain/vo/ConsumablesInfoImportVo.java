@@ -35,16 +35,31 @@ public class ConsumablesInfoImportVo implements Serializable {
     private String category;
 
     /**
+     * 	类别Id
+     */
+    private String categoryId;
+
+    /**
      * 	供应商
      */
     @ExcelProperty(value = "供应商")
     private String supplier;
 
     /**
+     * 	供应商Id
+     */
+    private String supplierId;
+
+    /**
      * 	位置
      */
     @ExcelProperty(value = "位置")
     private String location;
+    /**
+     * 	位置Id
+     */
+    private String locationId;
+
     /**
      * 	型号
      */

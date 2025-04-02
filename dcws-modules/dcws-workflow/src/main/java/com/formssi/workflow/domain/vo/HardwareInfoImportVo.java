@@ -48,10 +48,15 @@ public class HardwareInfoImportVo implements Serializable {
     private String modelNumber;
 
     /**
+     * 	型号ID
+     */
+    private String modelId;
+
+    /**
      * 	类别
      */
-    @ExcelProperty(value = "类别")
-    private String category;
+/*    @ExcelProperty(value = "类别")
+    private String category;*/
 
     /**
      * 位置
@@ -59,6 +64,11 @@ public class HardwareInfoImportVo implements Serializable {
     @NotBlank(message = "位置不能为空")
     @ExcelProperty(value = "位置")
     private String location;
+
+    /**
+     * 位置ID
+     */
+    private String locationId;
 
     /**
      * 	采购价格
@@ -71,6 +81,11 @@ public class HardwareInfoImportVo implements Serializable {
      */
     @ExcelProperty(value = "供应商")
     private String supplier;
+
+    /**
+     * 	供应商Id
+     */
+    private String supplierId;
 
     /**
      * 	备注

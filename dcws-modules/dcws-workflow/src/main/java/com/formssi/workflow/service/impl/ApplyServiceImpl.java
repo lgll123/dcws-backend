@@ -41,6 +41,7 @@ import com.formssi.workflow.domain.TaskNodeDataHis;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.*;
+import com.formssi.workflow.listener.AssetsImportValidationListener;
 import com.formssi.workflow.listener.ImportValidationListener;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
@@ -436,7 +437,7 @@ public class ApplyServiceImpl implements IApplyService {
         try {
             return EasyExcel.read(file.getInputStream())
                     .head(clazz)
-                    .registerReadListener(new ImportValidationListener<T>())
+                    .registerReadListener(new AssetsImportValidationListener<T>())
                     .sheet()
                     .doReadSync();
         } catch (IOException e) {

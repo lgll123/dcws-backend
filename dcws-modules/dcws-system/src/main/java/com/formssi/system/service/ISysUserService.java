@@ -4,6 +4,7 @@ import com.formssi.system.domain.bo.SysUserBo;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.system.domain.vo.HrUserVo;
+import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.system.domain.vo.SysUserExportVo;
 import com.formssi.system.domain.vo.SysUserVo;
 
@@ -252,8 +253,8 @@ public interface ISysUserService {
     List<SysUserVo> getUserLeader(Long userId);
 
     /**
-     * 获取公司id
+     * 获取公司
      * @return
      */
-    Long getCompanyId();
+    SysDeptVo getCompany();
 }

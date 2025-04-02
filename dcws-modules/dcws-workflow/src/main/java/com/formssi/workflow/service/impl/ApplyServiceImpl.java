@@ -30,6 +30,7 @@ import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.system.domain.SealInfo;
 import com.formssi.system.domain.vo.InfoChangeImportVo;
 import com.formssi.system.domain.vo.SealJsonVo;
+import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.system.domain.vo.SysFileVo;
 import com.formssi.system.service.ISysFileService;
 import com.formssi.system.service.ISysUserService;
@@ -243,7 +244,9 @@ public class ApplyServiceImpl implements IApplyService {
         }
         String id = taskSerialService.getTaskSerial(bo.getApplyType(), DcwsDateUtils.dateTime());
         add.setId(id);
-        add.setCompanyId(iSysUserService.getCompanyId());
+        SysDeptVo sysDeptVo = iSysUserService.getCompany();
+        add.setCompanyId(sysDeptVo.getDeptId());
+        add.setCompanyName(sysDeptVo.getDeptName());
         boolean flag = taskNodeDataMapper.insert(add) > 0;
         if (flag) {
             bo.setId(add.getId());

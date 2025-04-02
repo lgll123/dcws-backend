@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.workflow.domain.bo.DcwsProjectTaskBo;
 import com.formssi.workflow.service.ProjectManagementService;
 import com.formssi.workflow.utils.DcwsDateUtils;
@@ -160,7 +161,9 @@ public class NormalTaskServiceImpl implements NormalTaskService {
         }
         String taskId = taskSerialService.getTaskSerial("20",DcwsDateUtils.dateTime());
         add.setTaskId(taskId);
-        add.setCompanyId(iSysUserService.getCompanyId());
+        SysDeptVo sysDeptVo = iSysUserService.getCompany();
+        add.setCompanyId(sysDeptVo.getDeptId());
+        add.setCompanyName(sysDeptVo.getDeptName());
         //新增通用审批表
         boolean flag = dcwsNormalTaskMapper.insert(add) > 0;
         if (flag) {

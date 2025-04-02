@@ -350,7 +350,7 @@ kstry:
       shutdown-await: 3000 # 调用线程池 shutdown() 之后，时隔几毫秒后check关闭状态。 默认：3000，单位：毫秒
       shutdown-now-await: 3000 # 调用线程池 shutdown() 失败之后再调用 shutdownNow() 时隔几毫秒后check关闭状态。 默认：5000，单位：毫秒
       monitor:
-        enable: true # 是否开启线程池的监控日志。 默认：true
+        enable: false # 是否开启线程池的监控日志。 默认：true
         delay: 5000 # 线程池监控日志打印间隔时间。 默认：10000ms，单位：毫秒
     open-virtual: false # 使用JDK21+时，可以使用该参数开启虚拟线程
   story:

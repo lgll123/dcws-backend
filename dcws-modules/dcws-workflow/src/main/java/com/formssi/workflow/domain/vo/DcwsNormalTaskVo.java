@@ -92,9 +92,13 @@ public class DcwsNormalTaskVo implements Serializable {
     private List<DcwsNormalTaskUserVo> dcwsUserVoList;
 
     /**
-     * 公司
+     * 公司id
      */
-    private String companyId;
+    private Long companyId;
 
+    /**
+     * 公司名称
+     */
+    private String companyName;
 
 }

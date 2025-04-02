@@ -120,4 +120,14 @@ public class TaskNodeDataBo extends BaseEntity {
      * 服务申请：1-需求(非物料类需求，如开通网络、申请VPN等) 2-事件(故障排查或其它需IT支持事宜) 3-设备维修 4-收入证明 5-营业执照 6-其他类型
      */
     private String applyContentType;
+
+    /**
+     * 公司id
+     */
+    private Long companyId;
+
+    /**
+     * 公司名称
+     */
+    private String companyName;
 }

@@ -29,6 +29,7 @@
         <result property="processDefinitionVersion" column="processDefinitionVersion"/>
         <result property="businessKey" column="BUSINESS_KEY_"/>
         <result property="applyReason" column="applyReason"/>
+        <result property="companyName" column="companyName"/>
 
     </resultMap>
     <select id="getTaskWaitByPage" resultMap="DcwsTaskVoResult">
@@ -39,7 +40,8 @@
                      ARP.NAME_ AS processDefinitionName,
                      ARP.KEY_  AS processDefinitionKey,
                      ARP.VERSION_  AS processDefinitionVersion,
-                     node.apply_reson as applyReason
+                     node.apply_reson as applyReason,
+                     node.company_Name as companyName
               FROM ACT_RU_TASK RES
                        INNER JOIN ACT_HI_PROCINST AHP ON RES.PROC_INST_ID_ = AHP.PROC_INST_ID_
                        INNER JOIN ACT_RE_PROCDEF ARP ON ARP.ID_ = RES.PROC_DEF_ID_
@@ -56,7 +58,8 @@
                      ARP.NAME_ AS processDefinitionName,
                      ARP.KEY_  AS processDefinitionKey,
                      ARP.VERSION_  AS processDefinitionVersion,
-                     node.apply_reson as applyReason
+                     node.apply_reson as applyReason,
+                     node.company_Name as companyName
               FROM ACT_HI_TASKINST HTI
                        INNER JOIN ACT_HI_PROCINST AHP ON HTI.PROC_INST_ID_ = AHP.PROC_INST_ID_
                        INNER JOIN ACT_RE_PROCDEF ARP ON ARP.ID_ = HTI.PROC_DEF_ID_
@@ -73,7 +76,8 @@
                      ARP.NAME_ as processDefinitionName,
                      ARP.KEY_  as processDefinitionKey,
                      ARP.VERSION_  AS processDefinitionVersion,
-                     node.apply_reson as applyReason
+                     node.apply_reson as applyReason,
+                     node.company_Name as companyName
               FROM ACT_HI_TASKINST AHT
                        INNER JOIN ACT_HI_PROCINST AHP ON AHT.PROC_INST_ID_ = AHP.PROC_INST_ID_
                        INNER JOIN ACT_RE_PROCDEF ARP ON ARP.ID_ = AHT.PROC_DEF_ID_

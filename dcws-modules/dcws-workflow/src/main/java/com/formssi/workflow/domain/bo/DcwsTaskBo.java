@@ -54,5 +54,5 @@ public class DcwsTaskBo implements Serializable {
     /**
      * 公司
      */
-    private String companyId;
+    private Long companyId;
 }

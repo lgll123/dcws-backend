@@ -28,7 +28,7 @@ import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.satoken.utils.LoginHelper;
 import com.formssi.system.domain.SealInfo;
-import com.formssi.system.domain.vo.InfoChangeImportVo;
+import com.formssi.workflow.domain.vo.InfoChangeImportVo;
 import com.formssi.system.domain.vo.SealJsonVo;
 import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.system.domain.vo.SysFileVo;

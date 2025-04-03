@@ -4,7 +4,7 @@ package com.formssi.workflow.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
-import com.formssi.system.domain.vo.InfoChangeImportVo;
+import com.formssi.workflow.domain.vo.InfoChangeImportVo;
 import com.formssi.workflow.domain.bo.DcwsInvoiceInfoBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;

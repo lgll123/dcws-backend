@@ -9,6 +9,7 @@ import com.formssi.workflow.service.IAssetsCheckOutRecordService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class AssetsCheckOutRecordServiceImpl implements IAssetsCheckOutRecordService {
     private final DcwsAssetsCheckOutMapper dcwsAssetsCheckOutMapper;
     @Override
+    @Transactional(rollbackFor = Throwable.class)
     public DcwsAssetsCheckOutVo insertByBo(DcwsAssetsCheckOutBo bo) {
         DcwsAssetsCheckOut add = MapstructUtils.convert(bo, DcwsAssetsCheckOut.class);
         boolean flag = dcwsAssetsCheckOutMapper.insert(add) > 0;

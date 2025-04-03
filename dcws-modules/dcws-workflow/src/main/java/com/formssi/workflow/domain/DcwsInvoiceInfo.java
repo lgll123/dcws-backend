@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 
 import java.io.Serial;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -46,5 +47,20 @@ public class DcwsInvoiceInfo extends BaseEntity {
      * 发票金额
      */
     private BigDecimal amount;
+
+    /**
+     * 申请人
+     */
+    private String applicant;
+
+    /**
+     * 申请部门
+     */
+    private String applyDept;
+
+    /**
+     * 申请时间
+     */
+    private Date applyDate;
 
 }

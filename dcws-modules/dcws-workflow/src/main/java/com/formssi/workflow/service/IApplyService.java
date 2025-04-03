@@ -91,5 +91,10 @@ public interface IApplyService {
      */
     TableDataInfo<DcwsInvoiceInfoVo> getInvoiceInfo(DcwsInvoiceInfoBo bo, PageQuery pageQuery);
 
+    /**
+     * 查询发票详情
+     */
+    DcwsInvoiceInfoVo getInvoiceInfoById(String invoiceId);
+
 
 }

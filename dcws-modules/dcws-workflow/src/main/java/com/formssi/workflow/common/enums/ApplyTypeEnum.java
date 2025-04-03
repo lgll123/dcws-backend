@@ -37,7 +37,7 @@ public enum ApplyTypeEnum {
     /**
      * 报销申请
      */
-    CLAIM_APPLY("26", "claimApply","报销申请"),
+    CLAIM_APPLY("26", "claimApply","费用报销申请"),
 
     /**
      * 通用事项审批

@@ -13,7 +13,7 @@ import com.formssi.common.log.enums.BusinessType;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.common.web.core.BaseController;
-import com.formssi.system.domain.vo.InfoChangeImportVo;
+import com.formssi.workflow.domain.vo.InfoChangeImportVo;
 import com.formssi.workflow.common.enums.ImportTypeEnum;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
@@ -31,8 +31,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.formssi.workflow.domain.bo.DcwsInvoiceInfoBo;
 
 import java.util.*;
-
-import static com.formssi.workflow.common.enums.ImportTypeEnum.HARDWARE;
 
 /**
  * 申请

@@ -1,4 +1,4 @@
-package com.formssi.system.domain.vo;
+package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import jakarta.validation.constraints.NotBlank;

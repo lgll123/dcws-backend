@@ -35,14 +35,17 @@ import com.formssi.system.domain.vo.SysFileVo;
 import com.formssi.system.service.ISysFileService;
 import com.formssi.system.service.ISysUserService;
 import com.formssi.workflow.common.enums.ApplyTypeEnum;
+import com.formssi.workflow.domain.DcwsInvoiceInfo;
 import com.formssi.workflow.domain.DcwsSysFile;
 import com.formssi.workflow.domain.TaskNodeData;
 import com.formssi.workflow.domain.TaskNodeDataHis;
+import com.formssi.workflow.domain.bo.DcwsInvoiceInfoBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.*;
 import com.formssi.workflow.listener.AssetsImportValidationListener;
 import com.formssi.workflow.listener.ImportValidationListener;
+import com.formssi.workflow.mapper.DcwsInvoiceInfoMapper;
 import com.formssi.workflow.mapper.DcwsSysFileMapper;
 import com.formssi.workflow.mapper.TaskNodeDataHisMapper;
 import com.formssi.workflow.mapper.TaskNodeDataMapper;
@@ -80,6 +83,7 @@ public class ApplyServiceImpl implements IApplyService {
     private final TaskNodeDataMapper taskNodeDataMapper;
     private final TaskNodeDataHisMapper taskNodeDataHisMapper;
     private final DcwsSysFileMapper dcwsSysFileMapper;
+    private final DcwsInvoiceInfoMapper invoiceInfoMapper;
     private final WorkflowService workflowService;
     private final TaskSerialService taskSerialService;
     private static final String keys = "{'non_IT_assets_apply','IT_assets_apply','material','seal_apply','claim_apply'" +
@@ -388,7 +392,7 @@ public class ApplyServiceImpl implements IApplyService {
             }
             dcwsInvoiceVo.setFileUrl(minioUtil.getPermanentTimePreviewUrl("dcws-assets",sysFileVo.getFileName()));
             //获取发票信息
-            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,"请识别图中的购买方名称,购买方纳税人识别号，价税合计小写(不带币种)，并输出购买方名称重命名为:companyname,购买方纳税人识别号重命名为:taxnum,价税合计小写(不带币种)重命名为:amount的标准json字符串");
+            String invoiceInfo = DcwsAiUtils.invoiceIdentification(file,"请识别图中的发票号码,购买方信息名称,购买方纳税人识别号,价税合计小写(不带币种),并输出发票号码重命名为:invoiceId,购买方信息名称重命名为:companyname,购买方纳税人识别号重命名为:taxnum,价税合计小写(不带币种)重命名为:amount的标准json字符串");
             if (StringUtils.isEmpty(invoiceInfo)){
                 throw new ServiceException("发票识别错误");
             }
@@ -399,6 +403,7 @@ public class ApplyServiceImpl implements IApplyService {
             log.info("发票名称:" + sysFileVo.getFileName() + "\n" + "识别信息:" +invoiceInfo);
             dcwsInvoiceVo.setVerify(name.equals(invoice.get("companyname")) && taxpayerIdentificationNumber.equals(invoice.get("taxnum")) ? "Y":"N");
             dcwsInvoiceVo.setAmount(new BigDecimal(String.valueOf(invoice.get("amount"))));
+            dcwsInvoiceVo.setInvoiceId(String.valueOf(invoice.get("invoiceId")));
             list.add(dcwsInvoiceVo);
         }
         return list;
@@ -444,5 +449,22 @@ public class ApplyServiceImpl implements IApplyService {
             log.error("读取Excel文件失败",e);
             throw new ServiceException("读取Excel文件失败");
         }
+    }
+
+    @Override
+    public void insertInvoiceInfoBo(DcwsInvoiceInfoBo bo) {
+        DcwsInvoiceInfo add = MapstructUtils.convert(bo, DcwsInvoiceInfo.class);
+        invoiceInfoMapper.insert(add);
+    }
+
+    @Override
+    public TableDataInfo<DcwsInvoiceInfoVo> getInvoiceInfo(DcwsInvoiceInfoBo bo, PageQuery pageQuery) {
+        LambdaQueryWrapper<DcwsInvoiceInfo> lqw = Wrappers.lambdaQuery();
+        lqw.eq(StringUtils.isNotBlank(bo.getInvoiceId()), DcwsInvoiceInfo::getInvoiceId, bo.getInvoiceId());
+        lqw.eq(StringUtils.isNotBlank(bo.getBusinessKey()), DcwsInvoiceInfo::getBusinessKey, bo.getBusinessKey());
+        lqw.eq(DcwsInvoiceInfo::getCreateBy, LoginHelper.getUserId());
+        lqw.orderByDesc(BaseEntity::getCreateTime);
+        Page<DcwsInvoiceInfoVo> result = invoiceInfoMapper.selectVoPage(pageQuery.build(), lqw);
+        return TableDataInfo.build(result);
     }
 }

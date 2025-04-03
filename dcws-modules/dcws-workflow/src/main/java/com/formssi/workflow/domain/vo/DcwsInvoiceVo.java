@@ -43,4 +43,9 @@ public class DcwsInvoiceVo {
      */
     private BigDecimal amount;
 
+    /**
+     * 发票号
+     */
+    private String invoiceId;
+
 }

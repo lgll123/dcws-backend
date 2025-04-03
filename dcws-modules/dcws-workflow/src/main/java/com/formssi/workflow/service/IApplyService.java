@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.mybatis.core.page.PageQuery;
 import com.formssi.common.mybatis.core.page.TableDataInfo;
 import com.formssi.system.domain.vo.InfoChangeImportVo;
+import com.formssi.workflow.domain.bo.DcwsInvoiceInfoBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.*;
@@ -79,4 +80,16 @@ public interface IApplyService {
      * 根据类型导入exec文件内容
      */
     <T> List<T> readExcelByType(MultipartFile file, Class<T> clazz);
+
+    /**
+     * 新增发票信息
+     */
+    void insertInvoiceInfoBo(DcwsInvoiceInfoBo bo);
+
+    /**
+     * 查询发票
+     */
+    TableDataInfo<DcwsInvoiceInfoVo> getInvoiceInfo(DcwsInvoiceInfoBo bo, PageQuery pageQuery);
+
+
 }

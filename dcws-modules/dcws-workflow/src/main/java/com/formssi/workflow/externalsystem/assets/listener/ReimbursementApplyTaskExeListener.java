@@ -1,18 +1,24 @@
 package com.formssi.workflow.externalsystem.assets.listener;
 
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.system.domain.vo.DcwsFinanceApprovalVo;
 import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.system.domain.vo.SysUserVo;
 import com.formssi.system.service.IFinanceApprovalService;
 import com.formssi.system.service.ISysDeptService;
 import com.formssi.system.service.ISysUserService;
+import com.formssi.workflow.domain.bo.DcwsInvoiceInfoBo;
+import com.formssi.workflow.service.IApplyService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.ExecutionListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -28,6 +34,8 @@ public class ReimbursementApplyTaskExeListener implements ExecutionListener {
     private ISysUserService iSysUserService;
     @Autowired
     private IFinanceApprovalService iFinanceApprovalService;
+    @Autowired
+    private IApplyService iApplyService;
     @Override
     public void notify(DelegateExecution delegateTask) {
         try{
@@ -56,6 +64,25 @@ public class ReimbursementApplyTaskExeListener implements ExecutionListener {
             }
             if(sysDeptVo.getLeader()==null || sysDeptVo.getRespLeader()==null){
                 log.error("An error occurred while ReimbursementApplyTaskExeListener respLeader: "+sysDeptVo.getRespLeader()+" leader:"+sysDeptVo.getLeader());
+            }
+            //保存发票信息
+            Map<String, Object> entityInfo = (Map<String, Object>) variables.get("entity");
+            ObjectMapper objectMapper = new ObjectMapper();
+            Map<String,Object> applyDetails = objectMapper.readValue(JSONUtil.toJsonStr(entityInfo.get("applyDetail")), Map.class);
+            if(!Objects.isNull(applyDetails.get("invoiceDetail"))){
+                String businessKey = (String) entityInfo.get("id");
+                String applyType = (String) entityInfo.get("applyType");
+                List<Map<String,Object>> invoiceDetail = objectMapper.readValue(JSONUtil.toJsonStr(applyDetails.get("invoiceDetail")), List.class);
+                for (Map<String, Object> invoiceMap : invoiceDetail){
+                    DcwsInvoiceInfoBo invoiceInfoBo = new DcwsInvoiceInfoBo();
+                    invoiceInfoBo.setBusinessKey(businessKey);
+                    invoiceInfoBo.setApplyType(applyType);
+                    invoiceInfoBo.setAmount(new BigDecimal(String.valueOf(invoiceMap.get("amount"))));
+                    invoiceInfoBo.setFileName((String) invoiceMap.get("invoiceName"));
+                    invoiceInfoBo.setFileUrl((String) invoiceMap.get("fileUrl"));
+                    invoiceInfoBo.setInvoiceId((String) invoiceMap.get("invoiceId"));
+                    iApplyService.insertInvoiceInfoBo(invoiceInfoBo);
+                }
             }
         } catch (Exception e) {
             log.error("An error occurred while ReimbursementApplyTaskExeListener", e);

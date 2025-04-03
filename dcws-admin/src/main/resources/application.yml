@@ -139,6 +139,7 @@ tenant:
     - dcws_finance_approval
     - project
     - module
+    - dcws_invoice_info
 
 # MyBatisPlus配置
 # https://baomidou.com/config/

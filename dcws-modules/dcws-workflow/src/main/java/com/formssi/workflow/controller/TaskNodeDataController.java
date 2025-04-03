@@ -2,7 +2,6 @@ package com.formssi.workflow.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.util.ObjectUtil;
-import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
 import com.formssi.common.core.domain.R;
 import com.formssi.common.core.validate.AddGroup;
@@ -19,23 +18,19 @@ import com.formssi.workflow.common.enums.ImportTypeEnum;
 import com.formssi.workflow.domain.bo.TaskNodeDataBo;
 import com.formssi.workflow.domain.bo.TaskNodeDataQueryBo;
 import com.formssi.workflow.domain.vo.*;
-import com.formssi.workflow.listener.ImportValidationListener;
 import com.formssi.workflow.service.IApplyService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.http.MediaType;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import com.formssi.workflow.domain.bo.DcwsInvoiceInfoBo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static com.formssi.workflow.common.enums.ImportTypeEnum.HARDWARE;
 
@@ -246,6 +241,15 @@ public class TaskNodeDataController extends BaseController {
         if(!CollectionUtils.isEmpty(list)){
            ExcelUtil.exportExcel(list,"档案信息", InfoChangeImportVo.class, response);
        }
+    }
+
+    /**
+     * 查询发票信息
+     *
+     */
+    @GetMapping("/getInvoiceInfo")
+    public TableDataInfo<DcwsInvoiceInfoVo> getInvoiceInfo(DcwsInvoiceInfoBo invoiceInfoBo, PageQuery pageQuery) {
+        return applyService.getInvoiceInfo(invoiceInfoBo,pageQuery);
     }
 
 }

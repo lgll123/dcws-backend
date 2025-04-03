@@ -397,11 +397,21 @@ public class ApplyServiceImpl implements IApplyService {
                 throw new ServiceException("发票识别错误");
             }
             JSONObject invoice = JSON.parseObject(invoiceInfo.replace("```json","").replace("```",""));
-            if(Objects.isNull(invoice.get("taxnum")) || Objects.isNull(invoice.get("amount"))){
+            if(Objects.isNull(invoice.get("invoiceId")) || Objects.isNull(invoice.get("companyname")) || Objects.isNull(invoice.get("taxnum")) || Objects.isNull(invoice.get("amount"))){
                 throw new ServiceException("发票识别错误");
             }
-            log.info("发票名称:" + sysFileVo.getFileName() + "\n" + "识别信息:" +invoiceInfo);
-            dcwsInvoiceVo.setVerify(name.equals(invoice.get("companyname")) && taxpayerIdentificationNumber.equals(invoice.get("taxnum")) ? "Y":"N");
+            log.info("发票名称:" + sysFileVo.getFileName() + "\n" + "识别信息:" + JSON.toJSONString(invoice));
+            if(!name.equals(invoice.get("companyname"))){
+                throw new ServiceException("公司名称错误,请核对!");
+            }
+            if(!taxpayerIdentificationNumber.equals(invoice.get("taxnum"))){
+                throw new ServiceException("公司纳税人识别号错误,请核对!");
+            }
+            DcwsInvoiceInfoVo dcwsInvoiceInfoVo = invoiceInfoMapper.selectVoById(String.valueOf(invoice.get("invoiceId")));
+            if(!Objects.isNull(dcwsInvoiceInfoVo)){
+                throw new ServiceException("此发票号已使用：" + String.valueOf(invoice.get("invoiceId")) + ",请核对!");
+            }
+            dcwsInvoiceVo.setVerify("Y");
             dcwsInvoiceVo.setAmount(new BigDecimal(String.valueOf(invoice.get("amount"))));
             dcwsInvoiceVo.setInvoiceId(String.valueOf(invoice.get("invoiceId")));
             list.add(dcwsInvoiceVo);
@@ -462,9 +472,13 @@ public class ApplyServiceImpl implements IApplyService {
         LambdaQueryWrapper<DcwsInvoiceInfo> lqw = Wrappers.lambdaQuery();
         lqw.eq(StringUtils.isNotBlank(bo.getInvoiceId()), DcwsInvoiceInfo::getInvoiceId, bo.getInvoiceId());
         lqw.eq(StringUtils.isNotBlank(bo.getBusinessKey()), DcwsInvoiceInfo::getBusinessKey, bo.getBusinessKey());
-        lqw.eq(DcwsInvoiceInfo::getCreateBy, LoginHelper.getUserId());
         lqw.orderByDesc(BaseEntity::getCreateTime);
         Page<DcwsInvoiceInfoVo> result = invoiceInfoMapper.selectVoPage(pageQuery.build(), lqw);
         return TableDataInfo.build(result);
+    }
+
+    @Override
+    public DcwsInvoiceInfoVo getInvoiceInfoById(String invoiceId) {
+        return invoiceInfoMapper.selectVoById(invoiceId);
     }
 }

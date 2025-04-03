@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.formssi.common.core.utils.SpringUtils;
 import com.formssi.workflow.domain.bo.DcwsAssetsCheckOutBo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
+import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.service.IAssetsCheckOutRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.TaskListener;
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static com.formssi.workflow.common.enums.AssetsCheckStatusEnum.CHECK_STATUS_0;
-import static com.formssi.workflow.common.enums.AssetsCheckStatusEnum.CHECK_STATUS_1;
+import static com.formssi.workflow.common.enums.AssetsCheckStatusEnum.*;
 import static com.formssi.workflow.common.enums.AssetsCheckTypeEnum.CHECK_TYPE_1;
 import static com.formssi.workflow.common.enums.AssetsCheckTypeEnum.CHECK_TYPE_5;
 
@@ -72,7 +72,14 @@ public class AssetsInAddTaskListener implements TaskListener {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"hardware","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
                         bo.setCode(Convert.toStr(responseMap.get("status")));
-                    } catch (Exception e) {
+                        if("error".equals(Convert.toStr(responseMap.get("status")))){
+                            bo.setStatus(CHECK_STATUS_0.getCode());
+                        }
+                    } catch (ApiCallException e) {
+                        bo.setStatus(CHECK_STATUS_2.getCode());
+                        bo.setMessage(e.getMessage());
+                        log.error("资产-hardware 新增失败", e);
+                    }  catch (Exception e) {
                         bo.setStatus(CHECK_STATUS_0.getCode());
                         bo.setMessage(e.getMessage());
                         log.error("资产-hardware 新增失败", e);
@@ -82,6 +89,7 @@ public class AssetsInAddTaskListener implements TaskListener {
             }
             // 附属品-accessories 新增
             if (!CollectionUtil.isEmpty(accessories)) {
+                bo.setAssetsType("accessories");
                 Map<String, String> requestBodyMap = new HashMap<>();
                 accessories.forEach(a->{
                     bo.setAssetsDetail(JSONUtil.toJsonStr(a));
@@ -97,16 +105,24 @@ public class AssetsInAddTaskListener implements TaskListener {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"accessories","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
                         bo.setCode(Convert.toStr(responseMap.get("status")));
+                        if("error".equals(Convert.toStr(responseMap.get("status")))){
+                            bo.setStatus(CHECK_STATUS_0.getCode());
+                        }
+                    } catch (ApiCallException e) {
+                        bo.setStatus(CHECK_STATUS_2.getCode());
+                        bo.setMessage(e.getMessage());
+                        log.error("附属品-accessories 新增失败", e);
                     } catch (Exception e) {
                         bo.setStatus(CHECK_STATUS_0.getCode());
                         bo.setMessage(e.getMessage());
-                        log.error("附属品-hardware 新增失败", e);
+                        log.error("附属品-accessories 新增失败", e);
                     }
                     saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
             // 组件-components 新增
             if (!CollectionUtil.isEmpty(components)) {
+                bo.setAssetsType("components");
                 Map<String, String> requestBodyMap = new HashMap<>();
                 components.forEach(c->{
                     bo.setAssetsDetail(JSONUtil.toJsonStr(c));
@@ -121,16 +137,24 @@ public class AssetsInAddTaskListener implements TaskListener {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"components","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
                         bo.setCode(Convert.toStr(responseMap.get("status")));
+                        if("error".equals(Convert.toStr(responseMap.get("status")))){
+                            bo.setStatus(CHECK_STATUS_0.getCode());
+                        }
+                    } catch (ApiCallException e) {
+                        bo.setStatus(CHECK_STATUS_2.getCode());
+                        bo.setMessage(e.getMessage());
+                        log.error("组件-components 新增失败", e);
                     } catch (Exception e) {
                         bo.setStatus(CHECK_STATUS_0.getCode());
                         bo.setMessage(e.getMessage());
-                        log.error("组件-hardware 新增失败", e);
+                        log.error("组件-components 新增失败", e);
                     }
                     saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
             // 消耗品-consumables 新增
             if (!CollectionUtil.isEmpty(consumables)) {
+                bo.setAssetsType("consumables");
                 Map<String, String> requestBodyMap = new HashMap<>();
                 consumables.forEach(c->{
                     bo.setAssetsDetail(JSONUtil.toJsonStr(c));
@@ -145,16 +169,24 @@ public class AssetsInAddTaskListener implements TaskListener {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"consumables","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
                         bo.setCode(Convert.toStr(responseMap.get("status")));
+                        if("error".equals(Convert.toStr(responseMap.get("status")))){
+                            bo.setStatus(CHECK_STATUS_0.getCode());
+                        }
+                    } catch (ApiCallException e) {
+                        bo.setStatus(CHECK_STATUS_2.getCode());
+                        bo.setMessage(e.getMessage());
+                        log.error("消耗品-consumables 新增失败", e);
                     } catch (Exception e) {
                         bo.setStatus(CHECK_STATUS_0.getCode());
                         bo.setMessage(e.getMessage());
-                        log.error("消耗品-hardware 新增失败", e);
+                        log.error("消耗品-consumables 新增失败", e);
                     }
                     saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });
             }
             //许可证-licenses 新增
             if (!CollectionUtil.isEmpty(licenses)) {
+                bo.setAssetsType("licenses");
                 Map<String, String> requestBodyMap = new HashMap<>();
                 licenses.forEach(c->{
                     bo.setAssetsDetail(JSONUtil.toJsonStr(c));
@@ -170,10 +202,17 @@ public class AssetsInAddTaskListener implements TaskListener {
                         Map<String, Object> responseMap = instance.process(requestBodyMap,"licenses","post");
                         bo.setMessage(Convert.toStr(responseMap.get("messages")));
                         bo.setCode(Convert.toStr(responseMap.get("status")));
+                        if("error".equals(Convert.toStr(responseMap.get("status")))){
+                            bo.setStatus(CHECK_STATUS_0.getCode());
+                        }
+                    } catch (ApiCallException e) {
+                        bo.setStatus(CHECK_STATUS_2.getCode());
+                        bo.setMessage(e.getMessage());
+                        log.error("许可证-licenses 新增失败", e);
                     } catch (Exception e) {
                         bo.setStatus(CHECK_STATUS_0.getCode());
                         bo.setMessage(e.getMessage());
-                        log.error("许可证-hardware 新增失败", e);
+                        log.error("许可证-licenses 新增失败", e);
                     }
                     saveCheckOutRecord(bo);// 资产入库记录新增记录
                 });

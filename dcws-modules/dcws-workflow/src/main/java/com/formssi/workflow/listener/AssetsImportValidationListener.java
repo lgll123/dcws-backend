@@ -16,6 +16,7 @@ import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 /**
  * 资产入库导入execl 校验监听器
@@ -69,6 +70,12 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
     }
 
     private void checkHardwareData(HardwareInfoImportVo vo, AnalysisContext context) {
+        /*CompletableFuture<List<String>> modelCheck = CompletableFuture.supplyAsync(
+                () -> checkEntityExists(vo.getModelNumber(), MODELS_LIST,"资产型号不存在",context));
+        CompletableFuture<List<String>> supplierCheck = CompletableFuture.supplyAsync(
+                () -> checkEntityExists(vo.getSupplier(), SUPPLIERS_LIST,"供应商不存在",context));
+        List<String> join = supplierCheck.join();
+        CompletableFuture.allOf(modelCheck, supplierCheck).join();*/
         List<String> modelIds = checkEntityExists(vo.getModelNumber(), MODELS_LIST, "资产型号不存在", context);
         vo.setModelId(ObjectUtil.isEmpty(modelIds)?null:modelIds.get(0));
         List<String> supplierIds = checkEntityExists(vo.getSupplier(), SUPPLIERS_LIST, "供应商不存在", context);

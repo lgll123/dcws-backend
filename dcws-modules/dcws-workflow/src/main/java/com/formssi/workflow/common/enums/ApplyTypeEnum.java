@@ -52,7 +52,11 @@ public enum ApplyTypeEnum {
     /**
      * 差旅费报销申请
      */
-    TRAVELCOST_APPLY("29", "travelcostApply","差旅费报销申请");
+    TRAVELCOST_APPLY("29", "travelcostApply","差旅费报销申请"),
+    /**
+     * 资产入库申请
+     */
+    ASSETS_IN("30", "assetsIn","资产入库申请");
 
     private final String code;
     private final String name;

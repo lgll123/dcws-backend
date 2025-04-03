@@ -11,19 +11,12 @@ import com.formssi.workflow.domain.vo.DcwsAssetsCheckOutVo;
 import com.formssi.workflow.externalsystem.assets.strategy.IExternalSystemAPIStrategy;
 import com.formssi.workflow.externalsystem.exception.ApiCallException;
 import com.formssi.workflow.service.IAssetsCheckOutRecordService;
-import jakarta.annotation.PreDestroy;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.engine.delegate.TaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.task.ThreadPoolTaskExecutorBuilder;
-import org.springframework.context.annotation.Bean;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.SynchronousQueue;
@@ -51,30 +44,7 @@ public class AssetsInAddTaskListener implements TaskListener {
             new ThreadPoolExecutor.CallerRunsPolicy() // 饱和策略
     );
     // spring线程池配置
-    /*@Bean(name = "assetsTaskExecutor")
-    public ThreadPoolTaskExecutor typeExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);                   // 核心线程数
-        executor.setMaxPoolSize(5);                    // 最大线程数
-        executor.setKeepAliveSeconds(60);              // 空闲线程存活时间（秒）
-        executor.setQueueCapacity(0);                  // 使用SynchronousQueue等效配置
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.setThreadNamePrefix("Asset-Processor-");  // 线程名前缀
-        executor.setWaitForTasksToCompleteOnShutdown(true); // 关闭时等待任务完成
-        executor.setAwaitTerminationSeconds(30);       // 等待终止时间
-        executor.initialize();  // 必须显式初始化
-        return executor;
-    }
-    @PreDestroy
-    public void destroy() {
-        if (typeExecutor != null) {
-            typeExecutor.shutdown();
-            log.info("资产处理线程池关闭完成");
-        }
-    }
-    @Autowired
-    @Qualifier("assetsTaskExecutor")
-    private ThreadPoolTaskExecutor typeExecutor;*/
+
     private final TransactionTemplate transactionTemplate;  // 编程式事务模板
     public AssetsInAddTaskListener(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;

@@ -402,14 +402,14 @@ public class ApplyServiceImpl implements IApplyService {
             }
             log.info("发票名称:" + sysFileVo.getFileName() + "\n" + "识别信息:" + JSON.toJSONString(invoice));
             if(!name.equals(invoice.get("companyname"))){
-                throw new ServiceException("公司名称错误,请核对!");
+                throw new ServiceException("公司名称错误，请核对!");
             }
             if(!taxpayerIdentificationNumber.equals(invoice.get("taxnum"))){
-                throw new ServiceException("公司纳税人识别号错误,请核对!");
+                throw new ServiceException("公司纳税人识别号错误，请核对!");
             }
             DcwsInvoiceInfoVo dcwsInvoiceInfoVo = invoiceInfoMapper.selectVoById(String.valueOf(invoice.get("invoiceId")));
             if(!Objects.isNull(dcwsInvoiceInfoVo)){
-                throw new ServiceException("此发票号已使用：" + String.valueOf(invoice.get("invoiceId")) + ",请核对!");
+                throw new ServiceException("发票号 " + String.valueOf(invoice.get("invoiceId")) + " 已使用，请核对!");
             }
             dcwsInvoiceVo.setVerify("Y");
             dcwsInvoiceVo.setAmount(new BigDecimal(String.valueOf(invoice.get("amount"))));

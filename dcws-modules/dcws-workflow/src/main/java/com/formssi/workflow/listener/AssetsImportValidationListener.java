@@ -111,11 +111,11 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
 
     private void checkConsumablesData(ConsumablesInfoImportVo vo, AnalysisContext context){
         List<String> categoryIds = checkEntityExists(vo.getCategory(), LICENSE_CATEGORY, "类别不存在", context);
-        vo.setCategoryId(Objects.requireNonNull(categoryIds).get(0));
+        vo.setCategoryId(ObjectUtil.isEmpty(categoryIds)?null:categoryIds.get(0));
         List<String> supplierIds = checkEntityExists(vo.getSupplier(), SUPPLIERS_LIST, "供应商不存在", context);
-        vo.setSupplierId(Objects.requireNonNull(supplierIds).get(0));
+        vo.setSupplierId(ObjectUtil.isEmpty(supplierIds)?null:supplierIds.get(0));
         List<String> locationIds = checkEntityExists(vo.getLocation(), LOCATIONS_LIST, "位置不存在", context);
-        vo.setLocationId(Objects.requireNonNull(locationIds).get(0));
+        vo.setLocationId(ObjectUtil.isEmpty(locationIds)?null:locationIds.get(0));
     }
 
     // 通用校验方法

@@ -128,10 +128,12 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
             Map<String, Object> response = assetsSystemService.selectList(currentPage, apiPath);
             List<Map<String, Object>> results = (List<Map<String, Object>>) response.get("results");
             if (CollectionUtil.isNotEmpty(results)) {
-                return results.stream()
-                        .filter(r ->value.equals(Convert.toStr(r.get("text")).trim()))
-                        .map(l->Convert.toStr(l.get("id")))
+                List<String> list = results.stream()
+                        .filter(r -> value.equals(Convert.toStr(r.get("text")).trim()))
+                        .map(l -> Convert.toStr(l.get("id")))
                         .toList();
+                if(ObjectUtil.isEmpty(list)) addError(context, errorMsg);
+                return list;
             }
             totalPages = Convert.toInt(response.get("page_count"), 1);
             currentPage++;

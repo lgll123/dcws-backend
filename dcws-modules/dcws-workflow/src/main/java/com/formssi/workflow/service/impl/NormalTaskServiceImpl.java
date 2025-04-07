@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.formssi.common.core.enums.BusinessStatusEnum;
 import com.formssi.common.mybatis.core.domain.BaseEntity;
+import com.formssi.common.sse.dto.SseMessageDto;
+import com.formssi.common.sse.utils.SseMessageUtils;
 import com.formssi.system.domain.vo.SysDeptVo;
 import com.formssi.workflow.domain.bo.DcwsProjectTaskBo;
 import com.formssi.workflow.service.ProjectManagementService;
@@ -33,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Service
@@ -47,6 +51,7 @@ public class NormalTaskServiceImpl implements NormalTaskService {
     private final TaskSerialService taskSerialService;
     private final WfCategoryMapper wfCategoryMapper;
     private final ProjectManagementService projectService;
+    private final ScheduledExecutorService scheduledExecutorService;
 
 
     /**
@@ -214,6 +219,13 @@ public class NormalTaskServiceImpl implements NormalTaskService {
                     dcwsHisTemp.setUserName(sysUserVo.getUserName());
                     dcwsHisTemp.setCreateTime(new Date());
                     dcwsHisMapper.insert(dcwsHisTemp);
+
+                    scheduledExecutorService.schedule(() -> {
+                        SseMessageDto dto = new SseMessageDto();
+                        dto.setMessage("有新的【" + bo.getTaskName() +"】任务已经提交至您的待办，请您及时处理。");
+                        dto.setUserIds(List.of(Long.valueOf(userIdTemp)));
+                        SseMessageUtils.publishMessage(dto);
+                    }, 3, TimeUnit.SECONDS);
                 }
             }
         }

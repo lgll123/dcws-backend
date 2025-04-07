@@ -1,6 +1,7 @@
 package com.formssi.workflow.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.formssi.workflow.common.annotation.FixedValues;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -70,6 +71,8 @@ public class InfoChangeImportVo implements Serializable {
      * 其他
      */
     @ExcelProperty(value = "其他")
+    @FixedValues(value = {"U盾", "光盘", "照片", "奖杯"},
+            message = "【其他】栏位只能填：U盾/光盘/照片/奖杯")
     private String other;
 
     /**

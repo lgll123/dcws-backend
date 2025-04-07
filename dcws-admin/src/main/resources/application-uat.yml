@@ -4,8 +4,8 @@ server:
   port: 8081
   ssl:
     key-store-type: PKCS12
-    key-store: classpath:client-test.pfx
-    key-store-password: 123456  # 替换为您在创建PKCS12文件时设置的密码
+    key-store: classpath:client-uat.pfx
+    key-store-password: Yfglzx@2025  # 替换为您在创建PKCS12文件时设置的密码
   servlet:
     # 应用的访问路径
     context-path: /
@@ -24,16 +24,6 @@ server:
       # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
       worker: 256
 
-## minio
-minio:
-  accessKey: minioadmin
-  secretKey: minioadmin
-  #  bucketName: lce-admin
-  bucketName: dcws-assets
-  #  endpoint: http://127.0.0.1:9005
-  #  endpoint: http://10.101.68.2:9100
-  endpoint: http://10.101.68.29:9000
-
 --- # 监控中心配置
 spring.boot.admin.client:
   # 增加客户端开关
@@ -48,6 +38,13 @@ spring.boot.admin.client:
   username: admin
   password: 123456
 
+## minio
+minio:
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucketName: dcws-assets
+  endpoint: http://10.101.128.6:9000
+
 --- # snail-job 配置
 snail-job:
   enabled: true
@@ -56,7 +53,7 @@ snail-job:
   # SnailJob 接入验证令牌 详见 script/sql/snail_job.sql `sj_group_config` 表
   token: "SJ_cKqBTPzCsWA3VyuCfFoccmuIEGXjr5KT"
   server:
-    host: 10.101.68.29 #127.0.0.1
+    host: 10.101.128.6 #127.0.0.1
     port: 17888
   # 详见 script/sql/snail_job.sql `sj_namespace` 表
   namespace: ${spring.profiles.active}
@@ -80,7 +77,7 @@ spring:
         master:
           type: ${spring.datasource.type}
           driverClassName: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://10.101.68.29:3306/dcws_dev?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://10.101.128.6:3306/dcws_uat?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
           password: gZsgC4I0!S
         # 从库数据源
@@ -88,7 +85,7 @@ spring:
           lazy: true
           type: ${spring.datasource.type}
           driverClassName: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://10.101.68.29:3306/dcws_dev?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://10.101.128.6:3306/dcws_uat?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
           password: gZsgC4I0!S
 
@@ -113,7 +110,7 @@ spring.data:
   redis:
     # 地址
     #    host: 127.0.0.1
-    host: 10.101.68.29
+    host: 10.101.128.6
     # 端口，默认为6379
     port: 6379
     # 数据库索引
@@ -204,10 +201,11 @@ sms:
       signature: 您的短信签名
       sdk-app-id: 您的sdkAppId
 
+
 --- # 资产管理系统三方接口url及token
 assets:
   api:
-    url: http://10.101.68.29:8000/api/v1/
+    url: http://10.101.128.6:8000/api/v1/
     token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZjRhNDM1MDFmMmFiMWQ1OWRjNzE3NjY5ZWU1MWVkMGE0ZTY2NDA4Mzc2MmY4NmVjNGUxNzU5NTZiN2UyZThlOTM2ZmFjNTNkMWVmODViODUiLCJpYXQiOjE3NDAxMTg2MjcuNDI4OTM2LCJuYmYiOjE3NDAxMTg2MjcuNDI4OTQ2LCJleHAiOjMwMDI0MjI2MjcuNDI2Mjk5LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.VT4tifmGbr9CblfzRiX8xdatgK_VkiD7nWeY7NUZ3n3ww2Gkks1S8L4q7E7a114EgUCEFRyNrNYRrQdFCkV5mh-JqvMMog-89FtWMEdPOCIShtgv-wzgUaUjborBiCM7Ho0nTP3d0ih8-HPL5m8anJfbxjs4pMNo2CZuX82qx7lldzc1i_zc3Hl4W1F89dmM32gQc-CcY9mvWZLT-mmAsrmsNq5HvrHBupscIZwF7XWRWbVwiG5OV4LoniuD-S7r0fU6fr5uNnkJnP5x_UXVUmGOgqwj-SVp37oiGtEYbP5WwHqTGEF8w5GAWdA9qD8FvYP08GtYo53acYAIEMA67t14z-Ey6vHlxiyAtuYra0QFjsmKwHGOZf3DtoLmpFQIGbxdBj-6esWSESARxojkLcKKowGXEzPGVhRj3U9CY-ecRcH1ABGTDGovSArQQT3AiOJJnd6e4Vw-Il-1E257H9bDCA6nCXkcYTEFwgerp5D_d-RVVdBLfp2td-6cVfLv6YfdE8IJ3Nn3i0uhYv9g_-4ULJYHPfGxNGafEUeqdUsPXpMAP42LNCEPJeAmLMtvzheZvOayAsWaepGpLF22TFdPzc0fNEYSss-hHWIcglwPt84agGdevBCvpVVApY5R1UoHS0Uf4IManmCdaqJo_Lz1_3cQdToEEPBTglD8gpQ
 
 --- # 档案管理系统三方接口url及token

@@ -364,17 +364,6 @@ kstry:
     success-code: 200 # Story 执行成功后的 code。 默认：200
     timeout: 10000 # Story 任务超时时间。 默认：3000ms，单位：毫秒
 
-
-## minio
-minio:
-  accessKey: minioadmin
-  secretKey: minioadmin
-#  bucketName: lce-admin
-  bucketName: dcws-assets
-#  endpoint: http://127.0.0.1:9005
-#  endpoint: http://10.101.68.2:9100
-  endpoint: http://10.101.68.29:9000
-
 gc:
   starter:
     file:

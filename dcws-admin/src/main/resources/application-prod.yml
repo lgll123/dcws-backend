@@ -1,11 +1,35 @@
---- # 临时文件存储位置 避免临时文件被系统清理报错
-spring.servlet.multipart.location: /lce/server/temp
+# 开发环境配置
+server:
+  # 服务器的HTTPS端口，默认为8081
+  port: 8081
+  ssl:
+    key-store-type: PKCS12
+    key-store: classpath:client-test.pfx
+    key-store-password: Yfglzx@2025  # 替换为您在创建PKCS12文件时设置的密码
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  # undertow 配置
+  undertow:
+    # HTTP post内容的最大大小。当值为-1时，默认值为大小是无限的
+    max-http-post-size: -1
+    # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理
+    # 每块buffer的空间大小,越小的空间被利用越充分
+    buffer-size: 512
+    # 是否分配的直接内存
+    direct-buffers: true
+    threads:
+      # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+      io: 8
+      # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+      worker: 256
 
 --- # 监控中心配置
 spring.boot.admin.client:
   # 增加客户端开关
-  enabled: true
+  enabled: false
   url: http://localhost:9090/admin
+  #  url: http://10.101.128.5:9090/admin
   instance:
     service-host-type: IP
     metadata:
@@ -14,15 +38,22 @@ spring.boot.admin.client:
   username: admin
   password: 123456
 
+## minio
+minio:
+  accessKey: minioadmin
+  secretKey: minioadmin
+  bucketName: dcws-assets
+  endpoint: http://10.101.128.6:9000
+
 --- # snail-job 配置
 snail-job:
   enabled: true
   # 需要在 SnailJob 后台组管理创建对应名称的组,然后创建任务的时候选择对应的组,才能正确分派任务
-  group: "lce_group"
+  group: "dcws_group"
   # SnailJob 接入验证令牌 详见 script/sql/snail_job.sql `sj_group_config` 表
   token: "SJ_cKqBTPzCsWA3VyuCfFoccmuIEGXjr5KT"
   server:
-    host: 127.0.0.1
+    host: 10.101.128.6 #127.0.0.1
     port: 17888
   # 详见 script/sql/snail_job.sql `sj_namespace` 表
   namespace: ${spring.profiles.active}
@@ -36,7 +67,7 @@ spring:
     # 动态数据源文档 https://www.kancloud.cn/tracy5546/dynamic-datasource/content
     dynamic:
       # 性能分析插件(有性能损耗 不建议生产环境使用)
-      p6spy: false
+      p6spy: true
       # 设置默认的数据源或者数据源组,默认值即为 master
       primary: master
       # 严格模式 匹配不到数据源则报错
@@ -46,37 +77,18 @@ spring:
         master:
           type: ${spring.datasource.type}
           driverClassName: com.mysql.cj.jdbc.Driver
-          # jdbc 所有参数配置参考 https://lionli.blog.csdn.net/article/details/122018562
-          # rewriteBatchedStatements=true 批处理优化 大幅提升批量插入更新删除性能(对数据库有性能损耗 使用批量操作应考虑性能问题)
-          url: jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          url: jdbc:mysql://10.101.128.6:3306/dcws_uat?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
           username: root
-          password: root
+          password: gZsgC4I0!S
         # 从库数据源
         slave:
           lazy: true
           type: ${spring.datasource.type}
           driverClassName: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://localhost:3306/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
-          username:
-          password:
-#        oracle:
-#          type: ${spring.datasource.type}
-#          driverClassName: oracle.jdbc.OracleDriver
-#          url: jdbc:oracle:thin:@//localhost:1521/XE
-#          username: ROOT
-#          password: root
-#        postgres:
-#          type: ${spring.datasource.type}
-#          driverClassName: org.postgresql.Driver
-#          url: jdbc:postgresql://localhost:5432/postgres?useUnicode=true&characterEncoding=utf8&useSSL=true&autoReconnect=true&reWriteBatchedInserts=true
-#          username: root
-#          password: root
-#        sqlserver:
-#          type: ${spring.datasource.type}
-#          driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
-#          url: jdbc:sqlserver://localhost:1433;DatabaseName=tempdb;SelectMethod=cursor;encrypt=false;rewriteBatchedStatements=true
-#          username: SA
-#          password: root
+          url: jdbc:mysql://10.101.128.6:3306/dcws_uat?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&autoReconnect=true&rewriteBatchedStatements=true&allowPublicKeyRetrieval=true&nullCatalogMeansCurrent=true
+          username: root
+          password: gZsgC4I0!S
+
       hikari:
         # 最大连接池数量
         maxPoolSize: 20
@@ -97,13 +109,14 @@ spring:
 spring.data:
   redis:
     # 地址
-    host: localhost
+    #    host: 127.0.0.1
+    host: 10.101.128.6
     # 端口，默认为6379
     port: 6379
     # 数据库索引
     database: 0
     # redis 密码必须配置
-    password: lce123
+    password: FCfY5su9
     # 连接超时时间
     timeout: 10s
     # 是否开启ssl
@@ -114,17 +127,17 @@ redisson:
   # redis key前缀
   keyPrefix:
   # 线程池数量
-  threads: 16
+  threads: 4
   # Netty线程池数量
-  nettyThreads: 32
+  nettyThreads: 8
   # 单节点配置
   singleServerConfig:
     # 客户端名称
     clientName: ${lce.name}
     # 最小空闲连接数
-    connectionMinimumIdleSize: 32
+    connectionMinimumIdleSize: 8
     # 连接池大小
-    connectionPoolSize: 64
+    connectionPoolSize: 32
     # 连接空闲超时，单位：毫秒
     idleConnectionTimeout: 10000
     # 命令等待超时，单位：毫秒
@@ -134,17 +147,19 @@ redisson:
 
 --- # mail 邮件发送
 mail:
-  enabled: false
-  host: smtp.163.com
-  port: 465
+  enabled: true
+  #host: smtp.163.com
+  host: smtp.qiye.163.com
+  #port: 465
+  port: 994
   # 是否需要用户名密码验证
   auth: true
   # 发送方，遵循RFC-822标准
-  from: xxx@163.com
+  from: yangqingheng@formssi.com
   # 用户名（注意：如果使用foxmail邮箱，此处user为qq号）
-  user: xxx@163.com
+  user: yangqingheng@formssi.com
   # 密码（注意，某些邮箱需要为SMTP服务单独设置密码，详情查看相关帮助）
-  pass: xxxxxxxxxx
+  pass: 2P9QcWZpGBsDTBCQ
   # 使用 STARTTLS安全连接，STARTTLS是对纯文本通信协议的扩展。
   starttlsEnable: true
   # 使用SSL安全连接
@@ -186,78 +201,26 @@ sms:
       signature: 您的短信签名
       sdk-app-id: 您的sdkAppId
 
---- # 三方授权
-justauth:
-  # 前端外网访问地址
-  address: http://localhost:80
-  type:
-    maxkey:
-      # maxkey 服务器地址
-      # 注意 如下均配置均不需要修改 maxkey 已经内置好了数据
-      server-url: http://sso.maxkey.top
-      client-id: 876892492581044224
-      client-secret: x1Y5MTMwNzIwMjMxNTM4NDc3Mzche8
-      redirect-uri: ${justauth.address}/social-callback?source=maxkey
-    topiam:
-      # topiam 服务器地址
-      server-url: http://127.0.0.1:1989/api/v1/authorize/y0q************spq***********8ol
-      client-id: 449c4*********937************759
-      client-secret: ac7***********1e0************28d
-      redirect-uri: ${justauth.address}/social-callback?source=topiam
-      scopes: [ openid, email, phone, profile ]
-    qq:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=qq
-      union-id: false
-    weibo:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=weibo
-    gitee:
-      client-id: 91436b7940090d09c72c7daf85b959cfd5f215d67eea73acbf61b6b590751a98
-      client-secret: 02c6fcfd70342980cd8dd2f2c06c1a350645d76c754d7a264c4e125f9ba915ac
-      redirect-uri: ${justauth.address}/social-callback?source=gitee
-    dingtalk:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=dingtalk
-    baidu:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=baidu
-    csdn:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=csdn
-    coding:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=coding
-      coding-group-name: xx
-    oschina:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=oschina
-    alipay_wallet:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=alipay_wallet
-      alipay-public-key: MIIB**************DAQAB
-    wechat_open:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=wechat_open
-    wechat_mp:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=wechat_mp
-    wechat_enterprise:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=wechat_enterprise
-      agent-id: 1000002
-    gitlab:
-      client-id: 10**********6
-      client-secret: 1f7d08**********5b7**********29e
-      redirect-uri: ${justauth.address}/social-callback?source=gitlab
+
+--- # 资产管理系统三方接口url及token
+assets:
+  api:
+    url: http://10.101.128.6:8000/api/v1/
+    token: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZjRhNDM1MDFmMmFiMWQ1OWRjNzE3NjY5ZWU1MWVkMGE0ZTY2NDA4Mzc2MmY4NmVjNGUxNzU5NTZiN2UyZThlOTM2ZmFjNTNkMWVmODViODUiLCJpYXQiOjE3NDAxMTg2MjcuNDI4OTM2LCJuYmYiOjE3NDAxMTg2MjcuNDI4OTQ2LCJleHAiOjMwMDI0MjI2MjcuNDI2Mjk5LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.VT4tifmGbr9CblfzRiX8xdatgK_VkiD7nWeY7NUZ3n3ww2Gkks1S8L4q7E7a114EgUCEFRyNrNYRrQdFCkV5mh-JqvMMog-89FtWMEdPOCIShtgv-wzgUaUjborBiCM7Ho0nTP3d0ih8-HPL5m8anJfbxjs4pMNo2CZuX82qx7lldzc1i_zc3Hl4W1F89dmM32gQc-CcY9mvWZLT-mmAsrmsNq5HvrHBupscIZwF7XWRWbVwiG5OV4LoniuD-S7r0fU6fr5uNnkJnP5x_UXVUmGOgqwj-SVp37oiGtEYbP5WwHqTGEF8w5GAWdA9qD8FvYP08GtYo53acYAIEMA67t14z-Ey6vHlxiyAtuYra0QFjsmKwHGOZf3DtoLmpFQIGbxdBj-6esWSESARxojkLcKKowGXEzPGVhRj3U9CY-ecRcH1ABGTDGovSArQQT3AiOJJnd6e4Vw-Il-1E257H9bDCA6nCXkcYTEFwgerp5D_d-RVVdBLfp2td-6cVfLv6YfdE8IJ3Nn3i0uhYv9g_-4ULJYHPfGxNGafEUeqdUsPXpMAP42LNCEPJeAmLMtvzheZvOayAsWaepGpLF22TFdPzc0fNEYSss-hHWIcglwPt84agGdevBCvpVVApY5R1UoHS0Uf4IManmCdaqJo_Lz1_3cQdToEEPBTglD8gpQ
+
+--- # 档案管理系统三方接口url及token
+document:
+  api:
+    url: http://10.100.216.113:8000/api/
+    token: Token bb04390c75d903d1baf536ddac2ce2868b5d31ef
+
+#调用人事系统api
+hr-system:
+  api-url-user: http://10.101.136.104:8099/thirdPlatformForeign/call/v2/getUserList
+  api-url-org: http://10.101.136.104:8099/thirdPlatformForeign/call/v2/getOrgList
+
+
+#RSA加密密钥
+securityKey:
+  dcwsPrivateKey: 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
+  llPublicKey: MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAr2wlA5EfxphMQIs85sLWvui8rtArUWaQeUFl0QpEz13RVU2+WZBdbLJ0J8q3t2KSx3r61OJIPnYE3X5/4KzlEZalbMqpTp+cbCQ3ZDctnGSWWiLfoKeBRqjZj2uvc35w6lQ15k58ShK/WOHgEevapAQojGUFykvOYpa4A389XOyRybmSERjBFF2Bn4SiVSmO62Lh3ItveSaiLhgHsjtccY1m+HKP/8+OO3cbnIrXHm7WMDTT6ETKHBRz10u1i6WJIgW5Mt1n4+Mo28egJjcJmQjFrWeLFYEVqqweP9RBDj8t/Rnryan/acc8QrqtuIo4B3OaDKnjAAIrYOxJV98wWB+qB5QV2Jl6870Gq4Fo1+siHxkrEHgVMNyBkNlZWEFRGNMH7sBap7fleEU7vtLtGg/3JSIUYbqgZc07Ommroh2LPCUoVpSsGy8dwd5cwIrML8jqCu8NxGHsIvuVWEY4c8+IAfWFQgisI5zhGVfbmbkb2TgIg2dHXFXrqXnDtUN47ZhmSemcEjVIxSR/vrIgxqoJgsT8dsoLf8qhYvyc2JyDEnfZlLJ3CxvpcKa8OFKrzWF2/6Xe4M1pwhaPskQA+uUKIgSl/Q0jZPayMDQ0y3Tj9PF2x+5Ux1GefG7O1Y1l5W1X7O/jLd9T/1wN+y8UemFS9yh16OHgqurQeo2cNf8CAwEAAQ==

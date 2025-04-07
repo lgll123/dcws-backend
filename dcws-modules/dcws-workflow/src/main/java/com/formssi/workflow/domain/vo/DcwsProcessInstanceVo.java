@@ -107,4 +107,9 @@ public class DcwsProcessInstanceVo implements Serializable {
      * 申请原因
      */
     private String applyReason;
+
+    /**
+     * 任务名称
+     */
+    private String name;
 }

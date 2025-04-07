@@ -129,6 +129,7 @@ public class DcwsActProcessInstanceController extends BaseController {
                     processInstanceVo.setId(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     processInstanceVo.setBusinessKey(String.valueOf(dcwsNormalTaskVo.getTaskId()));
                     processInstanceVo.setApplyReason(dcwsNormalTaskVo.getRemark());
+                    processInstanceVo.setName(dcwsNormalTaskVo.getTaskName());
                     listTemp.add(processInstanceVo);
                 }
             }

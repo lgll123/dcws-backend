@@ -31,6 +31,9 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
     public static final String LOCATIONS_LIST = "locations/selectlist";
     public static final String MANUFACTURERS_LIST = "manufacturers/selectlist";
     public static final String LICENSE_CATEGORY = "categories/license/selectlist";
+    public static final String CONSUMABLE_CATEGORY = "categories/consumable/selectlist";
+    public static final String ACCESSORY_CATEGORY = "categories/accessory/selectlist";
+    public static final String COMPONENT_CATEGORY = "categories/component/selectlist";
 
     @Override
     public void invoke(T data, AnalysisContext context) {
@@ -92,7 +95,7 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
     }
 
     private void checkAccessoriesData(AccessoriesInfoImportVo vo, AnalysisContext context){
-        List<String> categoryIds = checkEntityExists(vo.getCategory(), LICENSE_CATEGORY, "类别不存在", context);
+        List<String> categoryIds = checkEntityExists(vo.getCategory(), ACCESSORY_CATEGORY, "类别不存在", context);
         vo.setCategoryId(ObjectUtil.isEmpty(categoryIds)?null:categoryIds.get(0));
         List<String> supplierIds = checkEntityExists(vo.getSupplier(), SUPPLIERS_LIST, "供应商不存在", context);
         vo.setSupplierId(ObjectUtil.isEmpty(supplierIds)?null:supplierIds.get(0));
@@ -101,7 +104,7 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
     }
 
     private void checkComponentsData(ComponentsInfoImportVo vo, AnalysisContext context){
-        List<String> categoryIds = checkEntityExists(vo.getCategory(), LICENSE_CATEGORY, "类别不存在", context);
+        List<String> categoryIds = checkEntityExists(vo.getCategory(), COMPONENT_CATEGORY, "类别不存在", context);
         vo.setCategoryId(ObjectUtil.isEmpty(categoryIds)?null:categoryIds.get(0));
         List<String> supplierIds = checkEntityExists(vo.getSupplier(), SUPPLIERS_LIST, "供应商不存在", context);
         vo.setSupplierId(ObjectUtil.isEmpty(supplierIds)?null:supplierIds.get(0));
@@ -110,7 +113,7 @@ public class AssetsImportValidationListener<T> extends AnalysisEventListener<T> 
     }
 
     private void checkConsumablesData(ConsumablesInfoImportVo vo, AnalysisContext context){
-        List<String> categoryIds = checkEntityExists(vo.getCategory(), LICENSE_CATEGORY, "类别不存在", context);
+        List<String> categoryIds = checkEntityExists(vo.getCategory(), CONSUMABLE_CATEGORY, "类别不存在", context);
         vo.setCategoryId(ObjectUtil.isEmpty(categoryIds)?null:categoryIds.get(0));
         List<String> supplierIds = checkEntityExists(vo.getSupplier(), SUPPLIERS_LIST, "供应商不存在", context);
         vo.setSupplierId(ObjectUtil.isEmpty(supplierIds)?null:supplierIds.get(0));

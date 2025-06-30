@@ -13,7 +13,7 @@ public class SecurityUtil {
     // 生成密钥对
     public static KeyPair generateKeyPair() throws NoSuchAlgorithmException {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-        keyPairGenerator.initialize(4096); // 选择密钥长度
+        keyPairGenerator.initialize(4096); //   选择密钥长度
         return keyPairGenerator.generateKeyPair();
     }
 
